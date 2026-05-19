@@ -1,0 +1,66 @@
+import Sidebar from "@/components/Sidebar";
+import Tarefas from "@/pages/Tarefas";
+import Metricas from "@/pages/Metricas";
+import Arquivos from "@/pages/Arquivos";
+import Configuracoes from "@/pages/Configuracoes";
+import Agenda from "@/pages/Agenda";
+import UserMenu from "@/components/UserMenu";
+import { Menu } from "lucide-react";
+import { useState } from "react";
+
+const PAGINA_LABELS: Record<string, string> = {
+  tarefas: "📚 Tarefas",
+  metricas: "📊 Métricas",
+  arquivos: "📁 Arquivos",
+  configuracoes: "⚙️ Configurações",
+  agenda: "📅 Agenda",
+};
+
+export default function Home() {
+  const [pagina, setPagina] = useState("tarefas");
+  const [sidebarAberta, setSidebarAberta] = useState(false);
+
+  return (
+    <div className="flex h-screen bg-[#0f1117] overflow-hidden">
+      <Sidebar
+        paginaAtual={pagina}
+        onNavegar={setPagina}
+        aberta={sidebarAberta}
+        onFechar={() => setSidebarAberta(false)}
+      />
+
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Topbar mobile */}
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-white/8 bg-[#13151f]">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarAberta(true)}
+              className="text-slate-400 hover:text-white transition-colors p-1 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded"
+              aria-label="Abrir menu"
+            >
+              <Menu size={20} />
+            </button>
+            <h1 className="text-sm font-semibold text-white font-['Space_Grotesk']">
+              {PAGINA_LABELS[pagina] ?? pagina}
+            </h1>
+          </div>
+          <UserMenu onNavegar={setPagina} />
+        </div>
+
+        {/* Topbar desktop */}
+        <div className="hidden lg:flex items-center justify-between px-6 py-3 border-b border-white/8 bg-[#13151f]">
+          <div />
+          <UserMenu onNavegar={setPagina} />
+        </div>
+
+        <main className="flex-1 overflow-hidden" id="main-content">
+          {pagina === "tarefas" && <Tarefas />}
+          {pagina === "metricas" && <Metricas />}
+          {pagina === "arquivos" && <Arquivos />}
+          {pagina === "configuracoes" && <Configuracoes />}
+          {pagina === "agenda" && <Agenda />}
+        </main>
+      </div>
+    </div>
+  );
+}

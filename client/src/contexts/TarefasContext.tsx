@@ -1,0 +1,182 @@
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { taskService } from "@/services/taskService";
+import { useAuth } from "@/contexts/AuthContext";
+import type { Tarefa, FiltrosTarefas, MetricasTarefas, PrioridadeTarefa, StatusTarefa } from "@/types";
+
+type TarefaInsert = Omit<Tarefa, "id" | "created_at" | "updated_at" | "completed_at">;
+type TarefaUpdate = Partial<Omit<Tarefa, "id" | "user_id" | "created_at">>;
+
+interface TarefasContextValue {
+  tarefas: Tarefa[];
+  carregando: boolean;
+  filtros: FiltrosTarefas;
+  tarefasFiltradas: Tarefa[];
+  setFiltros: (f: Partial<FiltrosTarefas>) => void;
+  adicionarTarefa: (t: Omit<TarefaInsert, "user_id">) => Promise<void>;
+  atualizarTarefa: (id: string, t: TarefaUpdate) => Promise<void>;
+  removerTarefa: (id: string) => Promise<void>;
+  toggleConcluida: (id: string) => Promise<void>;
+  limparTodas: () => Promise<void>;
+  recarregar: () => Promise<void>;
+  metricas: MetricasTarefas;
+}
+
+const TarefasContext = createContext<TarefasContextValue | null>(null);
+
+function calcularDiasRestantes(dueDate: string | null): number | null {
+  if (!dueDate) return null;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const prazo = new Date(dueDate);
+  prazo.setHours(0, 0, 0, 0);
+  return Math.ceil((prazo.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function isUrgente(tarefa: Tarefa): boolean {
+  if (tarefa.status === "Concluída") return false;
+  const dias = calcularDiasRestantes(tarefa.due_date);
+  return dias !== null && dias <= 3;
+}
+
+export function TarefasProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [filtros, setFiltrosState] = useState<FiltrosTarefas>({
+    busca: "",
+    status: "Todas",
+    materia: "Todas",
+    prioridade: "Todas",
+  });
+
+  const recarregar = useCallback(async () => {
+    if (!user) return;
+    setCarregando(true);
+    try {
+      const data = await taskService.list(user.id);
+      setTarefas(data);
+    } finally {
+      setCarregando(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      recarregar();
+    } else {
+      setTarefas([]);
+      setCarregando(false);
+    }
+  }, [user, recarregar]);
+
+  const setFiltros = (f: Partial<FiltrosTarefas>) => {
+    setFiltrosState((prev) => ({ ...prev, ...f }));
+  };
+
+  // Urgentes primeiro, depois por data de entrega
+  const tarefasFiltradas = tarefas
+    .filter((t) => {
+      if (
+        filtros.busca &&
+        !t.title.toLowerCase().includes(filtros.busca.toLowerCase()) &&
+        !t.subject_name.toLowerCase().includes(filtros.busca.toLowerCase())
+      )
+        return false;
+      if (filtros.status !== "Todas" && t.status !== filtros.status) return false;
+      if (filtros.materia !== "Todas" && t.subject_name !== filtros.materia) return false;
+      if (filtros.prioridade !== "Todas" && t.priority !== filtros.prioridade) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      const aUrgente = isUrgente(a);
+      const bUrgente = isUrgente(b);
+      if (aUrgente && !bUrgente) return -1;
+      if (!aUrgente && bUrgente) return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+  const adicionarTarefa = async (t: Omit<TarefaInsert, "user_id">) => {
+    if (!user) throw new Error("Usuário não autenticado");
+    const nova = await taskService.create({ ...t, user_id: user.id });
+    setTarefas((prev) => [nova, ...prev]);
+  };
+
+  const atualizarTarefa = async (id: string, dados: TarefaUpdate) => {
+    const atualizada = await taskService.update(id, dados);
+    setTarefas((prev) => prev.map((t) => (t.id === id ? atualizada : t)));
+  };
+
+  const removerTarefa = async (id: string) => {
+    await taskService.delete(id);
+    setTarefas((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const limparTodas = async () => {
+    if (!user) throw new Error("Usuário não autenticado");
+    await taskService.deleteAll(user.id);
+    setTarefas([]);
+  };
+
+  const toggleConcluida = async (id: string) => {
+    const tarefa = tarefas.find((t) => t.id === id);
+    if (!tarefa) return;
+    const atualizada = await taskService.toggle(id, tarefa.status);
+    setTarefas((prev) => prev.map((t) => (t.id === id ? atualizada : t)));
+  };
+
+  const total = tarefas.length;
+  const concluidas = tarefas.filter((t) => t.status === "Concluída").length;
+  const emAndamento = tarefas.filter((t) => t.status === "Em Andamento").length;
+  const passouPrazo = tarefas.filter((t) => t.status === "Passou do Prazo").length;
+  const pendentes = tarefas.filter((t) => t.status === "Não iniciada").length;
+  const percentualConcluido = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+
+  const porMateria: Record<string, number> = {};
+  const porStatus: Record<string, number> = {};
+  const porSetor: Record<string, number> = {};
+  tarefas.forEach((t) => {
+    porMateria[t.subject_name] = (porMateria[t.subject_name] ?? 0) + 1;
+    porStatus[t.status] = (porStatus[t.status] ?? 0) + 1;
+    if (t.sector) porSetor[t.sector] = (porSetor[t.sector] ?? 0) + 1;
+  });
+
+  return (
+    <TarefasContext.Provider
+      value={{
+        tarefas,
+        carregando,
+        filtros,
+        tarefasFiltradas,
+        setFiltros,
+        adicionarTarefa,
+        atualizarTarefa,
+        removerTarefa,
+        toggleConcluida,
+        limparTodas,
+        recarregar,
+        metricas: {
+          total,
+          concluidas,
+          pendentes,
+          emAndamento,
+          passouPrazo,
+          percentualConcluido,
+          porMateria,
+          porStatus,
+          porSetor,
+        },
+      }}
+    >
+      {children}
+    </TarefasContext.Provider>
+  );
+}
+
+export function useTarefas() {
+  const ctx = useContext(TarefasContext);
+  if (!ctx) throw new Error("useTarefas deve ser usado dentro de TarefasProvider");
+  return ctx;
+}
+
+export { calcularDiasRestantes, isUrgente };
+export type { PrioridadeTarefa, StatusTarefa };

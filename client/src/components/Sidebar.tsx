@@ -1,0 +1,181 @@
+import { useTarefas } from "@/contexts/TarefasContext";
+import { getMateriaColor } from "@/lib/tarefasData";
+import type { StatusTarefa } from "@/types";
+import {
+  BookOpen,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  LayoutDashboard,
+  ListTodo,
+  Settings,
+  XCircle,
+} from "lucide-react";
+
+interface SidebarProps {
+  paginaAtual: string;
+  onNavegar: (p: string) => void;
+  aberta: boolean;
+  onFechar: () => void;
+}
+
+const STATUS_FILTROS: { label: string; valor: StatusTarefa | "Todas"; cor: string }[] = [
+  { label: "Todas", valor: "Todas", cor: "#94a3b8" },
+  { label: "Não iniciada", valor: "Não iniciada", cor: "#94a3b8" },
+  { label: "Em Andamento", valor: "Em Andamento", cor: "#f59e0b" },
+  { label: "Concluída", valor: "Concluída", cor: "#10b981" },
+  { label: "Passou do Prazo", valor: "Passou do Prazo", cor: "#ef4444" },
+];
+
+export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: SidebarProps) {
+  const { metricas, filtros, setFiltros } = useTarefas();
+
+  const navItems = [
+    { id: "tarefas", label: "Tarefas", icon: ListTodo },
+    { id: "agenda", label: "Agenda", icon: Calendar },
+    { id: "metricas", label: "Métricas", icon: LayoutDashboard },
+    { id: "arquivos", label: "Arquivos", icon: BookOpen },
+    { id: "configuracoes", label: "Configurações", icon: Settings },
+  ];
+
+  const materias = Object.entries(metricas.porMateria).sort((a, b) => b[1] - a[1]);
+
+  return (
+    <>
+      {aberta && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          onClick={onFechar}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-[#13151f] border-r border-white/8 z-30 flex flex-col transition-transform duration-300 ease-out
+          ${aberta ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:z-auto`}
+        role="navigation"
+        aria-label="Menu lateral"
+      >
+        <div className="px-5 py-5 border-b border-white/8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center">
+              <BookOpen size={16} className="text-black" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white font-['Space_Grotesk'] leading-none">Tarefas</p>
+              <p className="text-xs text-slate-500 leading-none mt-0.5">Escolares</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 py-4 border-b border-white/8">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-3 font-['Space_Grotesk']">Resumo</p>
+          <div className="grid grid-cols-2 gap-2">
+            <MetricaMini label="Total" valor={metricas.total} cor="#94a3b8" icon={<ListTodo size={12} />} />
+            <MetricaMini label="Concluídas" valor={metricas.concluidas} cor="#10b981" icon={<CheckCircle2 size={12} />} />
+            <MetricaMini label="Pendentes" valor={metricas.pendentes} cor="#94a3b8" icon={<Clock size={12} />} />
+            <MetricaMini label="Atrasadas" valor={metricas.passouPrazo} cor="#ef4444" icon={<XCircle size={12} />} />
+          </div>
+
+          <div className="mt-3">
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-slate-500">Progresso geral</span>
+              <span className="text-amber-400 font-semibold font-['Space_Grotesk']">{metricas.percentualConcluido}%</span>
+            </div>
+            <div className="h-2 bg-white/5 rounded-full overflow-hidden" role="progressbar" aria-valuenow={metricas.percentualConcluido} aria-valuemin={0} aria-valuemax={100}>
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-700"
+                style={{ width: `${metricas.percentualConcluido}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <nav className="px-3 py-3 border-b border-white/8">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Navegação</p>
+          {navItems.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => { onNavegar(id); onFechar(); }}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 mb-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                paginaAtual === id
+                  ? "bg-amber-500/15 text-amber-400 font-medium"
+                  : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+              }`}
+              aria-current={paginaAtual === id ? "page" : undefined}
+            >
+              <Icon size={15} aria-hidden="true" />
+              <span>{label}</span>
+              {paginaAtual === id && <ChevronRight size={13} className="ml-auto" aria-hidden="true" />}
+            </button>
+          ))}
+        </nav>
+
+        <div className="flex-1 overflow-y-auto flex flex-col">
+          <div className="px-3 py-3 border-b border-white/8">
+            <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">
+              Filtrar por Status
+            </p>
+            {STATUS_FILTROS.map(({ label, valor, cor }) => {
+              const qtd = valor === "Todas" ? metricas.total : (metricas.porStatus[valor] ?? 0);
+              const ativo = filtros.status === valor;
+              return (
+                <button
+                  key={valor}
+                  onClick={() => { setFiltros({ status: valor }); onFechar(); }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                    ativo ? "bg-white/8 font-medium" : "hover:bg-white/5"
+                  }`}
+                  aria-pressed={ativo}
+                >
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} aria-hidden="true" />
+                  <span className={ativo ? "text-slate-200" : "text-slate-400"}>{label}</span>
+                  <span className="ml-auto text-xs text-slate-500 font-['Space_Grotesk']">{qtd}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {materias.length > 0 && (
+            <div className="px-3 py-3">
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Por Matéria</p>
+              {materias.map(([materia, qtd]) => {
+                const cor = getMateriaColor(materia);
+                const ativo = filtros.materia === materia;
+                return (
+                  <button
+                    key={materia}
+                    onClick={() => { setFiltros({ materia: ativo ? "Todas" : materia }); onFechar(); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-150 mb-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                      ativo ? "bg-white/8 font-medium" : "hover:bg-white/5"
+                    }`}
+                    aria-pressed={ativo}
+                  >
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} aria-hidden="true" />
+                    <span className={`truncate ${ativo ? "text-slate-200" : "text-slate-400"}`}>{materia}</span>
+                    <span className="ml-auto text-xs text-slate-500 font-['Space_Grotesk']">{qtd}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </aside>
+    </>
+  );
+}
+
+function MetricaMini({ label, valor, cor, icon }: { label: string; valor: number; cor: string; icon: React.ReactNode }) {
+  return (
+    <div className="bg-white/4 rounded-lg p-2.5 border border-white/6">
+      <div className="flex items-center gap-1 mb-1" style={{ color: cor }} aria-hidden="true">
+        {icon}
+        <span className="text-xs text-slate-500">{label}</span>
+      </div>
+      <p className="text-xl font-bold font-['Space_Grotesk'] leading-none" style={{ color: cor }} aria-label={`${label}: ${valor}`}>
+        {valor}
+      </p>
+    </div>
+  );
+}
