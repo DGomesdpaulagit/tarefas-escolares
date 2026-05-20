@@ -12,8 +12,8 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 6 - Fase 2 Finalizada
-## SESSÃO ATUAL: [Sessão 12] - Tema Claro/Escuro ✅ PROJETO FINALIZADO
+## ETAPA ATUAL: Etapa 7 - PWA e Ícone Oficial
+## SESSÃO ATUAL: [Sessão 13] - Ícone oficial e PWA favicon assets ✅ CONCLUÍDA
 
 ---
 
@@ -55,6 +55,43 @@ Lido automaticamente no início de cada nova conversa.
 - Build: ✅ 0 erros TypeScript
 - Commit: df771fd — "feat: implement light/dark theme with CSS custom properties"
 - Push: ✅ main → GitHub (59e76f0)
+
+---
+
+## [Etapa 7 / Sessão 13] - Ícone oficial e PWA favicon assets
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Gerados 7 arquivos de ícone em `client/public/`:
+  - `favicon.ico` (16/32/48px)
+  - `favicon-16x16.png`, `favicon-32x32.png`
+  - `apple-touch-icon.png` (180×180)
+  - `android-chrome-192x192.png`, `android-chrome-512x512.png`
+  - `maskable-icon-512x512.png`
+- Criado `manifest.webmanifest` com configuração PWA completa
+- Atualizado `client/index.html` com todas as meta tags e links de ícone
+
+### Arquivos criados/modificados (9)
+- `client/public/favicon.ico` (novo)
+- `client/public/favicon-16x16.png` (novo)
+- `client/public/favicon-32x32.png` (novo)
+- `client/public/apple-touch-icon.png` (novo)
+- `client/public/android-chrome-192x192.png` (novo)
+- `client/public/android-chrome-512x512.png` (novo)
+- `client/public/maskable-icon-512x512.png` (novo)
+- `client/public/manifest.webmanifest` (novo)
+- `client/index.html` (modificado)
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (deploy automático disparado)
+- Build: ✅ 0 erros TypeScript
+- Commit: e3ecd5d — "feat: add official app icon and PWA favicon assets"
+- Merge: a9a4609 — "merge: Sessão 13 — ícone oficial e PWA favicon assets"
+- Push: ✅ main → GitHub
+
+### Próximo passo
+A definir na próxima conversa.
 
 ---
 

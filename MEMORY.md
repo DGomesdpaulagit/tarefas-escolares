@@ -251,6 +251,7 @@ created_at, updated_at, completed_at
 | 16 | Toasts de feedback | Sonner |
 | 17 | TypeScript strict (0 erros) | `tsconfig.json` |
 | 18 | Deploy CI/CD (GitHub → Vercel) | `vercel.json` |
+| 19 | Favicon + PWA icons (7 tamanhos) + manifest | `client/public/` + `index.html` |
 
 ---
 
@@ -436,7 +437,7 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**Fase 2 concluída ✅** — projeto finalizado com todas as features planejadas.
+**Fase 2 concluída ✅ | PWA icons configurados ✅**
 
 ### Próximas opções (Fase 3 — Features Avançadas)
 - Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
@@ -444,7 +445,7 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
 
 ### Último commit
-`59e76f0` — merge: Sessão 12 — light/dark theme (Fase 2 finalizada)
+`a9a4609` — merge: Sessão 13 — ícone oficial e PWA favicon assets
 
 ---
 
