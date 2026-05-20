@@ -12,8 +12,38 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 4 - Fase 2 Features
-## SESSÃO ATUAL: [Sessão 10] - Configurações Avançadas (avatar, bio, matérias)
+## ETAPA ATUAL: Etapa 5 - Fase 2 Features (continuação)
+## SESSÃO ATUAL: [Sessão 11] - Sons de Transição (Web Audio API)
+
+---
+
+## [Etapa 5 / Sessão 11] - Sons de Transição (Web Audio API)
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Criado `soundService.ts` — Web Audio API puro, sem arquivos externos:
+  - `playConcluida()` — chime ascendente ao concluir tarefa
+  - `playDesmarcada()` — tom descendente ao desmarcar
+  - `playAdicionada()` — pop curto ao criar nova tarefa
+  - `playRemovida()` — descida rápida ao remover tarefa
+- `sound_enabled` lido do localStorage (sincronizado com Supabase ao salvar Settings)
+- `AbaNotificacoes`: ao carregar, sincroniza localStorage; ao salvar, toca preview do som se ativado
+- `TarefaCard`: sons em toggle e remoção
+- `TarefaForm`: som ao adicionar nova tarefa
+
+### Arquivos modificados
+- `client/src/services/soundService.ts` (novo)
+- `client/src/pages/Configuracoes.tsx`
+- `client/src/components/TarefaCard.tsx`
+- `client/src/components/TarefaForm.tsx`
+
+### Próximo passo
+**Etapa 6 — [Sessão 12] - Fase 2: Tema claro/escuro** (última feature da Fase 2)
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
+- Build: ✅ 0 erros TypeScript
 
 ---
 

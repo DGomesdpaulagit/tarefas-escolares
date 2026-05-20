@@ -8,6 +8,15 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 5 / Sessão 11 — 2026-05-20)
+- **Sons de transição** via Web Audio API (sem arquivos externos):
+  - Chime ascendente ao concluir tarefa
+  - Tom descendente ao desmarcar
+  - Pop curto ao criar nova tarefa
+  - Descida rápida ao remover tarefa
+- Sons controlados pelo toggle "Habilitar sons" em Configurações → Notificações
+- Preview sonoro ao salvar configurações com sons ativados
+
 ### Adicionado (Etapa 4 / Sessão 10 — 2026-05-20)
 - **Avatar upload** em Configurações → Perfil, com fallback de iniciais e limite de 2 MB
 - **Campo Bio** no perfil (até 200 caracteres, salvo no Supabase)

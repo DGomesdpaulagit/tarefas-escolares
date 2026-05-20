@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTarefas } from "@/contexts/TarefasContext";
+import { soundService } from "@/services/soundService";
 import { MATERIAS_PADRAO, SETORES, ORIGENS } from "@/lib/tarefasData";
 import type { Tarefa, PrioridadeTarefa, StatusTarefa } from "@/types";
 import { X } from "lucide-react";
@@ -61,6 +62,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
         toast.success("Tarefa atualizada!");
       } else {
         await adicionarTarefa(form);
+        soundService.playAdicionada();
         toast.success("Tarefa adicionada!");
       }
       onClose();
