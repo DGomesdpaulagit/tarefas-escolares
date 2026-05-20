@@ -14,6 +14,7 @@ import type { Materia, Perfil } from "@/types";
 import { MATERIAS_PADRAO, MATERIAS_CORES } from "@/lib/tarefasData";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Aba = "perfil" | "tema" | "notificacoes" | "materias";
 
@@ -154,7 +155,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
         <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Informações do Perfil</h2>
 
         {/* Avatar */}
@@ -232,7 +233,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
         </Button>
       </div>
 
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
         <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Alterar Senha</h2>
         <div className="space-y-1.5">
           <Label htmlFor="nova-senha" className="text-slate-300 text-sm">Nova Senha</Label>
@@ -268,34 +269,54 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
 }
 
 function AbaTema() {
-  const [tema, setTema] = useState<"dark" | "light">("dark");
+  const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const [salvando, setSalvando] = useState(false);
+
+  const aplicarTema = async (novoTema: "dark" | "light") => {
+    setTheme?.(novoTema);
+    setSalvando(true);
+    try {
+      if (user) await profileService.update(user.id, { theme: novoTema });
+      toast.success(`Tema ${novoTema === "dark" ? "escuro" : "claro"} aplicado!`);
+    } catch {
+      toast.error("Erro ao salvar preferência de tema");
+    } finally {
+      setSalvando(false);
+    }
+  };
 
   return (
-    <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
+    <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
       <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Aparência</h2>
       <p className="text-xs text-slate-500">Escolha o tema da interface</p>
       <div className="grid grid-cols-2 gap-3">
         <button
-          onClick={() => setTema("dark")}
+          onClick={() => aplicarTema("dark")}
+          disabled={salvando}
           className={`p-4 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-            tema === "dark" ? "border-amber-500 bg-amber-500/10" : "border-white/10 bg-white/5 hover:border-white/20"
+            theme === "dark" ? "border-amber-500 bg-amber-500/10" : "border-white/10 bg-white/5 hover:border-white/20"
           }`}
-          aria-pressed={tema === "dark"}
+          aria-pressed={theme === "dark"}
         >
-          <div className="w-full h-12 bg-[#0f1117] rounded-lg mb-2 border border-white/10" />
+          <div className="w-full h-12 rounded-lg mb-2 border border-white/10" style={{ background: "#0f1117" }} />
           <p className="text-xs font-medium text-slate-300 text-center">Escuro</p>
-          {tema === "dark" && <p className="text-xs text-amber-400 text-center">✓ Ativo</p>}
+          {theme === "dark" && <p className="text-xs text-amber-400 text-center">✓ Ativo</p>}
         </button>
         <button
-          onClick={() => { setTema("light"); toast.info("Tema claro em breve!"); }}
-          className="p-4 rounded-xl border-2 border-white/10 bg-white/5 hover:border-white/20 transition-all opacity-50 focus:outline-none focus:ring-2 focus:ring-amber-500"
-          aria-pressed={tema === "light"}
+          onClick={() => aplicarTema("light")}
+          disabled={salvando}
+          className={`p-4 rounded-xl border-2 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+            theme === "light" ? "border-amber-500 bg-amber-500/10" : "border-white/10 bg-white/5 hover:border-white/20"
+          }`}
+          aria-pressed={theme === "light"}
         >
-          <div className="w-full h-12 bg-slate-100 rounded-lg mb-2 border border-slate-200" />
+          <div className="w-full h-12 rounded-lg mb-2 border border-slate-200" style={{ background: "#f0f3f8" }} />
           <p className="text-xs font-medium text-slate-300 text-center">Claro</p>
-          <p className="text-xs text-slate-500 text-center">Em breve</p>
+          {theme === "light" && <p className="text-xs text-amber-400 text-center">✓ Ativo</p>}
         </button>
       </div>
+      {salvando && <p className="text-xs text-slate-500 text-center">Salvando preferência...</p>}
     </div>
   );
 }
@@ -344,7 +365,7 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
   };
 
   return (
-    <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
+    <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
       <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Notificações</h2>
       <p className="text-xs text-slate-500">Configure alertas de prazo</p>
       <div className="space-y-3">
@@ -435,7 +456,7 @@ function AbaMaterias() {
   return (
     <div className="space-y-4">
       {/* Matérias ativas */}
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-3">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Suas Matérias</h2>
           {!carregando && <span className="text-xs text-slate-500">{materias.length} matéria{materias.length !== 1 ? "s" : ""}</span>}
@@ -488,7 +509,7 @@ function AbaMaterias() {
 
       {/* Matérias padrão para adicionar rapidamente */}
       {materiasPadraoNaoAdicionadas.length > 0 && (
-        <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-3">
+        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
           <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Adicionar Matéria Padrão</h2>
           <div className="grid grid-cols-2 gap-2">
             {materiasPadraoNaoAdicionadas.map((nome) => {

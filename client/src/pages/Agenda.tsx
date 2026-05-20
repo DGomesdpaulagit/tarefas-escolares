@@ -72,7 +72,7 @@ export default function Agenda() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendário */}
-          <div className="lg:col-span-2 bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+          <div className="lg:col-span-2 bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
             {/* Navegação do mês */}
             <div className="flex items-center justify-between mb-5">
               <button
@@ -163,7 +163,7 @@ export default function Agenda() {
           </div>
 
           {/* Painel lateral com tarefas do dia */}
-          <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+          <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
             {diaSelecionado ? (
               <>
                 <h3 className="text-sm font-semibold text-white mb-4 font-['Space_Grotesk']">

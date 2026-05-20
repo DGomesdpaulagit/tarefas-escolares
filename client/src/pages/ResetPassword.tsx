@@ -72,7 +72,7 @@ export default function ResetPassword() {
   // ── Carregando ────────────────────────────────────────────────────────────
   if (aguardando) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0f1117]">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="text-amber-400 animate-spin" />
           <p className="text-slate-400 text-sm">Verificando link de recuperação...</p>
@@ -84,7 +84,7 @@ export default function ResetPassword() {
   // ── Link inválido / expirado ──────────────────────────────────────────────
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0f1117] p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] p-4">
         <div className="w-full max-w-md">
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
@@ -96,7 +96,7 @@ export default function ResetPassword() {
             </div>
           </div>
 
-          <div className="bg-[#13151f] border border-red-500/20 rounded-2xl p-6 shadow-2xl text-center">
+          <div className="bg-[var(--bg-surface)] border border-red-500/20 rounded-2xl p-6 shadow-2xl text-center">
             <AlertTriangle size={40} className="mx-auto mb-4 text-red-400" />
             <h1 className="text-xl font-bold text-white font-['Space_Grotesk'] mb-2">
               Link inválido ou expirado
@@ -118,7 +118,7 @@ export default function ResetPassword() {
 
   // ── Formulário de nova senha ──────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f1117] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
@@ -130,7 +130,7 @@ export default function ResetPassword() {
           </div>
         </div>
 
-        <div className="bg-[#13151f] border border-white/10 rounded-2xl p-6 shadow-2xl">
+        <div className="bg-[var(--bg-surface)] border border-white/10 rounded-2xl p-6 shadow-2xl">
           <div className="flex items-center gap-3 mb-1">
             <ShieldCheck size={22} className="text-amber-400" />
             <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">

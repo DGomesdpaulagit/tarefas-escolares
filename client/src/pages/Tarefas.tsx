@@ -76,7 +76,7 @@ export default function Tarefas() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-4 sm:px-6 py-4 border-b border-white/8 bg-[#0f1117]/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="px-4 sm:px-6 py-4 border-b border-white/8 bg-[var(--bg-base)]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[140px] max-w-sm">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
@@ -152,7 +152,7 @@ export default function Tarefas() {
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {STATUS_OPTIONS.map((s) => (
                     <SelectItem key={s} value={s} className="text-slate-200 text-xs focus:bg-white/10">{s}</SelectItem>
                   ))}
@@ -166,7 +166,7 @@ export default function Tarefas() {
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-32 focus:border-amber-500">
                   <SelectValue placeholder="Prioridade" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {PRIORIDADE_OPTIONS.map((p) => (
                     <SelectItem key={p} value={p} className="text-slate-200 text-xs focus:bg-white/10">{p}</SelectItem>
                   ))}
@@ -180,7 +180,7 @@ export default function Tarefas() {
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
                   <SelectValue placeholder="Matéria" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {materiasDisponiveis.map((m) => (
                     <SelectItem key={m} value={m} className="text-slate-200 text-xs focus:bg-white/10">{m}</SelectItem>
                   ))}
@@ -194,7 +194,7 @@ export default function Tarefas() {
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-40 focus:border-amber-500">
                   <SelectValue placeholder="Ordenar" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {ORDENACAO_OPTIONS.map((o) => (
                     <SelectItem key={o.value} value={o.value} className="text-slate-200 text-xs focus:bg-white/10">{o.label}</SelectItem>
                   ))}

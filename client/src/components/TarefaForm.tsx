@@ -88,7 +88,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-lg bg-[#1a1d27] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+      <div className="relative w-full max-w-lg bg-[var(--bg-card)] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-white font-['Space_Grotesk']">
             {isEdicao ? "Editar Tarefa" : "Nova Tarefa"}
@@ -122,7 +122,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
                 <SelectTrigger id="subject" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {MATERIAS_PADRAO.map((m) => (
                     <SelectItem key={m} value={m} className="text-slate-200 focus:bg-white/10">
                       {m}
@@ -137,7 +137,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
                 <SelectTrigger id="status" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {STATUS_OPTIONS.map((s) => (
                     <SelectItem key={s} value={s} className="text-slate-200 focus:bg-white/10">
                       {s}
@@ -155,7 +155,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
                 <SelectTrigger id="priority" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {PRIORIDADE_OPTIONS.map((p) => (
                     <SelectItem key={p} value={p} className="text-slate-200 focus:bg-white/10">
                       {p}
@@ -170,7 +170,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
                 <SelectTrigger id="sector" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {SETORES.map((s) => (
                     <SelectItem key={s} value={s} className="text-slate-200 focus:bg-white/10">
                       {s}
@@ -188,7 +188,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
                 <SelectTrigger id="origin" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1d27] border-white/10">
+                <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {ORIGENS.map((o) => (
                     <SelectItem key={o} value={o} className="text-slate-200 focus:bg-white/10">
                       {o}

@@ -66,7 +66,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f1117] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
@@ -78,7 +78,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="bg-[#13151f] border border-white/10 rounded-2xl p-6 shadow-2xl">
+        <div className="bg-[var(--bg-surface)] border border-white/10 rounded-2xl p-6 shadow-2xl">
           <h1 className="text-2xl font-bold text-white font-['Space_Grotesk'] mb-1">
             {modo === "login" ? "Bem-vindo de volta" : modo === "cadastro" ? "Criar conta" : "Recuperar senha"}
           </h1>

@@ -70,7 +70,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   return (
     <>
       <div
-        className="group relative bg-[#1a1d27] border border-white/8 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 hover:bg-[#1e2130]"
+        className="group relative bg-[var(--bg-card)] border border-white/8 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 hover:bg-[var(--bg-card-hover)]"
         style={{
           animationDelay: `${index * 40}ms`,
           animation: "fadeSlideIn 0.3s ease-out both",

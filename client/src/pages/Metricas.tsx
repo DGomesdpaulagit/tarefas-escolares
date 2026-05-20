@@ -111,7 +111,7 @@ export default function Metricas() {
 
       {/* Perfil Inteligente */}
       {metricas.total > 0 && (
-        <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap size={15} className="text-amber-400" />
             <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Perfil Inteligente</h3>
@@ -190,7 +190,7 @@ export default function Metricas() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Distribuição por Status</h3>
           {dadosStatus.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
@@ -208,7 +208,7 @@ export default function Metricas() {
         </div>
 
         {dadosSetor.length > 0 && (
-          <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+          <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
             <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Tarefas por Setor</h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={dadosSetor} layout="vertical" margin={{ left: 8, right: 16 }}>
@@ -224,7 +224,7 @@ export default function Metricas() {
       </div>
 
       {dadosMateria.length > 0 && (
-        <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Tarefas por Matéria</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={dadosMateria} margin={{ left: 0, right: 16, bottom: 20 }}>
@@ -242,7 +242,7 @@ export default function Metricas() {
         </div>
       )}
 
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Progresso Geral</h3>
           <span className="text-2xl font-bold text-amber-400 font-['Space_Grotesk']">{metricas.percentualConcluido}%</span>
@@ -264,7 +264,7 @@ export default function Metricas() {
 
 function KpiCard({ label, valor, cor, sufixo }: { label: string; valor: number; cor: string; sufixo: string }) {
   return (
-    <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-4">
+    <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-4">
       <p className="text-xs text-slate-500 mb-1">{label}</p>
       <p className="text-3xl font-bold font-['Space_Grotesk'] leading-none" style={{ color: cor }}>{valor}</p>
       <p className="text-xs text-slate-500 mt-1">{sufixo}</p>
