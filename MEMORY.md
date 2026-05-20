@@ -443,15 +443,15 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**Fase 2 concluída ✅ | PWA icons configurados ✅**
+**✅ PROJETO CONCLUÍDO — Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅**
 
-### Próximas opções (Fase 3 — Features Avançadas)
+### Fase 3 — Features Avançadas (a iniciar quando o usuário decidir)
 - Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
 - Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
 - Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
 
 ### Último commit
-`a9a4609` — merge: Sessão 13 — ícone oficial e PWA favicon assets
+`f24b8a6` — docs: registrar bugfix importação planilha no MEMORY.md e MEMORY_CORE.md
 
 ---
 

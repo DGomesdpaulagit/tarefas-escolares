@@ -6,7 +6,7 @@
 
 ## Estado atual
 
-**PROJETO FINALIZADO — Fase 2 concluída ✅**
+**✅ PROJETO CONCLUÍDO — Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅**
 
 Sistema de memória distribuída completamente estruturado:
 - `MEMORY.md` → fonte de verdade completa do projeto (~500 linhas)
@@ -56,7 +56,7 @@ Candidatos:
 
 ## Último commit
 
-`59e76f0` — merge: Sessão 12 — light/dark theme (Fase 2 finalizada)
+`f24b8a6` — docs: registrar bugfix importação planilha no MEMORY.md e MEMORY_CORE.md
 
 ---
 
@@ -84,4 +84,4 @@ Tags desta fase: #tema #light #dark #css-vars #supabase #persistência
 
 ## Status
 
-ATIVO — aguardando próxima instrução (Fase 3 ou manutenção)
+**✅ CONCLUÍDO** — aguardando decisão do usuário para iniciar Fase 3 (Notificações, Onboarding, Agenda melhorada) ou manutenção.

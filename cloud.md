@@ -12,8 +12,40 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 7 - PWA e Ícone Oficial
-## SESSÃO ATUAL: [Sessão 13] - Ícone oficial e PWA favicon assets ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 8 - Manutenção / Bugfixes
+## SESSÃO ATUAL: [Sessão 14] - Bugfix importação de planilha ✅ CONCLUÍDA
+
+## STATUS DO PROJETO: ✅ CONCLUÍDO — Fase 0, Fase 1, Fase 2 implementadas e em produção
+
+---
+
+## [Etapa 8 / Sessão 14] - Bugfix: importação de planilha (erro 400)
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Corrigido erro 400 (Bad Request) ao importar planilhas .xlsx/.csv
+- Causa 1: status/prioridade da planilha não batia com enum do Supabase
+- Causa 2: datas do Excel chegavam como número serial (ex: 45672)
+- Adicionados `sanitizeStatus()`, `sanitizePrioridade()` e `parseExcelDate()` em `parseExcel.ts`
+- Melhorada mensagem de erro no modal para exibir o erro real do Supabase
+
+### Arquivos modificados
+- `client/src/lib/parseExcel.ts`
+- `client/src/components/ImportarPlanilhaModal.tsx`
+
+### Commits
+- `4e32f37` — fix: sanitize status/priority values and parse Excel dates on import
+- `f24b8a6` — docs: registrar bugfix no MEMORY.md e MEMORY_CORE.md
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app
+- Build: ✅ 0 erros TypeScript
+- Push: ✅ main → GitHub
+- Deploy: ✅ Vercel automático
+
+### Próximo passo
+Projeto concluído. Fase 3 (Notificações, Onboarding, Agenda melhorada) pode ser iniciada quando o usuário decidir.
 
 ---
 
@@ -370,6 +402,12 @@ A definir na próxima conversa.
 
 | Commit | Sessão | Descrição |
 |--------|--------|-----------|
+| `f24b8a6` | 14 | docs: registrar bugfix importação planilha no MEMORY.md e MEMORY_CORE.md |
+| `4e32f37` | 14 | fix: sanitize status/priority values and parse Excel dates on import |
+| `a9a4609` | 13 | merge: Sessão 13 — ícone oficial e PWA favicon assets |
+| `e3ecd5d` | 13 | feat: add official app icon and PWA favicon assets |
+| `59e76f0` | 12 | merge: Sessão 12 — light/dark theme (Fase 2 finalizada) |
+| `df771fd` | 12 | feat: implement light/dark theme with CSS custom properties |
 | `a3e1374` | 6 | docs: add mid-session registration rule |
 | `861a155` | 6 | chore: update CLAUDE.md with proactive checklist |
 | `9c5f152` | 6 | chore: add CLAUDE.md |
