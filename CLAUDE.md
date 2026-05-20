@@ -9,20 +9,24 @@ Este arquivo é lido automaticamente pelo Claude Code no início de cada sessão
 
 **Faça isso antes de responder qualquer coisa, sem esperar instrução:**
 
-1. Leia `MEMORY.md` na raiz do projeto
-2. Identifique o "Próximo Passo Exato" (seção 22 do MEMORY.md)
-3. Verifique o último commit do git (`git log --oneline -5`)
-4. Responda com este formato fixo:
+1. Leia `cloud.md` na raiz do projeto → identifique a sessão atual e o próximo passo
+2. Leia `MEMORY.md` → confirme o estado do sistema
+3. Verifique o último commit do git (`git log --oneline -3`)
+4. Determine o número da próxima sessão (última sessão do cloud.md + 1)
+5. Responda com este formato fixo:
 
 ```
 📂 Projeto carregado: Tarefas Escolares v[versão]
+📍 Última sessão: [Sessão X] - [título da última sessão do cloud.md]
 📍 Último commit: [hash] — [mensagem]
-🎯 Próximo passo: [copiado exatamente da seção 22 do MEMORY.md]
+🎯 Próxima sessão: [Sessão X+1] - [título baseado no próximo passo]
+
+[descrição do que será feito]
 
 Posso iniciar agora. Confirma?
 ```
 
-Se o usuário disser "sim", "pode", "continua", "vai", ou qualquer confirmação — execute sem mais perguntas.
+Se o usuário disser "sim", "pode", "continua", "vai", "oi", ou qualquer coisa — execute sem mais perguntas.
 
 ---
 
@@ -85,18 +89,18 @@ Antes de encerrar, execute cada item abaixo e confirme com ✅ ou ❌:
 VERIFICAÇÃO FINAL — execute cada comando e relate o resultado:
 
 [ ] 1. npm run build                    → deve terminar com 0 erros
-[ ] 2. MEMORY.md atualizado             → seções: estado atual, histórico, próximo passo
-[ ] 3. CHANGELOG.md atualizado          → mudanças desta sessão registradas
-[ ] 4. BUGS.md atualizado               → bugs corrigidos ou novos adicionados (se houver)
-[ ] 5. PROMPTS.md atualizado            → prompts relevantes desta sessão (se houver)
-[ ] 6. docs/ROADMAP.md atualizado       → status das fases reflete o trabalho feito
-[ ] 7. git add . && git commit          → commit realizado com mensagem descritiva
-[ ] 8. git push origin main             → push confirmado com hash do commit
-[ ] 9. Vercel deploy disparado          → automático após o push (confirmar output do git push)
+[ ] 2. cloud.md atualizado              → nova entrada [Sessão X] com resumo, problemas, próximo passo
+[ ] 3. MEMORY.md atualizado             → estado atual, histórico, próximo passo (seção 22)
+[ ] 4. CHANGELOG.md atualizado          → mudanças desta sessão registradas
+[ ] 5. BUGS.md atualizado               → bugs corrigidos ou novos adicionados (se houver)
+[ ] 6. PROMPTS.md atualizado            → prompts relevantes desta sessão (se houver)
+[ ] 7. docs/ROADMAP.md atualizado       → status das fases reflete o trabalho feito
+[ ] 8. git add . && git commit          → commit realizado com mensagem descritiva
+[ ] 9. git push origin main             → push confirmado com hash do commit
+[ ] 10. Vercel deploy disparado         → automático após o push (confirmar output do git push)
 ```
 
 Só encerre a sessão após todos os itens estarem ✅.
-
 Se algum item falhar, corrija antes de encerrar.
 
 ---
@@ -106,7 +110,7 @@ Se algum item falhar, corrija antes de encerrar.
 Após o checklist, exiba sempre:
 
 ```
-✅ Sessão encerrada — [data]
+✅ [Sessão X] encerrada — [data]
 
 O que foi feito:
 - [lista do que foi implementado/corrigido]
@@ -115,15 +119,18 @@ Arquivos modificados:
 - [lista de arquivos]
 
 Documentação atualizada:
-- [lista dos .md atualizados]
+- cloud.md → [Sessão X] registrada
+- MEMORY.md → estado e histórico atualizados
+- [outros .md atualizados]
 
 Build: ✅ 0 erros
 Commit: [hash] — "[mensagem]"
 Push: ✅ main → GitHub
 Deploy: ✅ Vercel deploy automático disparado
+Obsidian: ✅ sincronizado (arquivos .md atualizados no repo)
 
-Próximo passo:
-- [copiado da seção 22 do MEMORY.md atualizado]
+Próxima sessão:
+[Sessão X+1] - [título baseado no próximo passo]
 ```
 
 ---
