@@ -159,4 +159,19 @@ REGRAS:
 
 ---
 
+---
+
+## Comportamentos validados pelo usuário (Sessão 6)
+
+### P-010 — Sistema de sessões numeradas com cloud.md
+**Validado em:** 2026-05-20
+**Resultado:** Aprovado — "muito bom claude, vc alterou, registrou e me certificou sobre as alterações. continue assim"
+**O que foi aprovado:**
+- Criar `cloud.md` como controle de sessões numeradas `[Sessão X]`
+- Claude lê `cloud.md` no início e anuncia a próxima sessão antes de começar
+- Certificar ao usuário após cada ação importante que foi registrado em `MEMORY.md` + Obsidian
+- Checklist obrigatório ao final de cada sessão antes de encerrar
+
+---
+
 *Atualizado em: 2026-05-20*
