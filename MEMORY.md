@@ -421,10 +421,10 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - [x] Busca avançada (title + subject_name + notes + sector + origin + description)
 - [x] Tarefas urgentes no topo (já implementado, confirmado)
 
-### 📋 Fase 2 — Features Intermediárias
+### 🔄 Fase 2 — Features Intermediárias (em andamento)
 - [ ] Tema claro/escuro completo + persistência no Supabase
 - [ ] Configurações avançadas (avatar upload, idioma, matérias personalizadas)
-- [ ] Perfil inteligente (insights automáticos em Metricas.tsx)
+- [x] Perfil inteligente (insights automáticos em Metricas.tsx) ✅ Etapa 4 / Sessão 9
 - [ ] Sons de transição (Web Audio API)
 
 ### 🚀 Fase 3 — Features Avançadas
@@ -446,6 +446,11 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ### Último commit
 `b5bc303` — merge: Etapa 3 / Sessão 8 — Fase 1 UX
+
+### Próximas features da Fase 2 (a escolher)
+- Tema claro/escuro
+- Configurações avançadas
+- Sons de transição
 
 ---
 
@@ -474,6 +479,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | Regra adicionada: certificar registro no MEMORY.md + Obsidian após toda ação importante |
 | 2026-05-20 | [Etapa 2 / Sessão 7] Criação de MEMORY_CORE.md e estrutura SESSIONS/ — Mega Prompt integrado |
 | 2026-05-20 | [Etapa 3 / Sessão 8] Fase 1 UX: filtro de Matéria, busca multi-campo (6 campos), TarefaForm mobile |
+| 2026-05-20 | [Etapa 4 / Sessão 9] Fase 2: Perfil Inteligente com 5 insights automáticos em Metricas.tsx |
 
 ---
 

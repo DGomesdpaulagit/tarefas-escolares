@@ -32,17 +32,16 @@ Candidatos:
 
 ## Última ação
 
-**[Etapa 3 / Sessão 8]** — Fase 1 UX implementada:
-- Filtro de Matéria adicionado ao painel de filtros (lista dinâmica por matérias cadastradas)
-- Busca expandida para 6 campos: title, subject_name, notes, sector, origin, description
-- TarefaForm: todos os grids duplos agora são `grid-cols-1 sm:grid-cols-2` (mobile-friendly)
-- Urgentes no topo: confirmado como já implementado
+**[Etapa 4 / Sessão 9]** — Perfil Inteligente implementado em `Metricas.tsx`:
+- 5 insights automáticos: foco urgente, matéria mais produtiva, mais atrasada, progresso médio, ritmo semanal
+- Corrigido bug do `materiasComAtraso` (cálculo estava errado)
+- Componente `InsightCard` com variantes de cor
 
 ---
 
 ## Último commit
 
-`b5bc303` — merge: Etapa 3 / Sessão 8 — Fase 1 UX
+A commitar — Etapa 4 / Sessão 9
 
 ---
 

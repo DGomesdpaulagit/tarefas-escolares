@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 4 / Sessão 9 — 2026-05-20)
+- **Perfil Inteligente** na página de Métricas com 5 insights automáticos: foco urgente, matéria mais produtiva, matéria mais atrasada, progresso médio e ritmo semanal
+- Componente `InsightCard` reutilizável com variantes de cor
+- KPI "Ritmo (7 dias)" mostrando tarefas concluídas na última semana
+- Corrigido bug no cálculo de matérias com atraso (estava incorreto)
+
 ### Adicionado (Etapa 3 / Sessão 8 — 2026-05-20)
 - Filtro de **Matéria** no painel de filtros com lista dinâmica das matérias cadastradas
 - **Busca avançada multi-campo**: pesquisa agora inclui notas, setor, origem e descrição
