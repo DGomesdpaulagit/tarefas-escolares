@@ -52,6 +52,31 @@ C:\Users\HP\Downloads\tarefas-escolares-app (1)
 
 ---
 
+## CERTIFICAÇÃO APÓS AÇÕES IMPORTANTES
+
+Após qualquer uma destas situações, atualize o MEMORY.md imediatamente e confirme ao usuário:
+
+- Criação de arquivo novo (componente, página, serviço, doc)
+- Edição relevante em arquivo existente
+- Bug corrigido
+- Sugestão aceita pelo usuário
+- Decisão técnica tomada
+- Feature implementada (mesmo que parcial)
+
+**Formato da confirmação obrigatória após cada ação:**
+
+```
+📝 Registrado:
+- MEMORY.md → [o que foi adicionado/atualizado]
+- Obsidian → sincronizado automaticamente via Git
+- [CHANGELOG.md / BUGS.md / PROMPTS.md] → [atualizado se relevante]
+```
+
+Não espere o final da sessão para registrar — registre logo após cada ação importante.
+Se várias ações acontecerem em sequência, registre todas de uma vez ao final do bloco.
+
+---
+
 ## CHECKLIST OBRIGATÓRIO AO FINAL DE CADA SESSÃO
 
 Antes de encerrar, execute cada item abaixo e confirme com ✅ ou ❌:

@@ -453,20 +453,11 @@ Arquivos a modificar na Fase 1:
 
 ## 23. Prompt para Continuação
 
-Cole no início da próxima conversa:
+O `CLAUDE.md` na raiz do projeto carrega as instruções automaticamente.
+Basta abrir uma nova conversa no Claude Code e digitar qualquer coisa (ex: "oi", "continua").
+O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode iniciar.
 
-```
-Leia o arquivo MEMORY.md na raiz do projeto em:
-C:\Users\HP\Downloads\tarefas-escolares-app (1)\MEMORY.md
-
-O projeto Tarefas Escolares está funcionando em produção.
-Continue exatamente do ponto em que parou: implemente a Fase 1 completa.
-
-URLs:
-- Produção: https://tarefas-escolares-five.vercel.app
-- GitHub: https://github.com/DGomesdpaulagit/tarefas-escolares
-- Supabase: https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn
-```
+> Prompt manual não é mais necessário — o CLAUDE.md substitui.
 
 ---
 
@@ -481,6 +472,8 @@ URLs:
 | 2026-05-20 | Implementação reset de senha (`ResetPassword.tsx`) |
 | 2026-05-20 | Criação MEMORY.md + organização do projeto |
 | 2026-05-20 | Criação base de conhecimento: CHANGELOG.md, PROMPTS.md, BUGS.md, LINKS.md |
+| 2026-05-20 | Criação do CLAUDE.md com instruções automáticas de sessão (início proativo + checklist final) |
+| 2026-05-20 | Regra adicionada: certificar registro no MEMORY.md + Obsidian após toda ação importante |
 
 ---
 
