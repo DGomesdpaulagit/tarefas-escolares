@@ -13,33 +13,36 @@ Sistema de memória distribuída completamente estruturado:
 - `cloud.md` → controle de etapas e continuidade entre conversas
 - `CLAUDE.md` → instruções automáticas de início e fim de sessão
 
-App em produção, 100% funcional. Nenhuma feature nova implementada ainda.
-Próximo bloco de trabalho: Fase 1 UX (Etapa 3).
+App em produção, 100% funcional. **Fase 1 UX concluída ✅**
+Próximo bloco de trabalho: Fase 2 — Features Intermediárias.
 
 ---
 
 ## Próximo passo
 
-**Etapa 3 — Implementação Fase 1 UX**
+**Etapa 4 — Fase 2 (prioridade a definir com o usuário)**
 
-1. Legendas nos filtros → `client/src/pages/Tarefas.tsx`
-2. Melhorias mobile → `TarefaCard.tsx` + `TarefaForm.tsx`
-3. Busca avançada multi-campo → `client/src/contexts/TarefasContext.tsx`
-4. Tarefas urgentes no topo → `client/src/contexts/TarefasContext.tsx`
+Candidatos:
+- Tema claro/escuro + persistência no Supabase
+- Configurações avançadas (avatar upload, matérias personalizadas)
+- Notificações de prazo (Web Notifications API)
+- Perfil inteligente (insights automáticos em Metricas.tsx)
 
 ---
 
 ## Última ação
 
-**[Etapa 2 / Sessão 7]** — Integração do Mega Prompt ao sistema de memória.
-Criado `MEMORY_CORE.md` e estrutura `SESSIONS/`.
-Nenhum código de produção alterado.
+**[Etapa 3 / Sessão 8]** — Fase 1 UX implementada:
+- Filtro de Matéria adicionado ao painel de filtros (lista dinâmica por matérias cadastradas)
+- Busca expandida para 6 campos: title, subject_name, notes, sector, origin, description
+- TarefaForm: todos os grids duplos agora são `grid-cols-1 sm:grid-cols-2` (mobile-friendly)
+- Urgentes no topo: confirmado como já implementado
 
 ---
 
 ## Último commit
 
-`61baacd` — docs: register validated behavior P-011 in PROMPTS.md
+`b5bc303` — merge: Etapa 3 / Sessão 8 — Fase 1 UX
 
 ---
 
@@ -56,14 +59,13 @@ Nenhum código de produção alterado.
 
 ## Contexto vivo
 
-Etapa 1 e 2 foram 100% dedicadas a estruturar o sistema de memória e continuidade.
-O projeto está pronto para receber features. A Fase 1 UX está mapeada e documentada
-no ROADMAP.md — será executada na Etapa 3.
+Etapas 1 e 2 foram 100% dedicadas a estruturar o sistema de memória e continuidade.
+Etapa 3 implementou a Fase 1 UX completa. Projeto pronto para Fase 2.
 
-Tags desta fase: #sistema #memoria #documentacao
+Tags desta fase: #ux #filtros #busca #mobile
 
 ---
 
 ## Status
 
-ATIVO — aguardando Etapa 3
+ATIVO — aguardando Etapa 4 (Fase 2)

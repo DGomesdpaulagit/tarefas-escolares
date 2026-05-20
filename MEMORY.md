@@ -415,11 +415,11 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - Deploy GitHub → Vercel com CI/CD
 - Banco de dados com 5 tabelas, RLS e triggers
 
-### 🔜 Fase 1 — Polimento UX (Próxima)
-- [ ] Legendas nos filtros (labels acima de cada filtro)
-- [ ] Melhorias mobile (edição, detalhes, "Data de Registro")
-- [ ] Busca avançada (busca em title + description + subject_name + notes)
-- [ ] Tarefas urgentes no topo (ordenação automática por urgência)
+### ✅ Fase 1 — Polimento UX (Concluída — Etapa 3 / Sessão 8)
+- [x] Filtro de Matéria adicionado ao painel de filtros (lista dinâmica)
+- [x] Melhorias mobile — TarefaForm: grid-cols-1 sm:grid-cols-2
+- [x] Busca avançada (title + subject_name + notes + sector + origin + description)
+- [x] Tarefas urgentes no topo (já implementado, confirmado)
 
 ### 📋 Fase 2 — Features Intermediárias
 - [ ] Tema claro/escuro completo + persistência no Supabase
@@ -436,18 +436,16 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**Implementar Fase 1 completa** na próxima conversa:
+**Fase 1 UX concluída ✅** — próximo: Fase 2.
 
-1. **Legendas nos filtros** — adicionar `<label>` acima de cada `<Select>` em `Tarefas.tsx`
-2. **Melhorias mobile** — revisar `TarefaCard.tsx` e `TarefaForm.tsx` para mobile
-3. **Busca avançada** — expandir filtro `busca` em `TarefasContext.tsx` para buscar em múltiplos campos
-4. **Urgentes no topo** — ajustar `tarefasFiltradas` para ordenar urgentes primeiro
+### Fase 2 — Features Intermediárias (prioridade a definir)
+- Tema claro/escuro + persistência no Supabase
+- Configurações avançadas (avatar upload, matérias personalizadas)
+- Perfil inteligente (insights automáticos em Metricas.tsx)
+- Sons de transição (Web Audio API)
 
-Arquivos a modificar na Fase 1:
-- `client/src/pages/Tarefas.tsx` (filtros + busca)
-- `client/src/contexts/TarefasContext.tsx` (lógica de busca + ordenação)
-- `client/src/components/TarefaCard.tsx` (melhorias mobile + data de registro)
-- `client/src/components/TarefaForm.tsx` (melhorias mobile)
+### Último commit
+`b5bc303` — merge: Etapa 3 / Sessão 8 — Fase 1 UX
 
 ---
 
@@ -475,6 +473,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | Criação do CLAUDE.md com instruções automáticas de sessão (início proativo + checklist final) |
 | 2026-05-20 | Regra adicionada: certificar registro no MEMORY.md + Obsidian após toda ação importante |
 | 2026-05-20 | [Etapa 2 / Sessão 7] Criação de MEMORY_CORE.md e estrutura SESSIONS/ — Mega Prompt integrado |
+| 2026-05-20 | [Etapa 3 / Sessão 8] Fase 1 UX: filtro de Matéria, busca multi-campo (6 campos), TarefaForm mobile |
 
 ---
 
