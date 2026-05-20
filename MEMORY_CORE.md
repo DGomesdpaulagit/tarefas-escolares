@@ -32,16 +32,18 @@ Candidatos:
 
 ## Última ação
 
-**[Etapa 4 / Sessão 9]** — Perfil Inteligente implementado em `Metricas.tsx`:
-- 5 insights automáticos: foco urgente, matéria mais produtiva, mais atrasada, progresso médio, ritmo semanal
-- Corrigido bug do `materiasComAtraso` (cálculo estava errado)
-- Componente `InsightCard` com variantes de cor
+**[Etapa 4 / Sessão 10]** — Configurações Avançadas implementadas em `Configuracoes.tsx`:
+- Avatar upload com Supabase Storage (bucket `avatars`), fallback de iniciais
+- Bio (200 chars) salvo na tabela `profiles`
+- Carregamento real do perfil do Supabase no mount
+- AbaMaterias com persistência via `subjectService`: lista, adiciona e remove
+- `profileService.ts`: novo método `uploadAvatar()`
 
 ---
 
 ## Último commit
 
-A commitar — Etapa 4 / Sessão 9
+A commitar — Etapa 4 / Sessão 10
 
 ---
 

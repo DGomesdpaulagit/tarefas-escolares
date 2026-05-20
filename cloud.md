@@ -13,7 +13,36 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 4 - Fase 2 Features
-## SESSÃO ATUAL: [Sessão 9] - Perfil Inteligente em Métricas
+## SESSÃO ATUAL: [Sessão 10] - Configurações Avançadas (avatar, bio, matérias)
+
+---
+
+## [Etapa 4 / Sessão 10] - Configurações Avançadas (avatar, bio, matérias)
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Avatar upload** — foto de perfil com Supabase Storage (bucket `avatars`), exibição com iniciais como fallback, limite 2 MB
+- **Bio** — campo de texto curto (200 chars) salvo na tabela `profiles`
+- **Carregamento real do perfil** — `AbaPerfil` agora carrega dados do Supabase no mount (antes lia apenas `user_metadata`)
+- **Matérias com persistência real** — `AbaMaterias` agora usa `subjectService` (tabela `subjects`):
+  - Lista matérias salvas no Supabase
+  - Adiciona matérias padrão com 1 clique
+  - Adiciona matérias personalizadas por nome
+  - Remove matérias com botão (aparece no hover)
+- Adicionado `uploadAvatar()` em `profileService.ts`
+
+### Arquivos modificados
+- `client/src/pages/Configuracoes.tsx`
+- `client/src/services/profileService.ts`
+
+### Próximo passo
+**Etapa 5 — [Sessão 11] - Próxima feature da Fase 2** (tema claro/escuro ou sons)
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
+- Build: ✅ 0 erros TypeScript
+- Nota: avatar upload requer bucket `avatars` no Supabase Storage (público)
 
 ---
 
