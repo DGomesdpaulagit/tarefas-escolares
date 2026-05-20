@@ -32,6 +32,13 @@ Candidatos:
 
 ## Última ação
 
+**[Bugfix / 2026-05-20]** — Importação de planilha retornando erro 400 (Bad Request):
+- Causa: valores de `status` e `priority` da planilha não batiam com o enum do Supabase
+- Causa secundária: datas do Excel chegavam como número serial (ex: `45672`) em vez de string
+- Fix em `client/src/lib/parseExcel.ts`: adicionados `sanitizeStatus()`, `sanitizePrioridade()` e `parseExcelDate()` com mapeamento PT/EN
+- Fix em `client/src/components/ImportarPlanilhaModal.tsx`: mensagem de erro agora mostra o erro real do Supabase
+- Commit: 4e32f37 | Push: ✅ main → GitHub | Deploy: ✅ Vercel automático
+
 **[Etapa 7 / Sessão 13]** — Ícone oficial e PWA favicon assets:
 - Gerados 7 arquivos de ícone em `client/public/` (favicon.ico, PNGs 16/32/180/192/512px, maskable)
 - Criado `manifest.webmanifest` (PWA standalone, theme `#0f1117`)

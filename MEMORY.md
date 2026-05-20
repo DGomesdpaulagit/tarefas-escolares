@@ -352,6 +352,12 @@ Push para branch main
 |---|---|---|
 | Nenhum bug conhecido em produção | — | — |
 
+## 17b. Bugs Corrigidos (adicionais)
+
+| Bug | Causa | Solução | Commit |
+|---|---|---|---|
+| Importar planilha retorna 400 Bad Request | Status/prioridade da planilha não batia com enum do Supabase; datas Excel como número serial | Adicionados `sanitizeStatus()`, `sanitizePrioridade()` e `parseExcelDate()` em `parseExcel.ts` | 4e32f37 |
+
 ---
 
 ## 19. Estratégia de Tokens (Claude)
@@ -478,6 +484,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Etapa 4 / Sessão 10] Fase 2: Configurações avançadas — avatar, bio, matérias com persistência real |
 | 2026-05-20 | [Etapa 5 / Sessão 11] Fase 2: Sons de transição via Web Audio API (concluir, desmarcar, adicionar, remover) |
 | 2026-05-20 | [Etapa 6 / Sessão 12] Fase 2: Tema claro/escuro com CSS vars, ThemeLoader, persistência Supabase — PROJETO FINALIZADO |
+| 2026-05-20 | [Bugfix] Importação de planilha: erro 400 corrigido — sanitização de status/prioridade + parsing de datas Excel |
 
 ---
 
