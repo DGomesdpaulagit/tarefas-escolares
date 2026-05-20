@@ -12,8 +12,33 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 2 - Mega Prompt + MEMORY_CORE + estrutura de sessões
-## SESSÃO ATUAL: [Sessão 7] - Integração do Mega Prompt ao sistema de memória
+## ETAPA ATUAL: Etapa 3 - Implementação Fase 1 UX
+## SESSÃO ATUAL: [Sessão 8] - Filtro de Matéria, busca multi-campo e mobile
+
+---
+
+## [Etapa 3 / Sessão 8] - Filtro de Matéria, busca multi-campo e mobile
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Adicionado filtro de **Matéria** no painel de filtros (`Tarefas.tsx`) com lista dinâmica das matérias cadastradas
+- Expandida a **busca avançada** para incluir `notes`, `sector`, `origin`, `description` além de `title` e `subject_name` (`TarefasContext.tsx`)
+- Corrigido grid do **formulário mobile**: `grid-cols-1 sm:grid-cols-2` em todos os campos duplos (`TarefaForm.tsx`)
+- Confirmado que urgentes no topo já estava implementado ✅
+
+### Arquivos modificados
+- `client/src/contexts/TarefasContext.tsx` — busca multi-campo
+- `client/src/pages/Tarefas.tsx` — filtro de Matéria no painel
+- `client/src/components/TarefaForm.tsx` — grid responsivo mobile
+
+### Próximo passo
+**Etapa 4 — [Sessão 9] - Fase 2 (a definir)**
+- Possíveis: notificações de prazo, exportação de dados, integração com calendário real
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
+- Build: ✅ 0 erros TypeScript
 
 ---
 

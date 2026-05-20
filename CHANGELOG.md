@@ -8,11 +8,11 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
-### A fazer (Fase 1)
-- Legendas nos filtros de tarefas
-- Melhorias de responsividade mobile
-- Busca avançada (múltiplos campos)
-- Ordenação automática de tarefas urgentes
+### Adicionado (Etapa 3 / Sessão 8 — 2026-05-20)
+- Filtro de **Matéria** no painel de filtros com lista dinâmica das matérias cadastradas
+- **Busca avançada multi-campo**: pesquisa agora inclui notas, setor, origem e descrição
+- **Formulário mobile responsivo**: campos duplos agora empilham em telas pequenas (`sm:grid-cols-2`)
+- Ordenação de tarefas urgentes no topo (confirmada como já implementada)
 
 ---
 
