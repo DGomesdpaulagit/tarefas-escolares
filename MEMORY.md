@@ -421,8 +421,8 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - [x] Busca avançada (title + subject_name + notes + sector + origin + description)
 - [x] Tarefas urgentes no topo (já implementado, confirmado)
 
-### 🔄 Fase 2 — Features Intermediárias (em andamento)
-- [ ] Tema claro/escuro completo + persistência no Supabase
+### ✅ Fase 2 — Features Intermediárias (Concluída — Etapa 6 / Sessão 12)
+- [x] Tema claro/escuro completo + persistência no Supabase ✅ Etapa 6 / Sessão 12
 - [x] Configurações avançadas (avatar upload, bio, matérias com persistência) ✅ Etapa 4 / Sessão 10
 - [x] Perfil inteligente (insights automáticos em Metricas.tsx) ✅ Etapa 4 / Sessão 9
 - [x] Sons de transição (Web Audio API) ✅ Etapa 5 / Sessão 11
@@ -436,21 +436,15 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**Fase 1 UX concluída ✅** — próximo: Fase 2.
+**Fase 2 concluída ✅** — projeto finalizado com todas as features planejadas.
 
-### Fase 2 — Features Intermediárias (prioridade a definir)
-- Tema claro/escuro + persistência no Supabase
-- Configurações avançadas (avatar upload, matérias personalizadas)
-- Perfil inteligente (insights automáticos em Metricas.tsx)
-- Sons de transição (Web Audio API)
+### Próximas opções (Fase 3 — Features Avançadas)
+- Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
+- Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
+- Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
 
 ### Último commit
-`b5bc303` — merge: Etapa 3 / Sessão 8 — Fase 1 UX
-
-### Próximas features da Fase 2 (a escolher)
-- Tema claro/escuro
-- Configurações avançadas
-- Sons de transição
+`59e76f0` — merge: Sessão 12 — light/dark theme (Fase 2 finalizada)
 
 ---
 
@@ -482,6 +476,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Etapa 4 / Sessão 9] Fase 2: Perfil Inteligente com 5 insights automáticos em Metricas.tsx |
 | 2026-05-20 | [Etapa 4 / Sessão 10] Fase 2: Configurações avançadas — avatar, bio, matérias com persistência real |
 | 2026-05-20 | [Etapa 5 / Sessão 11] Fase 2: Sons de transição via Web Audio API (concluir, desmarcar, adicionar, remover) |
+| 2026-05-20 | [Etapa 6 / Sessão 12] Fase 2: Tema claro/escuro com CSS vars, ThemeLoader, persistência Supabase — PROJETO FINALIZADO |
 
 ---
 

@@ -12,8 +12,49 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 5 - Fase 2 Features (continuação)
-## SESSÃO ATUAL: [Sessão 11] - Sons de Transição (Web Audio API)
+## ETAPA ATUAL: Etapa 6 - Fase 2 Finalizada
+## SESSÃO ATUAL: [Sessão 12] - Tema Claro/Escuro ✅ PROJETO FINALIZADO
+
+---
+
+## [Etapa 6 / Sessão 12] - Tema Claro/Escuro (Fase 2 finalizada)
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- `index.css`: CSS custom properties `--bg-base`, `--bg-surface`, `--bg-card`, `--bg-card-hover` com valores Light (`:root`) e Dark (`.dark`)
+- `ThemeContext.tsx`: expõe `setTheme` no contexto, `ThemeProvider` com `switchable`
+- `App.tsx`: `ThemeLoader` sincroniza tema do Supabase (`profiles.theme`) no login; `ThemedApp` usa tema dinâmico no Toaster
+- Substituídos todos os `bg-[#0f1117]`, `bg-[#13151f]`, `bg-[#1a1d27]`, `bg-[#1e2130]` por vars CSS em 17 arquivos:
+  - `Home.tsx`, `Sidebar.tsx`, `Login.tsx`, `ResetPassword.tsx`, `Agenda.tsx`
+  - `Arquivos.tsx`, `Metricas.tsx`, `TarefaCard.tsx`, `Configuracoes.tsx`
+  - `Tarefas.tsx`, `TarefaForm.tsx`, `ImportarPlanilhaModal.tsx`
+  - `LimparTarefasModal.tsx`, `UserMenu.tsx`, `App.tsx`
+- `AbaTema` em Configurações: toggle light/dark funcional, salva em `profiles.theme` via Supabase
+- Transição suave (250ms) entre temas
+- Light mode: tema Academic Light (`#f0f3f8` base, `#ffffff` card)
+- Dark mode: tema Academic Dark (`#0f1117` base, `#1a1d27` card) — padrão preservado
+
+### Arquivos modificados (17)
+- `client/src/index.css`
+- `client/src/contexts/ThemeContext.tsx`
+- `client/src/App.tsx`
+- `client/src/components/{Sidebar,TarefaCard,TarefaForm,ImportarPlanilhaModal,LimparTarefasModal,UserMenu}.tsx`
+- `client/src/pages/{Home,Login,ResetPassword,Agenda,Arquivos,Metricas,Configuracoes,Tarefas}.tsx`
+
+### Próximo passo
+**PROJETO FINALIZADO** — todas as features da Fase 2 implementadas:
+✅ Sessão 8: Filtros + busca multi-campo + mobile
+✅ Sessão 9: Perfil Inteligente (Métricas)
+✅ Sessão 10: Configurações avançadas (avatar, bio, matérias)
+✅ Sessão 11: Sons de transição (Web Audio API)
+✅ Sessão 12: Tema claro/escuro com persistência Supabase
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (deploy automático disparado)
+- Build: ✅ 0 erros TypeScript
+- Commit: df771fd — "feat: implement light/dark theme with CSS custom properties"
+- Push: ✅ main → GitHub (59e76f0)
 
 ---
 

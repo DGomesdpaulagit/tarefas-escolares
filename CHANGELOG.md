@@ -8,6 +8,15 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 6 / Sessão 12 — 2026-05-20)
+- **Tema claro/escuro** com CSS custom properties (`--bg-base`, `--bg-surface`, `--bg-card`, `--bg-card-hover`)
+- Toggle de tema em Configurações → Aparência, com persistência via Supabase `profiles.theme`
+- `ThemeLoader` sincroniza preferência salva no login (multi-dispositivo)
+- Transição suave (250ms) entre temas
+- Light Academic: `#f0f3f8` base, `#ffffff` cards
+- Dark Academic (padrão): `#0f1117` base, `#1a1d27` cards — visual preservado
+- Toaster adapta estilo dinamicamente ao tema ativo
+
 ### Adicionado (Etapa 5 / Sessão 11 — 2026-05-20)
 - **Sons de transição** via Web Audio API (sem arquivos externos):
   - Chime ascendente ao concluir tarefa
