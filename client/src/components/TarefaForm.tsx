@@ -113,7 +113,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="subject" className="text-slate-300 text-sm">Matéria</Label>
               <Select value={form.subject_name} onValueChange={(v) => set("subject_name", v)}>
@@ -146,7 +146,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="priority" className="text-slate-300 text-sm">Prioridade</Label>
               <Select value={form.priority} onValueChange={(v) => set("priority", v as PrioridadeTarefa)}>
@@ -179,7 +179,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="origin" className="text-slate-300 text-sm">Origem</Label>
               <Select value={form.origin} onValueChange={(v) => set("origin", v)}>

@@ -54,7 +54,9 @@ function ordenarTarefas(tarefas: Tarefa[], ord: Ordenacao): Tarefa[] {
 }
 
 export default function Tarefas() {
-  const { tarefasFiltradas, filtros, setFiltros, carregando } = useTarefas();
+  const { tarefas, tarefasFiltradas, filtros, setFiltros, carregando } = useTarefas();
+
+  const materiasDisponiveis = ["Todas", ...Array.from(new Set(tarefas.map((t) => t.subject_name))).sort()];
   const [criando, setCriando] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("urgente");
@@ -167,6 +169,20 @@ export default function Tarefas() {
                 <SelectContent className="bg-[#1a1d27] border-white/10">
                   {PRIORIDADE_OPTIONS.map((p) => (
                     <SelectItem key={p} value={p} className="text-slate-200 text-xs focus:bg-white/10">{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs text-slate-500 px-1">Matéria</span>
+              <Select value={filtros.materia} onValueChange={(v) => setFiltros({ materia: v })}>
+                <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
+                  <SelectValue placeholder="Matéria" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1d27] border-white/10">
+                  {materiasDisponiveis.map((m) => (
+                    <SelectItem key={m} value={m} className="text-slate-200 text-xs focus:bg-white/10">{m}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

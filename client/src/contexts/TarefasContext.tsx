@@ -76,12 +76,11 @@ export function TarefasProvider({ children }: { children: React.ReactNode }) {
   // Urgentes primeiro, depois por data de entrega
   const tarefasFiltradas = tarefas
     .filter((t) => {
-      if (
-        filtros.busca &&
-        !t.title.toLowerCase().includes(filtros.busca.toLowerCase()) &&
-        !t.subject_name.toLowerCase().includes(filtros.busca.toLowerCase())
-      )
-        return false;
+      if (filtros.busca) {
+        const q = filtros.busca.toLowerCase();
+        const campos = [t.title, t.subject_name, t.notes, t.sector, t.origin, t.description];
+        if (!campos.some((c) => c?.toLowerCase().includes(q))) return false;
+      }
       if (filtros.status !== "Todas" && t.status !== filtros.status) return false;
       if (filtros.materia !== "Todas" && t.subject_name !== filtros.materia) return false;
       if (filtros.prioridade !== "Todas" && t.priority !== filtros.prioridade) return false;
