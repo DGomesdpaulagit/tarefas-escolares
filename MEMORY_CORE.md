@@ -32,18 +32,16 @@ Candidatos:
 
 ## Última ação
 
-**[Etapa 4 / Sessão 10]** — Configurações Avançadas implementadas em `Configuracoes.tsx`:
-- Avatar upload com Supabase Storage (bucket `avatars`), fallback de iniciais
-- Bio (200 chars) salvo na tabela `profiles`
-- Carregamento real do perfil do Supabase no mount
-- AbaMaterias com persistência via `subjectService`: lista, adiciona e remove
-- `profileService.ts`: novo método `uploadAvatar()`
+**[Etapa 5 / Sessão 11]** — Sons de Transição via Web Audio API:
+- `soundService.ts` criado: 4 sons programáticos (sem arquivos externos)
+- Sons disparados em: toggle de tarefa, remoção, nova tarefa
+- Controlado por `sound_enabled` no localStorage (sincronizado com Supabase)
 
 ---
 
 ## Último commit
 
-A commitar — Etapa 4 / Sessão 10
+A commitar — Etapa 5 / Sessão 11
 
 ---
 

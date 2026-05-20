@@ -13,6 +13,7 @@ import { Camera, Loader2, Plus, Save, Trash2, User, Bell, Palette, BookOpen } fr
 import type { Materia, Perfil } from "@/types";
 import { MATERIAS_PADRAO, MATERIAS_CORES } from "@/lib/tarefasData";
 import { settingsService } from "@/services/settingsService";
+import { soundService } from "@/services/soundService";
 
 type Aba = "perfil" | "tema" | "notificacoes" | "materias";
 
@@ -311,12 +312,15 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
   useEffect(() => {
     if (!userId) return;
     settingsService.getNotifications(userId).then((data) => {
-      if (data) setSettings({
-        notify_3_days: data.notify_3_days,
-        notify_2_days: data.notify_2_days,
-        notify_1_day: data.notify_1_day,
-        sound_enabled: data.sound_enabled,
-      });
+      if (data) {
+        setSettings({
+          notify_3_days: data.notify_3_days,
+          notify_2_days: data.notify_2_days,
+          notify_1_day: data.notify_1_day,
+          sound_enabled: data.sound_enabled,
+        });
+        soundService.setEnabled(data.sound_enabled);
+      }
     });
   }, [userId]);
 
@@ -325,6 +329,8 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     setSalvando(true);
     try {
       await settingsService.upsertNotifications(userId, settings);
+      soundService.setEnabled(settings.sound_enabled);
+      if (settings.sound_enabled) soundService.playConcluida();
       toast.success("Configurações salvas!");
     } catch {
       toast.error("Erro ao salvar");

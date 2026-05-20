@@ -425,7 +425,7 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - [ ] Tema claro/escuro completo + persistência no Supabase
 - [x] Configurações avançadas (avatar upload, bio, matérias com persistência) ✅ Etapa 4 / Sessão 10
 - [x] Perfil inteligente (insights automáticos em Metricas.tsx) ✅ Etapa 4 / Sessão 9
-- [ ] Sons de transição (Web Audio API)
+- [x] Sons de transição (Web Audio API) ✅ Etapa 5 / Sessão 11
 
 ### 🚀 Fase 3 — Features Avançadas
 - [ ] Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
@@ -481,6 +481,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Etapa 3 / Sessão 8] Fase 1 UX: filtro de Matéria, busca multi-campo (6 campos), TarefaForm mobile |
 | 2026-05-20 | [Etapa 4 / Sessão 9] Fase 2: Perfil Inteligente com 5 insights automáticos em Metricas.tsx |
 | 2026-05-20 | [Etapa 4 / Sessão 10] Fase 2: Configurações avançadas — avatar, bio, matérias com persistência real |
+| 2026-05-20 | [Etapa 5 / Sessão 11] Fase 2: Sons de transição via Web Audio API (concluir, desmarcar, adicionar, remover) |
 
 ---
 

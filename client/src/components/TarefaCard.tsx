@@ -1,4 +1,5 @@
 import { useTarefas, calcularDiasRestantes, isUrgente } from "@/contexts/TarefasContext";
+import { soundService } from "@/services/soundService";
 import type { Tarefa } from "@/types";
 import {
   formatarData,
@@ -44,6 +45,8 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   const handleToggle = async () => {
     try {
       await toggleConcluida(tarefa.id);
+      if (concluida) soundService.playDesmarcada();
+      else soundService.playConcluida();
     } catch {
       toast.error("Erro ao atualizar tarefa");
     }
@@ -53,6 +56,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
     if (confirmandoRemocao) {
       try {
         await removerTarefa(tarefa.id);
+        soundService.playRemovida();
         toast.success("Tarefa removida");
       } catch {
         toast.error("Erro ao remover tarefa");
