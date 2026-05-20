@@ -12,8 +12,36 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 3 - Implementação Fase 1 UX
-## SESSÃO ATUAL: [Sessão 8] - Filtro de Matéria, busca multi-campo e mobile
+## ETAPA ATUAL: Etapa 4 - Fase 2 Features
+## SESSÃO ATUAL: [Sessão 9] - Perfil Inteligente em Métricas
+
+---
+
+## [Etapa 4 / Sessão 9] - Perfil Inteligente em Métricas
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Implementado **Perfil Inteligente** na página de Métricas (`Metricas.tsx`)
+- 5 insights automáticos computados a partir dos dados reais:
+  1. **Foco urgente** — matéria com mais tarefas urgentes
+  2. **Mais produtiva** — matéria com maior taxa de conclusão (mín. 2 tarefas)
+  3. **Mais atrasada** — matéria com mais tarefas "Passou do Prazo"
+  4. **Progresso médio** — média de `progress` das tarefas em andamento
+  5. **Ritmo (7 dias)** — tarefas concluídas na última semana (via `completed_at`)
+- Corrigido bug do `materiasComAtraso` que calculava incorretamente
+- Adicionado componente `InsightCard` reutilizável com cor por tipo
+- KPI "Ponto de Atenção" substituído por "Ritmo (7 dias)" — dado mais útil
+
+### Arquivos modificados
+- `client/src/pages/Metricas.tsx`
+
+### Próximo passo
+**Etapa 5 — [Sessão 10] - Próxima feature da Fase 2** (tema claro/escuro, configurações ou notificações)
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
+- Build: ✅ 0 erros TypeScript
 
 ---
 

@@ -1,6 +1,8 @@
-import { useTarefas } from "@/contexts/TarefasContext";
+import React from "react";
+import { useTarefas, isUrgente } from "@/contexts/TarefasContext";
 import { getMateriaColor, getStatusColor } from "@/lib/tarefasData";
 import type { StatusTarefa } from "@/types";
+import { TrendingUp, TrendingDown, Target, Zap, BookOpen, AlertCircle } from "lucide-react";
 import {
   Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -21,8 +23,53 @@ const TOOLTIP_STYLE = {
   fontSize: "12px",
 };
 
+function calcularInsights(tarefas: ReturnType<typeof useTarefas>["tarefas"], metricas: ReturnType<typeof useTarefas>["metricas"]) {
+  // Matéria com mais atrasos
+  const atrasosPorMateria = tarefas
+    .filter((t) => t.status === "Passou do Prazo")
+    .reduce<Record<string, number>>((acc, t) => {
+      acc[t.subject_name] = (acc[t.subject_name] ?? 0) + 1;
+      return acc;
+    }, {});
+  const materiaComAtrasos = Object.entries(atrasosPorMateria).sort((a, b) => b[1] - a[1])[0] ?? null;
+
+  // Matéria mais produtiva (taxa de conclusão, mín. 2 tarefas)
+  const materiaProdutiva = Object.keys(metricas.porMateria)
+    .filter((m) => metricas.porMateria[m] >= 2)
+    .map((m) => {
+      const concluidas = tarefas.filter((t) => t.subject_name === m && t.status === "Concluída").length;
+      return { materia: m, taxa: Math.round((concluidas / metricas.porMateria[m]) * 100) };
+    })
+    .sort((a, b) => b.taxa - a.taxa)[0] ?? null;
+
+  // Progresso médio das em andamento
+  const emAndamento = tarefas.filter((t) => t.status === "Em Andamento");
+  const progressoMedio = emAndamento.length > 0
+    ? Math.round(emAndamento.reduce((sum, t) => sum + t.progress, 0) / emAndamento.length)
+    : null;
+
+  // Concluídas nos últimos 7 dias
+  const seteDiasAtras = new Date();
+  seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+  const concluidasRecentes = tarefas.filter(
+    (t) => t.completed_at && new Date(t.completed_at) >= seteDiasAtras
+  ).length;
+
+  // Matéria com mais urgentes (foco sugerido)
+  const urgentesPorMateria = tarefas
+    .filter((t) => isUrgente(t))
+    .reduce<Record<string, number>>((acc, t) => {
+      acc[t.subject_name] = (acc[t.subject_name] ?? 0) + 1;
+      return acc;
+    }, {});
+  const materiaFoco = Object.entries(urgentesPorMateria).sort((a, b) => b[1] - a[1])[0] ?? null;
+
+  return { materiaComAtrasos, materiaProdutiva, progressoMedio, concluidasRecentes, materiaFoco };
+}
+
 export default function Metricas() {
-  const { metricas } = useTarefas();
+  const { tarefas, metricas } = useTarefas();
+  const insights = calcularInsights(tarefas, metricas);
 
   const dadosStatus = Object.entries(metricas.porStatus).map(([status, qtd]) => ({
     name: status,
@@ -47,14 +94,6 @@ export default function Metricas() {
     ? `${Math.round((metricas.concluidas / metricas.total) * 100)}%`
     : "0%";
 
-  const materiasComAtraso = Object.entries(metricas.porMateria)
-    .filter(([materia]) => {
-      // Identificar matérias que podem ter tarefas atrasadas (simplificado)
-      return metricas.porStatus["Passou do Prazo"] > 0;
-    })
-    .slice(0, 3)
-    .map(([materia]) => materia);
-
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-6">
       <div>
@@ -70,39 +109,82 @@ export default function Metricas() {
         <KpiCard label="Atrasadas" valor={metricas.passouPrazo} cor="#ef4444" sufixo="tarefas" />
       </div>
 
-      {/* Insights analíticos */}
+      {/* Perfil Inteligente */}
       {metricas.total > 0 && (
         <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Perfil Analítico</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Zap size={15} className="text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Perfil Inteligente</h3>
+          </div>
+
+          {/* KPIs base */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <div className="bg-white/5 rounded-lg p-3">
               <p className="text-xs text-slate-500 mb-1">Taxa de Conclusão</p>
               <p className="text-2xl font-bold text-green-400 font-['Space_Grotesk']">{taxaConclusao}</p>
-              <p className="text-xs text-slate-500 mt-1">
-                {metricas.concluidas} de {metricas.total} tarefas
-              </p>
+              <p className="text-xs text-slate-500 mt-1">{metricas.concluidas} de {metricas.total} tarefas</p>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
               <p className="text-xs text-slate-500 mb-1">Taxa de Atraso</p>
               <p className="text-2xl font-bold text-red-400 font-['Space_Grotesk']">
-                {metricas.total > 0 ? `${Math.round((metricas.passouPrazo / metricas.total) * 100)}%` : "0%"}
+                {`${Math.round((metricas.passouPrazo / metricas.total) * 100)}%`}
               </p>
               <p className="text-xs text-slate-500 mt-1">{metricas.passouPrazo} tarefas atrasadas</p>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Ponto de Atenção</p>
-              {metricas.passouPrazo > 0 ? (
-                <p className="text-sm text-amber-400 font-medium mt-1">
-                  {metricas.passouPrazo} tarefa(s) passou(aram) do prazo
-                </p>
-              ) : metricas.emAndamento > 0 ? (
-                <p className="text-sm text-green-400 font-medium mt-1">
-                  Sem atrasos — {metricas.emAndamento} em andamento
-                </p>
-              ) : (
-                <p className="text-sm text-slate-400 font-medium mt-1">Nenhum ponto crítico</p>
-              )}
+              <p className="text-xs text-slate-500 mb-1">Ritmo (7 dias)</p>
+              <p className="text-2xl font-bold text-amber-400 font-['Space_Grotesk']">{insights.concluidasRecentes}</p>
+              <p className="text-xs text-slate-500 mt-1">tarefa{insights.concluidasRecentes !== 1 ? "s" : ""} concluída{insights.concluidasRecentes !== 1 ? "s" : ""}</p>
             </div>
+          </div>
+
+          {/* Insights detalhados */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {insights.materiaFoco && (
+              <InsightCard
+                icon={<AlertCircle size={13} className="text-red-400" />}
+                label="Foco urgente"
+                valor={insights.materiaFoco[0]}
+                detalhe={`${insights.materiaFoco[1]} tarefa${insights.materiaFoco[1] > 1 ? "s" : ""} urgente${insights.materiaFoco[1] > 1 ? "s" : ""}`}
+                cor="red"
+              />
+            )}
+            {insights.materiaProdutiva && (
+              <InsightCard
+                icon={<TrendingUp size={13} className="text-green-400" />}
+                label="Mais produtiva"
+                valor={insights.materiaProdutiva.materia}
+                detalhe={`${insights.materiaProdutiva.taxa}% de conclusão`}
+                cor="green"
+              />
+            )}
+            {insights.materiaComAtrasos && (
+              <InsightCard
+                icon={<TrendingDown size={13} className="text-red-400" />}
+                label="Mais atrasada"
+                valor={insights.materiaComAtrasos[0]}
+                detalhe={`${insights.materiaComAtrasos[1]} tarefa${insights.materiaComAtrasos[1] > 1 ? "s" : ""} atrasada${insights.materiaComAtrasos[1] > 1 ? "s" : ""}`}
+                cor="red"
+              />
+            )}
+            {insights.progressoMedio !== null && (
+              <InsightCard
+                icon={<Target size={13} className="text-amber-400" />}
+                label="Progresso médio"
+                valor={`${insights.progressoMedio}%`}
+                detalhe={`nas ${metricas.emAndamento} tarefas em andamento`}
+                cor="amber"
+              />
+            )}
+            {!insights.materiaFoco && metricas.passouPrazo === 0 && (
+              <InsightCard
+                icon={<BookOpen size={13} className="text-green-400" />}
+                label="Status"
+                valor="Tudo em dia!"
+                detalhe="Nenhuma tarefa urgente ou atrasada"
+                cor="green"
+              />
+            )}
           </div>
         </div>
       )}
@@ -194,6 +276,35 @@ function EmptyChart() {
   return (
     <div className="h-[220px] flex items-center justify-center text-slate-500 text-sm">
       Sem dados para exibir
+    </div>
+  );
+}
+
+type InsightCor = "red" | "green" | "amber";
+
+const INSIGHT_COR: Record<InsightCor, string> = {
+  red: "bg-red-500/10 border-red-500/20",
+  green: "bg-green-500/10 border-green-500/20",
+  amber: "bg-amber-500/10 border-amber-500/20",
+};
+
+function InsightCard({
+  icon, label, valor, detalhe, cor,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  valor: string;
+  detalhe: string;
+  cor: InsightCor;
+}) {
+  return (
+    <div className={`rounded-lg border p-3 ${INSIGHT_COR[cor]}`}>
+      <div className="flex items-center gap-1.5 mb-1">
+        {icon}
+        <span className="text-xs text-slate-500">{label}</span>
+      </div>
+      <p className="text-sm font-semibold text-slate-200 leading-tight">{valor}</p>
+      <p className="text-xs text-slate-500 mt-0.5">{detalhe}</p>
     </div>
   );
 }
