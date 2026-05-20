@@ -62,8 +62,9 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
       setStatus("success");
       toast.success(`${tarefasParaImportar.length} tarefa(s) importada(s)!`);
       setTimeout(onClose, 2000);
-    } catch {
-      setErro("Erro ao importar tarefas");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao importar tarefas";
+      setErro(msg);
       setStatus("error");
     }
   };
