@@ -9,6 +9,7 @@ import { ArquivosProvider } from "./contexts/ArquivosContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import { Loader2 } from "lucide-react";
 
 function Router() {
@@ -30,6 +31,8 @@ function Router() {
       <ArquivosProvider>
         <TarefasProvider>
           <Switch>
+            {/* Rota de reset acessível mesmo quando já autenticado */}
+            <Route path="/reset-password" component={ResetPassword} />
             <Route path="" component={Home} />
             <Route path="/404" component={NotFound} />
             <Route component={NotFound} />
@@ -41,6 +44,8 @@ function Router() {
 
   return (
     <Switch>
+      {/* Rota pública — não exige autenticação */}
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="" component={Login} />
       <Route component={Login} />
     </Switch>
