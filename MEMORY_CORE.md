@@ -41,7 +41,7 @@ Candidatos:
 
 ## Último commit
 
-A commitar — Etapa 5 / Sessão 11
+`509087f` — merge: Etapa 5 / Sessão 11 — Sons de Transição
 
 ---
 
