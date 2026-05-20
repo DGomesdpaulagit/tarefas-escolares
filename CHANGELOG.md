@@ -8,6 +8,16 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 7 / Sessão 13 — 2026-05-20)
+- **Ícone oficial do app** configurado em todo o projeto PWA
+- `favicon.ico` (16/32/48px) — aba do navegador (Chrome, Edge, Firefox)
+- `favicon-16x16.png` e `favicon-32x32.png` — favicons high-DPI
+- `apple-touch-icon.png` (180×180) — ícone na tela inicial do iOS/Safari
+- `android-chrome-192x192.png` e `android-chrome-512x512.png` — ícone PWA Android
+- `maskable-icon-512x512.png` — ícone adaptável para Android (safe zone completa)
+- `manifest.webmanifest` criado com nome, short_name, theme_color `#0f1117`, display standalone
+- `index.html` atualizado com tags `<link rel="icon">`, `<link rel="apple-touch-icon">`, `<link rel="manifest">` e metas PWA
+
 ### Adicionado (Etapa 6 / Sessão 12 — 2026-05-20)
 - **Tema claro/escuro** com CSS custom properties (`--bg-base`, `--bg-surface`, `--bg-card`, `--bg-card-hover`)
 - Toggle de tema em Configurações → Aparência, com persistência via Supabase `profiles.theme`

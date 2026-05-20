@@ -32,6 +32,12 @@ Candidatos:
 
 ## Última ação
 
+**[Etapa 7 / Sessão 13]** — Ícone oficial e PWA favicon assets:
+- Gerados 7 arquivos de ícone em `client/public/` (favicon.ico, PNGs 16/32/180/192/512px, maskable)
+- Criado `manifest.webmanifest` (PWA standalone, theme `#0f1117`)
+- Atualizado `client/index.html` com todas as tags de favicon, apple-touch-icon, manifest e metas PWA
+- Commit: e3ecd5d | Merge: a9a4609 | Push: ✅ main → GitHub | Deploy: ✅ Vercel
+
 **[Etapa 6 / Sessão 12]** — Tema Claro/Escuro (última feature da Fase 2):
 - CSS custom properties (`--bg-base`, `--bg-surface`, `--bg-card`, `--bg-card-hover`) em `index.css`
 - `ThemeContext.tsx` com `setTheme` exposto; `ThemeProvider switchable`
