@@ -52,7 +52,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-[#13151f] border-r border-white/8 z-30 flex flex-col transition-transform duration-300 ease-out
+        className={`fixed top-0 left-0 h-full w-64 bg-[var(--bg-surface)] border-r border-white/8 z-30 flex flex-col transition-transform duration-300 ease-out
           ${aberta ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:z-auto`}
         role="navigation"
         aria-label="Menu lateral"

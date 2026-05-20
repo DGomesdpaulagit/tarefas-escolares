@@ -78,7 +78,7 @@ export default function Arquivos() {
         <p className="text-slate-400 text-sm mt-1">Histórico de importações e exportações de dados</p>
       </div>
 
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <h2 className="text-sm font-semibold text-slate-200 mb-3 font-['Space_Grotesk']">Exportar Dados</h2>
         <p className="text-xs text-slate-500 mb-4">Faça backup ou exporte suas tarefas em diferentes formatos</p>
         <div className="flex flex-wrap gap-3">
@@ -106,7 +106,7 @@ export default function Arquivos() {
         )}
       </div>
 
-      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5">
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">
             Histórico de Importações

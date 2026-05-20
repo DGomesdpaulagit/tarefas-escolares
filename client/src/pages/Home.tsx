@@ -21,7 +21,7 @@ export default function Home() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#0f1117] overflow-hidden">
+    <div className="flex h-screen bg-[var(--bg-base)] overflow-hidden">
       <Sidebar
         paginaAtual={pagina}
         onNavegar={setPagina}
@@ -31,7 +31,7 @@ export default function Home() {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar mobile */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-white/8 bg-[#13151f]">
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-white/8 bg-[var(--bg-surface)]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarAberta(true)}
@@ -48,7 +48,7 @@ export default function Home() {
         </div>
 
         {/* Topbar desktop */}
-        <div className="hidden lg:flex items-center justify-between px-6 py-3 border-b border-white/8 bg-[#13151f]">
+        <div className="hidden lg:flex items-center justify-between px-6 py-3 border-b border-white/8 bg-[var(--bg-surface)]">
           <div />
           <UserMenu onNavegar={setPagina} />
         </div>

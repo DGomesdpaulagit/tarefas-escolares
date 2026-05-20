@@ -41,7 +41,7 @@ export default function UserMenu({ onNavegar }: UserMenuProps) {
 
       {aberto && (
         <>
-          <div className="absolute right-0 mt-2 w-56 bg-[#1a1d27] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-56 bg-[var(--bg-card)] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
             <div className="px-4 py-3 border-b border-white/10 bg-white/5">
               <div className="flex items-center gap-2 mb-1">
                 <User size={13} className="text-slate-400" aria-hidden="true" />
