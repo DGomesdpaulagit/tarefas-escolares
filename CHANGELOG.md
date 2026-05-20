@@ -8,6 +8,14 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 4 / Sessão 10 — 2026-05-20)
+- **Avatar upload** em Configurações → Perfil, com fallback de iniciais e limite de 2 MB
+- **Campo Bio** no perfil (até 200 caracteres, salvo no Supabase)
+- **Carregamento real do perfil** do Supabase no mount (não mais de user_metadata)
+- **AbaMaterias com persistência**: lista, adiciona e remove matérias via `subjectService`
+- Matérias padrão disponíveis para adição rápida com 1 clique
+- Matérias personalizadas via campo de texto livre
+
 ### Adicionado (Etapa 4 / Sessão 9 — 2026-05-20)
 - **Perfil Inteligente** na página de Métricas com 5 insights automáticos: foco urgente, matéria mais produtiva, matéria mais atrasada, progresso médio e ritmo semanal
 - Componente `InsightCard` reutilizável com variantes de cor

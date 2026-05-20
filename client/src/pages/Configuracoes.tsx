@@ -1,13 +1,16 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { profileService } from "@/services/profileService";
+import { subjectService } from "@/services/subjectService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Save, User, Bell, Palette, Globe, BookOpen } from "lucide-react";
-import type { Perfil } from "@/types";
+import React from "react";
+import { Camera, Loader2, Plus, Save, Trash2, User, Bell, Palette, BookOpen } from "lucide-react";
+import type { Materia, Perfil } from "@/types";
 import { MATERIAS_PADRAO, MATERIAS_CORES } from "@/lib/tarefasData";
 import { settingsService } from "@/services/settingsService";
 
@@ -71,17 +74,58 @@ export default function Configuracoes() {
 }
 
 function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>["user"]; atualizarSenha: (s: string) => Promise<void> }) {
-  const [nome, setNome] = useState(user?.user_metadata?.name ?? "");
+  const [perfil, setPerfil] = useState<Perfil | null>(null);
+  const [nome, setNome] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [salvandoSenha, setSalvandoSenha] = useState(false);
+  const [uploadandoAvatar, setUploadandoAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    profileService.get(user.id).then((p) => {
+      if (p) {
+        setPerfil(p);
+        setNome(p.name ?? user.user_metadata?.name ?? "");
+        setBio(p.bio ?? "");
+        setAvatarUrl(p.avatar_url);
+      } else {
+        setNome(user.user_metadata?.name ?? "");
+      }
+    });
+  }, [user]);
+
+  const iniciais = nome
+    ? nome.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()
+    : (user?.email?.[0] ?? "?").toUpperCase();
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error("Avatar deve ter no máximo 2 MB"); return; }
+    setUploadandoAvatar(true);
+    try {
+      const url = await profileService.uploadAvatar(user.id, file);
+      await profileService.update(user.id, { avatar_url: url });
+      setAvatarUrl(url);
+      toast.success("Avatar atualizado!");
+    } catch {
+      toast.error("Erro ao enviar avatar — verifique se o bucket 'avatars' existe no Supabase Storage");
+    } finally {
+      setUploadandoAvatar(false);
+      e.target.value = "";
+    }
+  };
 
   const salvarPerfil = async () => {
     if (!user) return;
     setSalvando(true);
     try {
-      await profileService.update(user.id, { name: nome });
+      await profileService.update(user.id, { name: nome, bio });
       toast.success("Perfil atualizado!");
     } catch {
       toast.error("Erro ao atualizar perfil");
@@ -111,6 +155,45 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
     <div className="space-y-6">
       <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
         <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Informações do Perfil</h2>
+
+        {/* Avatar */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex-shrink-0">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-amber-500/20 border-2 border-amber-500/30 flex items-center justify-center">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-xl font-bold text-amber-400 font-['Space_Grotesk']">{iniciais}</span>
+              )}
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadandoAvatar}
+              className="absolute -bottom-1 -right-1 w-6 h-6 bg-amber-500 hover:bg-amber-400 rounded-full flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500"
+              aria-label="Alterar foto de perfil"
+            >
+              {uploadandoAvatar ? <Loader2 size={11} className="animate-spin text-black" /> : <Camera size={11} className="text-black" />}
+            </button>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-200">{nome || "Sem nome"}</p>
+            <p className="text-xs text-slate-500">{user?.email}</p>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xs text-amber-400 hover:text-amber-300 mt-1 transition-colors"
+            >
+              Alterar foto
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
+        </div>
+
         <div className="space-y-1.5">
           <Label htmlFor="nome-perfil" className="text-slate-300 text-sm">Nome</Label>
           <Input
@@ -121,11 +204,27 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
             placeholder="Seu nome"
           />
         </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="bio-perfil" className="text-slate-300 text-sm">Bio</Label>
+          <Textarea
+            id="bio-perfil"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 resize-none"
+            placeholder="Conte um pouco sobre você..."
+            rows={2}
+            maxLength={200}
+          />
+          <p className="text-xs text-slate-600 text-right">{bio.length}/200</p>
+        </div>
+
         <div className="space-y-1.5">
           <Label className="text-slate-300 text-sm">Email</Label>
           <Input value={user?.email ?? ""} disabled className="bg-white/5 border-white/10 text-slate-500" />
           <p className="text-xs text-slate-600">O email não pode ser alterado aqui</p>
         </div>
+
         <Button onClick={salvarPerfil} disabled={salvando} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
           {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
           Salvar Perfil
@@ -269,38 +368,140 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
 }
 
 function AbaMaterias() {
-  const [materiasSelecionadas, setMateriasSelecionadas] = useState<string[]>([...MATERIAS_PADRAO]);
+  const { user } = useAuth();
+  const [materias, setMaterias] = useState<Materia[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [novaMateria, setNovaMateria] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
 
-  const toggleMateria = (m: string) => {
-    setMateriasSelecionadas((prev) =>
-      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]
-    );
+  useEffect(() => {
+    if (!user) return;
+    subjectService.list(user.id).then((data) => {
+      setMaterias(data);
+      setCarregando(false);
+    }).catch(() => setCarregando(false));
+  }, [user]);
+
+  const adicionarPadrao = async (nome: string) => {
+    if (!user || materias.some((m) => m.name === nome)) return;
+    const cor = MATERIAS_CORES[nome] ?? "#94a3b8";
+    try {
+      const nova = await subjectService.create(user.id, nome, cor);
+      setMaterias((prev) => [...prev, nova].sort((a, b) => a.name.localeCompare(b.name)));
+      toast.success(`${nome} adicionada!`);
+    } catch {
+      toast.error("Erro ao adicionar matéria");
+    }
   };
 
+  const adicionarPersonalizada = async () => {
+    const nome = novaMateria.trim();
+    if (!nome || !user) return;
+    if (materias.some((m) => m.name.toLowerCase() === nome.toLowerCase())) {
+      toast.error("Matéria já existe"); return;
+    }
+    setAdicionando(true);
+    try {
+      const nova = await subjectService.create(user.id, nome, "#94a3b8");
+      setMaterias((prev) => [...prev, nova].sort((a, b) => a.name.localeCompare(b.name)));
+      setNovaMateria("");
+      toast.success(`${nome} adicionada!`);
+    } catch {
+      toast.error("Erro ao adicionar matéria");
+    } finally {
+      setAdicionando(false);
+    }
+  };
+
+  const remover = async (id: string, nome: string) => {
+    try {
+      await subjectService.delete(id);
+      setMaterias((prev) => prev.filter((m) => m.id !== id));
+      toast.success(`${nome} removida`);
+    } catch {
+      toast.error("Erro ao remover matéria");
+    }
+  };
+
+  const materiasPadraoNaoAdicionadas = MATERIAS_PADRAO
+    .filter((m) => m !== "Outra" && !materias.some((x) => x.name === m));
+
   return (
-    <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Matérias</h2>
-      <p className="text-xs text-slate-500">Selecione as matérias que você cursa (funcionalidade de sincronização em breve)</p>
-      <div className="grid grid-cols-2 gap-2">
-        {MATERIAS_PADRAO.filter((m) => m !== "Outra").map((materia) => {
-          const cor = MATERIAS_CORES[materia] ?? "#94a3b8";
-          const ativo = materiasSelecionadas.includes(materia);
-          return (
-            <button
-              key={materia}
-              onClick={() => toggleMateria(materia)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all border focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                ativo ? "border-white/20 bg-white/8 text-slate-200" : "border-white/8 text-slate-500 hover:border-white/15"
-              }`}
-              aria-pressed={ativo}
-            >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} />
-              <span className="truncate">{materia}</span>
-              {ativo && <span className="ml-auto text-amber-400">✓</span>}
-            </button>
-          );
-        })}
+    <div className="space-y-4">
+      {/* Matérias ativas */}
+      <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Suas Matérias</h2>
+          {!carregando && <span className="text-xs text-slate-500">{materias.length} matéria{materias.length !== 1 ? "s" : ""}</span>}
+        </div>
+
+        {carregando ? (
+          <div className="flex justify-center py-4">
+            <Loader2 size={18} className="animate-spin text-amber-400" />
+          </div>
+        ) : materias.length === 0 ? (
+          <p className="text-xs text-slate-500 py-2">Nenhuma matéria adicionada ainda. Adicione abaixo.</p>
+        ) : (
+          <div className="space-y-1.5">
+            {materias.map((m) => (
+              <div key={m.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/8 group">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
+                <span className="text-sm text-slate-200 flex-1">{m.name}</span>
+                <button
+                  onClick={() => remover(m.id, m.name)}
+                  className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all focus:outline-none focus:ring-1 focus:ring-red-500 rounded"
+                  aria-label={`Remover ${m.name}`}
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Adicionar personalizada */}
+        <div className="flex gap-2 pt-1">
+          <Input
+            value={novaMateria}
+            onChange={(e) => setNovaMateria(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && adicionarPersonalizada()}
+            placeholder="Nova matéria personalizada..."
+            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 h-9 text-sm"
+          />
+          <Button
+            onClick={adicionarPersonalizada}
+            disabled={adicionando || !novaMateria.trim()}
+            size="sm"
+            className="bg-amber-500 hover:bg-amber-400 text-black font-semibold h-9 gap-1.5 flex-shrink-0"
+          >
+            {adicionando ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+            Adicionar
+          </Button>
+        </div>
       </div>
+
+      {/* Matérias padrão para adicionar rapidamente */}
+      {materiasPadraoNaoAdicionadas.length > 0 && (
+        <div className="bg-[#1a1d27] border border-white/8 rounded-xl p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Adicionar Matéria Padrão</h2>
+          <div className="grid grid-cols-2 gap-2">
+            {materiasPadraoNaoAdicionadas.map((nome) => {
+              const cor = MATERIAS_CORES[nome] ?? "#94a3b8";
+              return (
+                <button
+                  key={nome}
+                  onClick={() => adicionarPadrao(nome)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs border border-white/8 text-slate-400 hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} />
+                  <span className="truncate">{nome}</span>
+                  <Plus size={11} className="ml-auto flex-shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

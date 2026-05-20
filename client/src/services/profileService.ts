@@ -2,6 +2,15 @@ import { supabase } from "@/supabase/client";
 import type { Perfil } from "@/types";
 
 export const profileService = {
+  async uploadAvatar(userId: string, file: File): Promise<string> {
+    const ext = file.name.split(".").pop();
+    const path = `${userId}/avatar.${ext}`;
+    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    return data.publicUrl;
+  },
+
   async get(userId: string): Promise<Perfil | null> {
     const { data, error } = await supabase
       .from("profiles")
