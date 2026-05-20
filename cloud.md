@@ -1,32 +1,42 @@
-# cloud.md — Registro de Sessões do Projeto Tarefas Escolares
+# cloud.md — Registro de Etapas e Sessões do Projeto Tarefas Escolares
 
-Arquivo de controle de continuidade entre sessões do Claude Code.
-Lido automaticamente no início de cada conversa.
-
----
-
-## SESSÃO ATUAL: [Sessão 6] - Configuração de sessões estruturadas e CLAUDE.md
+Arquivo de controle de continuidade entre conversas do Claude Code.
+Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## [Sessão 6] - Configuração de sessões estruturadas e CLAUDE.md
+## Glossário
+
+- **Etapa** = uma conversa completa no Claude (uma janela/thread)
+- **Sessão** = um bloco de progresso dentro de uma Etapa
+
+---
+
+## ETAPA ATUAL: Etapa 1 - Documentação, CLAUDE.md e sistema de continuidade automática
+## SESSÃO ATUAL: [Sessão 6] - Nomenclatura de etapas e regra de nomeação de conversas
+
+---
+
+## [Etapa 1 / Sessão 6] - Nomenclatura de etapas e regra de nomeação de conversas
 **Data:** 2026-05-20
 **Status:** ✅ Concluída
 
 ### O que foi feito
 - Criado `CLAUDE.md` com instruções automáticas de início e fim de sessão
-- Configurado comportamento proativo: Claude lê MEMORY.md e anuncia o próximo passo automaticamente
+- Configurado comportamento proativo: Claude lê cloud.md e MEMORY.md ao iniciar
 - Adicionada regra de certificação após cada ação importante
-- Criado `cloud.md` (este arquivo) para controle de sessões numeradas
-- Explicado ao usuário como funciona o sistema de instruções (CLAUDE.md vs interface web)
-- MEMORY.md atualizado com histórico e seção 23 simplificada
+- Criado `cloud.md` para controle de etapas e sessões
+- Explicado a diferença entre Etapa (conversa) e Sessão (progresso dentro da conversa)
+- Definida regra: ao final de cada Etapa, Claude sugere o nome da conversa no formato `Etapa X - (nome)`
+- Etapa 1 nomeada: **"Etapa 1 - Documentação, CLAUDE.md e sistema de continuidade automática"**
 
 ### Problemas resolvidos
-- Usuário não sabia onde ficavam as "Project Instructions" → explicado e configurado via CLAUDE.md
-- Progresso de conversas não era registrado automaticamente → regra de certificação criada
+- Usuário não sabia onde ficavam as "Project Instructions" → configurado via CLAUDE.md
+- Progresso não era registrado automaticamente → sistema cloud.md + MEMORY.md criado
+- Conversas sem nome estruturado → regra de nomenclatura Etapa X definida
 
 ### Próximo passo
-**[Sessão 7] - Implementação da Fase 1 (UX e funcionalidades)**
+**Etapa 2 — [Sessão 7] - Implementação da Fase 1 (UX)**
 1. Legendas nos filtros → `client/src/pages/Tarefas.tsx`
 2. Melhorias mobile → `TarefaCard.tsx` + `TarefaForm.tsx`
 3. Busca avançada multi-campo → `client/src/contexts/TarefasContext.tsx`
@@ -34,7 +44,7 @@ Lido automaticamente no início de cada conversa.
 
 ### Status do sistema
 - App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
-- GitHub: ✅ commit `a3e1374` — push confirmado
+- GitHub: ✅ commit `02aafde` — push confirmado
 - Build: ✅ 0 erros TypeScript
 - Vercel: ✅ CI/CD ativo
 

@@ -105,12 +105,19 @@ Se algum item falhar, corrija antes de encerrar.
 
 ---
 
+## Glossário de nomenclatura
+
+- **Etapa** = uma conversa completa no Claude (uma janela/thread). Exemplo: Etapa 1, Etapa 2
+- **Sessão** = um bloco de progresso dentro de uma Etapa. Exemplo: Sessão 1, Sessão 2
+
+---
+
 ## Formato do resumo final obrigatório
 
 Após o checklist, exiba sempre:
 
 ```
-✅ [Sessão X] encerrada — [data]
+✅ [Etapa X / Sessão Y] encerrada — [data]
 
 O que foi feito:
 - [lista do que foi implementado/corrigido]
@@ -119,7 +126,7 @@ Arquivos modificados:
 - [lista de arquivos]
 
 Documentação atualizada:
-- cloud.md → [Sessão X] registrada
+- cloud.md → [Etapa X / Sessão Y] registrada
 - MEMORY.md → estado e histórico atualizados
 - [outros .md atualizados]
 
@@ -127,11 +134,16 @@ Build: ✅ 0 erros
 Commit: [hash] — "[mensagem]"
 Push: ✅ main → GitHub
 Deploy: ✅ Vercel deploy automático disparado
-Obsidian: ✅ sincronizado (arquivos .md atualizados no repo)
+Obsidian: ✅ sincronizado
 
-Próxima sessão:
-[Sessão X+1] - [título baseado no próximo passo]
+Próxima etapa:
+[Etapa X+1 / Sessão Y+1] - [título baseado no próximo passo]
+
+💬 Sugestão de nome para esta conversa:
+Etapa X - [resumo do que foi feito nesta conversa inteira]
 ```
+
+A sugestão de nome deve cobrir **tudo que aconteceu na conversa inteira**, não só a última sessão.
 
 ---
 
