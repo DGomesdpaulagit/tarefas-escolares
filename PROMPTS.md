@@ -174,4 +174,15 @@ REGRAS:
 
 ---
 
+### P-011 — Nomenclatura Etapa/Sessão para conversas do projeto
+**Validado em:** 2026-05-20
+**Resultado:** Aprovado com entusiasmo — "MUITOOOOO BEM CLAUDE, PERFEITO. CONTINUE ASSIM"
+**O que foi aprovado:**
+- Etapa = conversa completa (thread do Claude)
+- Sessão = bloco de progresso dentro de uma Etapa
+- Ao final de cada Etapa, Claude sugere o nome da conversa no formato `Etapa X - (nome)`
+- Nome cobre tudo que aconteceu na conversa inteira, não só a última sessão
+
+---
+
 *Atualizado em: 2026-05-20*
