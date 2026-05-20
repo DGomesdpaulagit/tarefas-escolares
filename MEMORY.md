@@ -474,6 +474,19 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | Criação base de conhecimento: CHANGELOG.md, PROMPTS.md, BUGS.md, LINKS.md |
 | 2026-05-20 | Criação do CLAUDE.md com instruções automáticas de sessão (início proativo + checklist final) |
 | 2026-05-20 | Regra adicionada: certificar registro no MEMORY.md + Obsidian após toda ação importante |
+| 2026-05-20 | [Etapa 2 / Sessão 7] Criação de MEMORY_CORE.md e estrutura SESSIONS/ — Mega Prompt integrado |
+
+---
+
+## 25. Arquivos do Sistema de Memória
+
+| Arquivo | Função |
+|---|---|
+| `MEMORY.md` | Fonte de verdade completa do projeto |
+| `MEMORY_CORE.md` | Estado operacional atual — "cérebro ativo" |
+| `SESSIONS/NNN.md` | Log individual de cada sessão |
+| `cloud.md` | Controle de etapas e continuidade entre conversas |
+| `CLAUDE.md` | Instruções automáticas de início e fim de sessão |
 
 ---
 

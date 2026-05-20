@@ -12,8 +12,39 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 1 - Documentação, CLAUDE.md e sistema de continuidade automática
-## SESSÃO ATUAL: [Sessão 6] - Nomenclatura de etapas e regra de nomeação de conversas
+## ETAPA ATUAL: Etapa 2 - Mega Prompt + MEMORY_CORE + estrutura de sessões
+## SESSÃO ATUAL: [Sessão 7] - Integração do Mega Prompt ao sistema de memória
+
+---
+
+## [Etapa 2 / Sessão 7] - Integração do Mega Prompt ao sistema de memória
+**Data:** 2026-05-20
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Recebido Mega Prompt de arquitetura de agente IA
+- Criado `MEMORY_CORE.md` — estado operacional ativo (complementa MEMORY.md)
+- Criada estrutura `SESSIONS/` com log `007.md`
+- Nenhum código de produção alterado
+- Fase 1 UX adiada para Etapa 3 por decisão do usuário (melhor organização)
+
+### Arquivos criados
+- `MEMORY_CORE.md`
+- `SESSIONS/007.md`
+
+### Próximo passo
+**Etapa 3 — [Sessão 8] - Implementação Fase 1 UX**
+1. Legendas nos filtros → `client/src/pages/Tarefas.tsx`
+2. Melhorias mobile → `TarefaCard.tsx` + `TarefaForm.tsx`
+3. Busca avançada multi-campo → `client/src/contexts/TarefasContext.tsx`
+4. Tarefas urgentes no topo → `client/src/contexts/TarefasContext.tsx`
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app (funcionando)
+- GitHub: ✅ commit `61baacd` — push confirmado
+- Build: ✅ 0 erros TypeScript
+- MEMORY_CORE.md: ✅ criado
+- SESSIONS/: ✅ criado
 
 ---
 
