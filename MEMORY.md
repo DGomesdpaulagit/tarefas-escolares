@@ -387,11 +387,11 @@ Push para branch main
 Tarefas Escolares/
 ├── MEMORY.md          ← Este arquivo (sincronizar do GitHub)
 ├── ROADMAP.md         ← docs/ROADMAP.md
-├── CHANGELOG.md       ← Criar — registro de mudanças
-├── PROMPTS.md         ← Prompts que funcionaram bem
-├── BUGS.md            ← Bugs encontrados
+├── CHANGELOG.md       ✅ Criado em 2026-05-20 — registro de mudanças (Keep a Changelog)
+├── PROMPTS.md         ✅ Criado em 2026-05-20 — prompts que funcionaram bem
+├── BUGS.md            ✅ Criado em 2026-05-20 — 12 bugs resolvidos + 3 conhecidos
 ├── IDEIAS.md          ← ideas.md atual
-└── LINKS.md           ← URLs do projeto
+└── LINKS.md           ✅ Criado em 2026-05-20 — URLs do projeto
 ```
 
 ### Fluxo de atualização
@@ -480,6 +480,7 @@ URLs:
 | 2026-05-19 | Correção variáveis de ambiente Vercel (salvas permanentemente via API) |
 | 2026-05-20 | Implementação reset de senha (`ResetPassword.tsx`) |
 | 2026-05-20 | Criação MEMORY.md + organização do projeto |
+| 2026-05-20 | Criação base de conhecimento: CHANGELOG.md, PROMPTS.md, BUGS.md, LINKS.md |
 
 ---
 
