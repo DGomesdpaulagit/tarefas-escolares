@@ -134,11 +134,12 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
     setUploadandoAvatar(true);
     try {
       const base64 = await compressImage(file, 256);
-      await profileService.update(user.id, { avatar_url: base64 });
+      await profileService.upsert({ id: user.id, avatar_url: base64 });
       setAvatarUrl(base64);
       toast.success("Avatar atualizado!");
-    } catch {
-      toast.error("Erro ao processar imagem. Tente outro arquivo.");
+    } catch (err) {
+      console.error("Avatar error:", err);
+      toast.error("Erro ao salvar avatar. Tente novamente.");
     } finally {
       setUploadandoAvatar(false);
       e.target.value = "";
@@ -149,7 +150,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
     if (!user) return;
     setSalvando(true);
     try {
-      await profileService.update(user.id, { name: nome, bio });
+      await profileService.upsert({ id: user.id, name: nome, bio });
       toast.success("Perfil atualizado!");
     } catch {
       toast.error("Erro ao atualizar perfil");
