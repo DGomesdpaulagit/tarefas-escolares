@@ -19,7 +19,7 @@ export const settingsService = {
   ): Promise<void> {
     const { error } = await supabase
       .from("notification_settings")
-      .upsert({ user_id: userId, ...settings });
+      .upsert({ user_id: userId, ...settings }, { onConflict: "user_id" });
 
     if (error) throw error;
   },

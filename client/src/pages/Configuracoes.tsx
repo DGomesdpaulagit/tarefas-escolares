@@ -18,6 +18,28 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 type Aba = "perfil" | "tema" | "notificacoes" | "materias";
 
+function compressImage(file: File, maxSize = 256): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas não suportado"));
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Imagem inválida")); };
+    img.src = url;
+  });
+}
+
 export default function Configuracoes() {
   const { user, deslogar, atualizarSenha } = useAuth();
   const [abaAtiva, setAbaAtiva] = useState<Aba>("perfil");
@@ -108,15 +130,15 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("Avatar deve ter no máximo 2 MB"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Imagem deve ter no máximo 5 MB"); return; }
     setUploadandoAvatar(true);
     try {
-      const url = await profileService.uploadAvatar(user.id, file);
-      await profileService.update(user.id, { avatar_url: url });
-      setAvatarUrl(url);
+      const base64 = await compressImage(file, 256);
+      await profileService.update(user.id, { avatar_url: base64 });
+      setAvatarUrl(base64);
       toast.success("Avatar atualizado!");
     } catch {
-      toast.error("Erro ao enviar avatar — verifique se o bucket 'avatars' existe no Supabase Storage");
+      toast.error("Erro ao processar imagem. Tente outro arquivo.");
     } finally {
       setUploadandoAvatar(false);
       e.target.value = "";
