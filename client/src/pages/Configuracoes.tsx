@@ -300,7 +300,7 @@ function AbaTema() {
     setTheme?.(novoTema);
     setSalvando(true);
     try {
-      if (user) await profileService.update(user.id, { theme: novoTema });
+      if (user) await profileService.upsert({ id: user.id, theme: novoTema });
       toast.success(`Tema ${novoTema === "dark" ? "escuro" : "claro"} aplicado!`);
     } catch {
       toast.error("Erro ao salvar preferência de tema");
