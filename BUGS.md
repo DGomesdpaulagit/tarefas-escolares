@@ -6,6 +6,34 @@ Registro de bugs resolvidos e bugs conhecidos/pendentes.
 
 ## Bugs Resolvidos
 
+### BUG-016 — Importação de planilha retornando erro 400
+- **Arquivo:** `client/src/lib/parseExcel.ts`, `client/src/components/ImportarPlanilhaModal.tsx`
+- **Causa 1:** valores de `status`/`priority` da planilha não batiam com os enums do Supabase (`"done"` ≠ `"Concluída"`)
+- **Causa 2:** datas do Excel chegavam como número serial (ex: `45672`) em vez de string `YYYY-MM-DD`
+- **Solução:** funções `sanitizeStatus()`, `sanitizePrioridade()` (mapeamento PT/EN) e `parseExcelDate()` (conversão serial → ISO)
+- **Status:** ✅ Resolvido em 2026-05-21 — commit `4e32f37`
+
+---
+
+### BUG-017 — Avatar upload falhando (406 / "Erro ao processar imagem")
+- **Arquivo:** `client/src/services/profileService.ts`, `client/src/pages/Configuracoes.tsx`
+- **Causa 1:** bucket `avatars` não existia no Supabase Storage → upload falhava com 400/406
+- **Causa 2:** linha do perfil não existia na tabela `profiles` (conta criada antes do trigger `on_auth_user_created`) → PATCH falhava com 406
+- **Solução 1:** avatar agora usa Canvas API para comprimir (256×256 JPEG) e salva base64 em `profiles.avatar_url` — sem depender de Storage
+- **Solução 2:** `profileService.get()` usa `.maybeSingle()`; todos os writes usam `upsert` em vez de `update`
+- **Solução 3 (definitiva):** linha do perfil criada manualmente via SQL no Supabase Dashboard
+- **Status:** ✅ Resolvido em 2026-05-21 — commits `725c09a`, `68c446c`, `b50dc3b`, `bdd49d0`
+
+---
+
+### BUG-018 — notification_settings retornando 409 (conflito)
+- **Arquivo:** `client/src/services/settingsService.ts`
+- **Causa:** `upsert` sem `onConflict` tentava INSERT duplicado quando já havia registro para o `user_id`
+- **Solução:** `{ onConflict: "user_id" }` adicionado ao `upsertNotifications()`
+- **Status:** ✅ Resolvido em 2026-05-21 — commit `725c09a`
+
+---
+
 ### BUG-001 — `Cannot find module './usePersistFn'`
 - **Arquivo:** `client/src/hooks/useComposition.ts`
 - **Causa:** `usePersistFn.ts` foi deletado durante a limpeza Manus AI, mas o import permaneceu.

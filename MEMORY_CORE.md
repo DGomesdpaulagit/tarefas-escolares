@@ -32,6 +32,12 @@ Candidatos:
 
 ## Última ação
 
+**[Sessão 015 / 2026-05-21]** — Bugfixes: avatar, perfil e notificações:
+- Avatar: Canvas base64 (sem Supabase Storage) + `profileService` todo migrado para `upsert`
+- Perfil: linha inexistente no banco criada via SQL no Supabase Dashboard
+- notification_settings: 409 corrigido com `{ onConflict: "user_id" }`
+- Commits: `725c09a` → `bdd49d0` + `b81add1`
+
 **[Bugfix / 2026-05-20]** — Importação de planilha retornando erro 400 (Bad Request):
 - Causa: valores de `status` e `priority` da planilha não batiam com o enum do Supabase
 - Causa secundária: datas do Excel chegavam como número serial (ex: `45672`) em vez de string
@@ -56,7 +62,7 @@ Candidatos:
 
 ## Último commit
 
-`f24b8a6` — docs: registrar bugfix importação planilha no MEMORY.md e MEMORY_CORE.md
+`b81add1` — build: force bundle hash refresh via explicit rollupOptions output naming
 
 ---
 

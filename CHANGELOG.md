@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Sessão 015 — 2026-05-21)
+- **Avatar upload** — removida dependência do Supabase Storage (bucket inexistente); imagem agora é comprimida via Canvas (256×256 JPEG) e salva como base64 em `profiles.avatar_url`
+- **Perfil sem linha no banco** — `profileService.get()` usa `.maybeSingle()` (sem erro 406); todas as escritas usam `upsert` em vez de `update` (PATCH falhava quando linha não existia)
+- **notification_settings 409** — `settingsService.upsertNotifications()` com `{ onConflict: "user_id" }`
+- **Importação de planilha 400** — sanitização de status/prioridade (mapeamento PT/EN → enum do banco) e conversão de datas seriais do Excel para `YYYY-MM-DD`
+
 ### Adicionado (Etapa 7 / Sessão 13 — 2026-05-20)
 - **Ícone oficial do app** configurado em todo o projeto PWA
 - `favicon.ico` (16/32/48px) — aba do navegador (Chrome, Edge, Firefox)

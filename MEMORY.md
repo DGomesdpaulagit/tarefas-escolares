@@ -357,6 +357,8 @@ Push para branch main
 | Bug | Causa | Solução | Commit |
 |---|---|---|---|
 | Importar planilha retorna 400 Bad Request | Status/prioridade da planilha não batia com enum do Supabase; datas Excel como número serial | Adicionados `sanitizeStatus()`, `sanitizePrioridade()` e `parseExcelDate()` em `parseExcel.ts` | 4e32f37 |
+| Avatar upload falhando (406) | Bucket `avatars` inexistente; perfil sem linha no banco | Canvas base64 (sem Storage); `profileService` usa `upsert`; SQL criou linha manualmente | 725c09a..bdd49d0 |
+| notification_settings 409 | upsert sem `onConflict` tentava INSERT duplicado | `{ onConflict: "user_id" }` em `settingsService` | 725c09a |
 
 ---
 
@@ -485,6 +487,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Etapa 5 / Sessão 11] Fase 2: Sons de transição via Web Audio API (concluir, desmarcar, adicionar, remover) |
 | 2026-05-20 | [Etapa 6 / Sessão 12] Fase 2: Tema claro/escuro com CSS vars, ThemeLoader, persistência Supabase — PROJETO FINALIZADO |
 | 2026-05-20 | [Bugfix] Importação de planilha: erro 400 corrigido — sanitização de status/prioridade + parsing de datas Excel |
+| 2026-05-21 | [Sessão 015] Bugfixes: avatar via Canvas base64, perfil sem linha no banco (upsert + SQL fix), notification_settings 409 |
 
 ---
 

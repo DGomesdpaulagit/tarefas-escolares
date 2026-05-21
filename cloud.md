@@ -15,7 +15,34 @@ Lido automaticamente no início de cada nova conversa.
 ## ETAPA ATUAL: Etapa 8 - Manutenção / Bugfixes
 ## SESSÃO ATUAL: [Sessão 14] - Bugfix importação de planilha ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: ✅ CONCLUÍDO — Fase 0, Fase 1, Fase 2 implementadas e em produção
+## STATUS DO PROJETO: ✅ CONCLUÍDO — Fase 0, Fase 1, Fase 2 implementadas + manutenção ativa
+
+---
+
+## [Etapa 8 / Sessão 015] - Bugfixes: avatar, perfil e notificações
+**Data:** 2026-05-21
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Avatar upload: Canvas base64 substituiu Supabase Storage (bucket inexistente)
+- profileService: `.single()` → `.maybeSingle()`, `.update()` → `upsert` em todo o código
+- settingsService: `{ onConflict: "user_id" }` corrigiu erro 409
+- AbaTema, salvarPerfil, handleAvatarChange: todos migrados para `upsert`
+- SQL no Supabase criou linha de perfil ausente do usuário (conta criada antes do trigger)
+
+### Arquivos modificados
+- `client/src/services/profileService.ts`
+- `client/src/services/settingsService.ts`
+- `client/src/pages/Configuracoes.tsx`
+- `vite.config.ts` (force bundle hash)
+
+### Commits
+- `725c09a` → `bdd49d0` + `b81add1`
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app
+- Avatar: ✅ funcionando
+- Notificações: ✅ funcionando
 
 ---
 
