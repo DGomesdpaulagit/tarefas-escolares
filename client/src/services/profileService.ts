@@ -16,17 +16,16 @@ export const profileService = {
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) return null;
-    return data as Perfil;
+    return data as Perfil | null;
   },
 
   async update(userId: string, updates: Partial<Perfil>): Promise<Perfil> {
     const { data, error } = await supabase
       .from("profiles")
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq("id", userId)
+      .upsert({ id: userId, ...updates, updated_at: new Date().toISOString() })
       .select()
       .single();
 
