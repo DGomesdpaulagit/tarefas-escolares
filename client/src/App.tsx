@@ -13,6 +13,8 @@ import ResetPassword from "./pages/ResetPassword";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { profileService } from "@/services/profileService";
+import { notificationService } from "@/services/notificationService";
+import { settingsService } from "@/services/settingsService";
 
 function Router() {
   const { estaAutenticado, carregando } = useAuth();
@@ -66,12 +68,29 @@ function ThemeLoader() {
   return null;
 }
 
+function NotificationChecker() {
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user || !notificationService.isSupported()) return;
+    if (notificationService.getPermission() !== "granted") return;
+    // Verifica tarefas próximas ao abrir o app (uma vez por dia)
+    Promise.all([
+      import("@/services/taskService").then(m => m.taskService.list(user.id)),
+      settingsService.getNotifications(user.id),
+    ]).then(([tasks, settings]) => {
+      if (settings) notificationService.checkAndNotify(tasks, settings);
+    }).catch(() => {});
+  }, [user?.id]);
+  return null;
+}
+
 function ThemedApp() {
   const { theme } = useTheme();
   return (
     <AuthProvider>
       <TooltipProvider>
         <ThemeLoader />
+        <NotificationChecker />
         <Toaster
           theme={theme}
           toastOptions={{

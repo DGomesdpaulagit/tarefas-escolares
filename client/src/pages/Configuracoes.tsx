@@ -14,6 +14,7 @@ import type { Materia, Perfil } from "@/types";
 import { MATERIAS_PADRAO, MATERIAS_CORES } from "@/lib/tarefasData";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
+import { notificationService } from "@/services/notificationService";
 import { useTheme } from "@/contexts/ThemeContext";
 
 type Aba = "perfil" | "tema" | "notificacoes" | "materias";
@@ -352,8 +353,11 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     sound_enabled: false,
   });
   const [salvando, setSalvando] = useState(false);
+  const [permissao, setPermissao] = useState<NotificationPermission>("default");
+  const [ativandoPush, setAtivandoPush] = useState(false);
 
   useEffect(() => {
+    if (notificationService.isSupported()) setPermissao(notificationService.getPermission());
     if (!userId) return;
     settingsService.getNotifications(userId).then((data) => {
       if (data) {
@@ -367,6 +371,29 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
       }
     });
   }, [userId]);
+
+  const ativarPush = async () => {
+    if (!userId) return;
+    setAtivandoPush(true);
+    try {
+      const granted = await notificationService.requestPermission();
+      setPermissao(notificationService.getPermission());
+      if (!granted) { toast.error("Permissão de notificação negada"); return; }
+      await notificationService.subscribe(userId);
+      toast.success("Notificações push ativadas! 🔔");
+    } catch {
+      toast.error("Erro ao ativar notificações");
+    } finally {
+      setAtivandoPush(false);
+    }
+  };
+
+  const desativarPush = async () => {
+    if (!userId) return;
+    await notificationService.unsubscribe(userId);
+    setPermissao("default");
+    toast.success("Notificações push desativadas");
+  };
 
   const salvar = async () => {
     if (!userId) return;
@@ -387,10 +414,51 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const pushSuportado = notificationService.isSupported();
+
   return (
     <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
       <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Notificações</h2>
       <p className="text-xs text-slate-500">Configure alertas de prazo</p>
+
+      {/* Push Notification Status */}
+      {pushSuportado && (
+        <div className={`rounded-lg p-3 border flex items-center justify-between gap-3 ${
+          permissao === "granted"
+            ? "bg-green-500/10 border-green-500/30"
+            : "bg-amber-500/10 border-amber-500/30"
+        }`}>
+          <div>
+            <p className={`text-sm font-medium ${permissao === "granted" ? "text-green-300" : "text-amber-300"}`}>
+              {permissao === "granted" ? "🔔 Notificações push ativas" : "🔕 Notificações push desativadas"}
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {permissao === "granted"
+                ? "Você será avisado mesmo com o site fechado"
+                : "Ative para receber alertas com o site fechado"}
+            </p>
+          </div>
+          {permissao === "granted" ? (
+            <Button size="sm" variant="outline" onClick={desativarPush}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-xs">
+              Desativar
+            </Button>
+          ) : (
+            <Button size="sm" onClick={ativarPush} disabled={ativandoPush}
+              className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs gap-1">
+              {ativandoPush ? <Loader2 size={12} className="animate-spin" /> : null}
+              Ativar
+            </Button>
+          )}
+        </div>
+      )}
+
+      {!pushSuportado && (
+        <div className="rounded-lg p-3 border border-white/10 bg-white/5">
+          <p className="text-xs text-slate-500">⚠️ Seu navegador não suporta notificações push</p>
+        </div>
+      )}
+
       <div className="space-y-3">
         {([
           { key: "notify_3_days" as const, label: "Alertar 3 dias antes" },
