@@ -8,6 +8,18 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 9 / Sessão 016 — 2026-05-22)
+- **Web Push Notifications** — sistema completo de notificações push para mobile e desktop
+- `client/public/sw.js` — Service Worker que recebe eventos `push` em background e exibe notificações nativas; reabre o app ao clicar
+- `client/src/services/notificationService.ts` — serviço com `isSupported()`, `requestPermission()`, `subscribe()`, `unsubscribe()`, `checkAndNotify()`
+- `supabase/functions/send-notifications/index.ts` — Edge Function Deno que consulta tarefas vencendo em 1/2/3 dias e envia Web Push com autenticação VAPID
+- Tabela `push_subscriptions` no Supabase com RLS (endpoint, p256dh, auth por usuário)
+- Secrets VAPID configurados na Edge Function (`VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY`)
+- Extensão `pg_cron` habilitada + cron job `send-daily-notifications` às 11h UTC (8h Brasília)
+- UI em Configurações → Notificações: banner de status (verde/âmbar) + botões "Ativar"/"Desativar push"
+- `NotificationChecker` em `App.tsx` — verifica tarefas ao abrir o app (1x por dia via localStorage)
+- `VITE_VAPID_PUBLIC_KEY` adicionado ao Vercel e `.env.local`
+
 ### Corrigido (Sessão 015 — 2026-05-21)
 - **Avatar upload** — removida dependência do Supabase Storage (bucket inexistente); imagem agora é comprimida via Canvas (256×256 JPEG) e salva como base64 em `profiles.avatar_url`
 - **Perfil sem linha no banco** — `profileService.get()` usa `.maybeSingle()` (sem erro 406); todas as escritas usam `upsert` em vez de `update` (PATCH falhava quando linha não existia)

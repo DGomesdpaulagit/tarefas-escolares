@@ -12,10 +12,52 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 8 - Manutenção / Bugfixes
-## SESSÃO ATUAL: [Sessão 14] - Bugfix importação de planilha ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 9 - Fase 3 / Web Push Notifications
+## SESSÃO ATUAL: [Sessão 016] - Web Push Notifications ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: ✅ CONCLUÍDO — Fase 0, Fase 1, Fase 2 implementadas + manutenção ativa
+## STATUS DO PROJETO: ✅ ATIVO — Fase 0, Fase 1, Fase 2, Fase 3 (Push) implementadas
+
+---
+
+## [Etapa 9 / Sessão 016] - Web Push Notifications completo
+**Data:** 2026-05-22
+**Status:** ✅ Concluída
+
+### O que foi feito
+- Service Worker `sw.js` criado — recebe push em background
+- `notificationService.ts` criado — subscribe/unsubscribe/checkAndNotify
+- Tabela `push_subscriptions` criada no Supabase com RLS
+- Edge Function `send-notifications` deployada no Supabase (Deno)
+- Secrets VAPID configurados na Edge Function
+- `pg_cron` habilitado + cron job diário às 8h Brasília criado
+- UI em Configurações reescrita — banner de status + botões Ativar/Desativar
+- `NotificationChecker` adicionado ao App.tsx
+- Bugfixes: avatar 406, importação 400, notification_settings 409
+
+### Arquivos criados
+- `client/public/sw.js`
+- `client/src/services/notificationService.ts`
+- `supabase/functions/send-notifications/index.ts`
+- `supabase/migrations/002_push_subscriptions.sql`
+- `SESSIONS/001-006.md`, `SESSIONS/008-016.md`
+
+### Arquivos modificados
+- `client/src/main.tsx`, `client/src/App.tsx`
+- `client/src/pages/Configuracoes.tsx`
+- `client/src/services/profileService.ts`, `settingsService.ts`
+- `vite.config.ts`, `.env.local`
+
+### Commits
+- `6f03b82` — feat: implement Web Push Notifications (Fase 3 / Sessão 016)
+
+### Status do sistema
+- App: ✅ https://tarefas-escolares-five.vercel.app
+- Push Notifications: ✅ funcionando (local + background)
+- Edge Function: ✅ deployada
+- Cron Job: ✅ todo dia às 8h Brasília
+
+### Próximo passo
+Fase 3 continuação: Onboarding, Agenda melhorada, ou novo feature
 
 ---
 

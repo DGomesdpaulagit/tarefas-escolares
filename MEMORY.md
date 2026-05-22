@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-20
+> **Última atualização:** 2026-05-22
 
 ---
 
@@ -252,6 +252,8 @@ created_at, updated_at, completed_at
 | 17 | TypeScript strict (0 erros) | `tsconfig.json` |
 | 18 | Deploy CI/CD (GitHub → Vercel) | `vercel.json` |
 | 19 | Favicon + PWA icons (7 tamanhos) + manifest | `client/public/` + `index.html` |
+| 20 | Web Push Notifications (Service Worker + VAPID + Edge Function) | `sw.js` + `notificationService.ts` + Supabase |
+| 21 | Cron job diário às 8h Brasília (pg_cron + Edge Function) | Supabase Dashboard |
 
 ---
 
@@ -261,10 +263,10 @@ created_at, updated_at, completed_at
 |---|---|---|---|
 | 1 | Tema Claro/Escuro | 30% | `ThemeContext.tsx` existe, CSS do light theme falta em `index.css` |
 | 2 | Tarefas urgentes no topo | 80% | `isUrgente()` existe, ordenação automática precisa de polimento |
-| 3 | Configurações de notificação | 50% | Tabela `notification_settings` existe, lógica de alerta falta |
+| 3 | Configurações de notificação | ✅ 100% | Web Push + local notifications + cron job implementados |
 | 4 | Matérias personalizadas | 40% | `subjectService.ts` existe, UI de gerenciamento falta |
 | 5 | Página Agenda | 70% | Calendário existe, clique p/ editar/excluir precisa de melhorias |
-| 6 | Perfil do usuário | 60% | `profileService.ts` existe, upload de avatar falta |
+| 6 | Perfil do usuário | ✅ 100% | Avatar via Canvas base64, bio, upsert corrigido |
 
 ---
 
@@ -436,8 +438,8 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - [x] Perfil inteligente (insights automáticos em Metricas.tsx) ✅ Etapa 4 / Sessão 9
 - [x] Sons de transição (Web Audio API) ✅ Etapa 5 / Sessão 11
 
-### 🚀 Fase 3 — Features Avançadas
-- [ ] Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
+### ✅ Fase 3 — Features Avançadas (Parcialmente Concluída)
+- [x] Notificações de prazo (Web Push + local — 3, 2, 1 dias) ✅ Etapa 9 / Sessão 016
 - [ ] Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
 - [ ] Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
 
@@ -445,15 +447,15 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**✅ PROJETO CONCLUÍDO — Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅**
+**✅ Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅ | Fase 3 (Push) ✅**
 
-### Fase 3 — Features Avançadas (a iniciar quando o usuário decidir)
-- Notificações de prazo (Web Notifications API — 3, 2, 1 dias)
-- Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
-- Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
+### Fase 3 — Features Avançadas (em progresso)
+- [x] ✅ Notificações Web Push (Service Worker + VAPID + Edge Function + pg_cron) — Sessão 016
+- [ ] Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
+- [ ] Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
 
 ### Último commit
-`f24b8a6` — docs: registrar bugfix importação planilha no MEMORY.md e MEMORY_CORE.md
+`6f03b82` — feat: implement Web Push Notifications (Fase 3 / Sessão 016)
 
 ---
 
@@ -488,6 +490,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Etapa 6 / Sessão 12] Fase 2: Tema claro/escuro com CSS vars, ThemeLoader, persistência Supabase — PROJETO FINALIZADO |
 | 2026-05-20 | [Bugfix] Importação de planilha: erro 400 corrigido — sanitização de status/prioridade + parsing de datas Excel |
 | 2026-05-21 | [Sessão 015] Bugfixes: avatar via Canvas base64, perfil sem linha no banco (upsert + SQL fix), notification_settings 409 |
+| 2026-05-22 | [Etapa 9 / Sessão 016] Web Push Notifications completo: sw.js, notificationService, Edge Function, VAPID secrets, pg_cron, UI em Configurações |
 
 ---
 
