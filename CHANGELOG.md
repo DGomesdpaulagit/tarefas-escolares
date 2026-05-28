@@ -8,6 +8,23 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 10 / Sessão 017 — 2026-05-28) — FASE 1: Correções críticas
+- **Bug crítico de timezone nas datas** — `new Date("YYYY-MM-DD")` era interpretado como UTC midnight, em UTC-3 (Brasília) caía 1 dia atrás. Novo helper `parseDueDateLocal()` parseia como data local no final do dia.
+- **Cálculo de dias restantes incorreto** — antes mostrava "Faltam 7 dias" quando o correto era 8 (dia atual e dia final contam). Novo `diasAteVencimento()` retorna 0 = "Último dia", 1 = "Falta 1 dia", N = "Faltam N dias".
+- **Tarefas com prazo passado podiam ser concluídas** — toggle agora bloqueado para tarefas expiradas (`toggleConcluida` ignora; botão visualmente desabilitado).
+- **Expiradas misturadas no topo da lista** — nova ordenação por buckets: pendentes urgentes → pendentes normais → concluídas → expiradas.
+- **Textos invisíveis em light mode** — bloco CSS `html:not(.dark)` em `index.css` remapeia `.text-slate-100..500`, `.text-white`, bordas e overlays `white/*` para tons escuros legíveis no tema claro. Cores de identidade (amber, materias) preservadas.
+
+### Adicionado (Etapa 10 / Sessão 017 — 2026-05-28)
+- `parseDueDateLocal(due)` — converte ISO date string em Date local no final do dia (23:59:59.999), evitando shift de timezone
+- `startOfToday()` — Date local às 00:00 do dia atual
+- `diasAteVencimento(due)` — dias até a entrega usando lógica que conta ambos os endpoints
+- `isExpirada(tarefa)` — true só após 23:59:59 local do dia final; concluídas nunca expiram
+- `getStatusEfetivo(tarefa)` — projeta "Passou do Prazo" na UI mesmo sem DB sincronizado
+- `labelDiasRestantes(dias)` — texto humano ("Último dia", "Falta 1 dia", "Faltam N dias", "N dias atrás")
+- Card de tarefa expirada — fundo vermelho suave, ícone `XCircle`, badge "✕ Prazo encerrado", título riscado, edição preservada
+- Auto-bump de status no Supabase em background ao detectar tarefas expiradas
+
 ### Adicionado (Etapa 9 / Sessão 016 — 2026-05-22)
 - **Web Push Notifications** — sistema completo de notificações push para mobile e desktop
 - `client/public/sw.js` — Service Worker que recebe eventos `push` em background e exibe notificações nativas; reabre o app ao clicar

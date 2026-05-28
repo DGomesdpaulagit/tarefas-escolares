@@ -6,8 +6,10 @@ import {
   getMateriaColor,
   getStatusColor,
   getDiasRestantesColor,
+  getStatusEfetivo,
+  labelDiasRestantes,
 } from "@/lib/tarefasData";
-import { AlertTriangle, Calendar, Clock, ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { AlertTriangle, Calendar, Clock, ExternalLink, Pencil, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
 import TarefaForm from "./TarefaForm";
 import { toast } from "sonner";
@@ -35,14 +37,20 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   const [editando, setEditando] = useState(false);
   const [confirmandoRemocao, setConfirmandoRemocao] = useState(false);
 
+  const statusEfetivo = getStatusEfetivo(tarefa);
   const materiaColor = getMateriaColor(tarefa.subject_name);
-  const statusColor = getStatusColor(tarefa.status);
+  const statusColor = getStatusColor(statusEfetivo);
   const diasRestantes = calcularDiasRestantes(tarefa.due_date);
   const diasColor = getDiasRestantesColor(diasRestantes);
-  const concluida = tarefa.status === "Concluída";
+  const concluida = statusEfetivo === "Concluída";
+  const expirada = statusEfetivo === "Passou do Prazo";
   const urgente = isUrgente(tarefa);
 
   const handleToggle = async () => {
+    if (expirada) {
+      toast.error("Esta tarefa expirou e não pode ser concluída");
+      return;
+    }
     try {
       await toggleConcluida(tarefa.id);
       if (concluida) soundService.playDesmarcada();
@@ -70,7 +78,11 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   return (
     <>
       <div
-        className="group relative bg-[var(--bg-card)] border border-white/8 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-200 hover:shadow-lg hover:shadow-black/30 hover:bg-[var(--bg-card-hover)]"
+        className={`group relative border rounded-xl overflow-hidden transition-all duration-200 hover:shadow-lg ${
+          expirada
+            ? "bg-red-500/5 border-red-500/30 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-red-500/10"
+            : "bg-[var(--bg-card)] border-white/8 hover:border-white/20 hover:shadow-black/30 hover:bg-[var(--bg-card-hover)]"
+        }`}
         style={{
           animationDelay: `${index * 40}ms`,
           animation: "fadeSlideIn 0.3s ease-out both",
@@ -78,7 +90,12 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
         role="article"
         aria-label={`Tarefa: ${tarefa.title}`}
       >
-        {urgente && !concluida && (
+        {expirada && (
+          <div className="absolute top-2 right-2 z-10" title="Prazo encerrado">
+            <XCircle size={16} className="text-red-500" aria-label="Tarefa expirada — prazo encerrado" />
+          </div>
+        )}
+        {urgente && !concluida && !expirada && (
           <div className="absolute top-2 right-2 z-10">
             <AlertTriangle size={14} className="text-red-400 animate-pulse" aria-label="Tarefa urgente — prazo em 3 dias ou menos" />
           </div>
@@ -87,20 +104,33 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
         {/* Barra lateral colorida por matéria */}
         <div
           className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
-          style={{ backgroundColor: urgente && !concluida ? "#ef4444" : materiaColor }}
+          style={{ backgroundColor: expirada ? "#ef4444" : urgente && !concluida ? "#ef4444" : materiaColor }}
         />
 
         <div className="pl-4 pr-4 py-4">
           <div className="flex items-start gap-3">
             <button
               onClick={handleToggle}
-              className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center"
+              disabled={expirada}
+              className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-40"
               style={{
-                borderColor: concluida ? "#10b981" : "#475569",
+                borderColor: expirada ? "#ef4444" : concluida ? "#10b981" : "#475569",
                 backgroundColor: concluida ? "#10b981" : "transparent",
               }}
-              title={concluida ? "Marcar como pendente" : "Marcar como concluída"}
-              aria-label={concluida ? "Marcar como pendente" : "Marcar como concluída"}
+              title={
+                expirada
+                  ? "Prazo encerrado — não pode ser concluída"
+                  : concluida
+                  ? "Marcar como pendente"
+                  : "Marcar como concluída"
+              }
+              aria-label={
+                expirada
+                  ? "Tarefa expirada — concluir desabilitado"
+                  : concluida
+                  ? "Marcar como pendente"
+                  : "Marcar como concluída"
+              }
             >
               {concluida && (
                 <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -112,7 +142,11 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
             <div className="flex-1 min-w-0">
               <p
                 className={`text-sm font-medium leading-snug transition-all duration-200 select-none ${
-                  concluida ? "line-through text-slate-500" : "text-slate-100"
+                  concluida
+                    ? "line-through text-slate-500"
+                    : expirada
+                    ? "line-through text-slate-500 dark:text-slate-400"
+                    : "text-slate-900 dark:text-slate-100"
                 }`}
               >
                 {tarefa.title}
@@ -138,7 +172,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                     border: `1px solid ${statusColor}40`,
                   }}
                 >
-                  {STATUS_LABELS[tarefa.status] ?? tarefa.status}
+                  {expirada ? "✕ Prazo encerrado" : STATUS_LABELS[statusEfetivo] ?? statusEfetivo}
                 </span>
 
                 {tarefa.sector && (
@@ -151,7 +185,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                   {PRIORIDADE_LABELS[tarefa.priority]}
                 </span>
 
-                {urgente && !concluida && (
+                {urgente && !concluida && !expirada && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30 font-semibold">
                     Urgente
                   </span>
@@ -174,13 +208,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                 style={{ color: diasColor }}
               >
                 <Clock size={11} aria-hidden="true" />
-                <span>
-                  {diasRestantes < 0
-                    ? `${Math.abs(diasRestantes)}d atrás`
-                    : diasRestantes === 0
-                    ? "Hoje!"
-                    : `${diasRestantes}d restantes`}
-                </span>
+                <span>{labelDiasRestantes(diasRestantes)}</span>
               </div>
             )}
 

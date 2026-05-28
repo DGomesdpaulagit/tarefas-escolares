@@ -1,6 +1,70 @@
-import type { StatusTarefa, PrioridadeTarefa } from "@/types";
+import type { StatusTarefa, PrioridadeTarefa, Tarefa } from "@/types";
 
 export type { StatusTarefa, PrioridadeTarefa };
+
+// ============================================================
+// DATAS — sempre tratadas como datas LOCAIS (sem timezone shift)
+// ============================================================
+
+/**
+ * Converte "YYYY-MM-DD" (ou ISO) em Date local no FINAL do dia (23:59:59.999).
+ * Evita o bug clássico de `new Date("2026-06-05")` interpretar como UTC midnight
+ * e cair um dia atrás em fusos negativos (ex: Brasília UTC-3).
+ */
+export function parseDueDateLocal(due: string): Date {
+  const datePart = due.split("T")[0];
+  const [ano, mes, dia] = datePart.split("-").map(Number);
+  return new Date(ano, (mes ?? 1) - 1, dia ?? 1, 23, 59, 59, 999);
+}
+
+/** Hoje às 00:00:00 local. */
+export function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Dias restantes até a entrega (contando o dia atual e o dia final).
+ * - Entrega hoje  → 0  ("Último dia")
+ * - Entrega amanhã → 1 ("Falta 1 dia")
+ * - Entrega em 8 dias → 8 ("Faltam 8 dias")
+ * - Prazo vencido → número negativo
+ */
+export function diasAteVencimento(due: string | null): number | null {
+  if (!due) return null;
+  const hoje = startOfToday();
+  const prazo = parseDueDateLocal(due);
+  prazo.setHours(0, 0, 0, 0);
+  return Math.round((prazo.getTime() - hoje.getTime()) / 86_400_000);
+}
+
+/** Tarefa expirou? Só após 23:59:59 do dia final. Concluídas nunca expiram. */
+export function isExpirada(tarefa: Pick<Tarefa, "status" | "due_date">): boolean {
+  if (tarefa.status === "Concluída") return false;
+  if (!tarefa.due_date) return false;
+  return Date.now() > parseDueDateLocal(tarefa.due_date).getTime();
+}
+
+/**
+ * Status efetivo para uso na UI — projeta "Passou do Prazo" quando o prazo
+ * já passou, mesmo que o status persistido ainda não tenha sido atualizado.
+ */
+export function getStatusEfetivo(tarefa: Tarefa): StatusTarefa {
+  if (tarefa.status === "Concluída") return "Concluída";
+  if (isExpirada(tarefa)) return "Passou do Prazo";
+  return tarefa.status;
+}
+
+/** Texto humano para a contagem de dias. */
+export function labelDiasRestantes(dias: number | null): string {
+  if (dias === null) return "";
+  if (dias === 0) return "Último dia";
+  if (dias === 1) return "Falta 1 dia";
+  if (dias > 0) return `Faltam ${dias} dias`;
+  if (dias === -1) return "1 dia atrás";
+  return `${Math.abs(dias)} dias atrás`;
+}
 
 export const MATERIAS_CORES: Record<string, string> = {
   Português: "#f59e0b",

@@ -1,4 +1,5 @@
 import { supabase } from "@/supabase/client";
+import { diasAteVencimento, isExpirada } from "@/lib/tarefasData";
 import type { Tarefa, NotificationSettings } from "@/types";
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
@@ -79,22 +80,21 @@ export const notificationService = {
     if (!this.isSupported() || Notification.permission !== "granted") return;
     if (!settings.notify_1_day && !settings.notify_2_days && !settings.notify_3_days) return;
 
+    // Evita notificar mais de uma vez por dia (localStorage como flag)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    // Evita notificar mais de uma vez por dia (localStorage como flag)
     const lastCheck = localStorage.getItem("notify_last_check");
-    const todayStr = today.toISOString().split("T")[0];
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     if (lastCheck === todayStr) return;
 
     const notified: string[] = [];
 
     for (const task of tasks) {
       if (task.status === "Concluída" || !task.due_date) continue;
+      if (isExpirada(task)) continue; // não notifica tarefas já expiradas
 
-      const due = new Date(task.due_date);
-      due.setHours(0, 0, 0, 0);
-      const diff = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      const diff = diasAteVencimento(task.due_date);
+      if (diff === null) continue;
 
       const shouldNotify =
         (diff === 3 && settings.notify_3_days) ||
@@ -104,7 +104,7 @@ export const notificationService = {
 
       if (!shouldNotify) continue;
 
-      const label = diff === 0 ? "HOJE" : diff === 1 ? "amanhã" : `em ${diff} dias`;
+      const label = diff === 0 ? "HOJE (último dia)" : diff === 1 ? "amanhã" : `em ${diff} dias`;
 
       new Notification(`📚 ${task.title}`, {
         body: `Prazo ${label} — ${task.subject_name}`,

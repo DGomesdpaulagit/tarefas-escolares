@@ -185,4 +185,23 @@ REGRAS:
 
 ---
 
-*Atualizado em: 2026-05-20*
+### P-012 — Mega prompt FASE 1 (correções críticas do sistema)
+**Validado em:** 2026-05-28
+**Sessão:** 017
+**Escopo aprovado:**
+1. Sistema de status com 3 estados (pending/completed/expired) com regras claras
+2. Correção do bug de timezone das datas (dia atual e dia final contam)
+3. Expiração automática só após 23:59:59 do dia final
+4. Visual dedicado para tarefas expiradas (riscado, vermelho, badge, X, sem botão concluir, edição livre)
+5. Ordenação correta: urgentes → normais → concluídas → expiradas
+6. Notificações com cálculo de dias corrigido
+7. Light/Dark mode com cores neutras adaptativas
+
+**Estratégia adotada:**
+- Helpers centralizados em `lib/tarefasData.ts` (`parseDueDateLocal`, `diasAteVencimento`, `isExpirada`, `getStatusEfetivo`, `labelDiasRestantes`)
+- Status efetivo computado client-side + persistência em background no Supabase
+- Light mode resolvido com overrides CSS em `index.css` (`html:not(.dark)`) — sem refatorar componentes um a um
+
+---
+
+*Atualizado em: 2026-05-28*

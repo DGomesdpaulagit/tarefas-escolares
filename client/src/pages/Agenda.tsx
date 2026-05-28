@@ -1,5 +1,12 @@
 import { useTarefas, calcularDiasRestantes } from "@/contexts/TarefasContext";
-import { getMateriaColor, getStatusColor, formatarData } from "@/lib/tarefasData";
+import {
+  getMateriaColor,
+  getStatusColor,
+  formatarData,
+  getStatusEfetivo,
+  labelDiasRestantes,
+  parseDueDateLocal,
+} from "@/lib/tarefasData";
 import type { Tarefa } from "@/types";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
@@ -34,7 +41,7 @@ export default function Agenda() {
   const tarefasPorDia: Record<number, Tarefa[]> = {};
   tarefas.forEach((t) => {
     if (!t.due_date) return;
-    const data = new Date(t.due_date + "T12:00:00");
+    const data = parseDueDateLocal(t.due_date);
     if (data.getFullYear() === ano && data.getMonth() === mes) {
       const dia = data.getDate();
       tarefasPorDia[dia] = [...(tarefasPorDia[dia] ?? []), t];
@@ -112,7 +119,7 @@ export default function Agenda() {
                 const dia = i + 1;
                 const temTarefas = !!tarefasPorDia[dia];
                 const tarefasDia = tarefasPorDia[dia] ?? [];
-                const temAtrasada = tarefasDia.some((t) => t.status === "Passou do Prazo");
+                const temAtrasada = tarefasDia.some((t) => getStatusEfetivo(t) === "Passou do Prazo");
                 const selecionado = diaSelecionado === dia;
 
                 return (
@@ -179,7 +186,8 @@ export default function Agenda() {
                     {tarefasDoDia.map((t) => {
                       const dias = calcularDiasRestantes(t.due_date);
                       const cor = getMateriaColor(t.subject_name);
-                      const statusCor = getStatusColor(t.status);
+                      const eff = getStatusEfetivo(t);
+                      const statusCor = getStatusColor(eff);
                       return (
                         <div
                           key={t.id}
@@ -193,7 +201,7 @@ export default function Agenda() {
                           <div className="flex items-start gap-2">
                             <div className="w-1 h-full min-h-[32px] rounded-full flex-shrink-0" style={{ backgroundColor: cor }} />
                             <div className="flex-1 min-w-0">
-                              <p className={`text-xs font-medium truncate ${t.status === "Concluída" ? "line-through text-slate-500" : "text-slate-200"}`}>
+                              <p className={`text-xs font-medium truncate ${eff === "Concluída" || eff === "Passou do Prazo" ? "line-through text-slate-500" : "text-slate-900 dark:text-slate-200"}`}>
                                 {t.title}
                               </p>
                               <div className="flex items-center gap-2 mt-1">
@@ -201,12 +209,12 @@ export default function Agenda() {
                                   {t.subject_name}
                                 </span>
                                 <span className="text-xs" style={{ color: statusCor }}>
-                                  {t.status}
+                                  {eff === "Passou do Prazo" ? "Prazo encerrado" : eff}
                                 </span>
                               </div>
                               {dias !== null && (
                                 <p className={`text-xs mt-1 ${dias < 0 ? "text-red-400" : dias <= 3 ? "text-amber-400" : "text-slate-500"}`}>
-                                  {dias < 0 ? `${Math.abs(dias)}d atrás` : dias === 0 ? "Hoje!" : `${dias}d restantes`}
+                                  {labelDiasRestantes(dias)}
                                 </p>
                               )}
                             </div>

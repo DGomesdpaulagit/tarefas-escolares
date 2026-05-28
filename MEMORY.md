@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-22
+> **Última atualização:** 2026-05-28
 
 ---
 
@@ -447,15 +447,24 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**✅ Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅ | Fase 3 (Push) ✅**
+**✅ Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅ | Fase 3 (Push) ✅ | Fase 1 Crítica (Sessão 017) ✅**
 
-### Fase 3 — Features Avançadas (em progresso)
-- [x] ✅ Notificações Web Push (Service Worker + VAPID + Edge Function + pg_cron) — Sessão 016
+### Estado atual
+- Sistema de status com 3 estados efetivos (pending/completed/expired) via `getStatusEfetivo`
+- Datas com timezone correto (`parseDueDateLocal`), conta dia atual + dia final
+- Expiração automática só após 23:59:59 local do dia final
+- Tarefas expiradas: visual riscado/vermelho, badge "Prazo encerrado", toggle bloqueado, edição preservada
+- Listagem ordenada: urgentes → normais → concluídas → expiradas
+- Notificações push real funcionando (Sessão 016) + cálculo de dias corrigido (Sessão 017)
+- Light/Dark mode: cores neutras adaptam via overrides em `index.css`
+
+### Próximas opções
 - [ ] Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
-- [ ] Agenda melhorada (visão semanal, clique para editar/excluir tarefas)
+- [ ] Agenda melhorada (visão semanal, drag-and-drop)
+- [ ] Testes manuais ampliados (mobile Android/iOS, troca de tema, criação de tarefa hoje/amanhã/8 dias)
 
 ### Último commit
-`6f03b82` — feat: implement Web Push Notifications (Fase 3 / Sessão 016)
+A criar — Sessão 017 (Fase 1 correções críticas)
 
 ---
 
@@ -491,6 +500,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-20 | [Bugfix] Importação de planilha: erro 400 corrigido — sanitização de status/prioridade + parsing de datas Excel |
 | 2026-05-21 | [Sessão 015] Bugfixes: avatar via Canvas base64, perfil sem linha no banco (upsert + SQL fix), notification_settings 409 |
 | 2026-05-22 | [Etapa 9 / Sessão 016] Web Push Notifications completo: sw.js, notificationService, Edge Function, VAPID secrets, pg_cron, UI em Configurações |
+| 2026-05-28 | [Etapa 10 / Sessão 017] FASE 1 crítica: timezone das datas, expiração automática (23:59:59), status efetivo (pending/completed/expired), buckets de ordenação, light mode cores neutras corrigidas |
 
 ---
 

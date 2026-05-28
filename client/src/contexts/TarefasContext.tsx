@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { taskService } from "@/services/taskService";
 import { useAuth } from "@/contexts/AuthContext";
+import { diasAteVencimento, isExpirada, getStatusEfetivo } from "@/lib/tarefasData";
 import type { Tarefa, FiltrosTarefas, MetricasTarefas, PrioridadeTarefa, StatusTarefa } from "@/types";
 
 type TarefaInsert = Omit<Tarefa, "id" | "created_at" | "updated_at" | "completed_at">;
@@ -24,18 +25,14 @@ interface TarefasContextValue {
 const TarefasContext = createContext<TarefasContextValue | null>(null);
 
 function calcularDiasRestantes(dueDate: string | null): number | null {
-  if (!dueDate) return null;
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  const prazo = new Date(dueDate);
-  prazo.setHours(0, 0, 0, 0);
-  return Math.ceil((prazo.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+  return diasAteVencimento(dueDate);
 }
 
 function isUrgente(tarefa: Tarefa): boolean {
-  if (tarefa.status === "Concluída") return false;
+  const status = getStatusEfetivo(tarefa);
+  if (status === "Concluída" || status === "Passou do Prazo") return false;
   const dias = calcularDiasRestantes(tarefa.due_date);
-  return dias !== null && dias <= 3;
+  return dias !== null && dias >= 0 && dias <= 3;
 }
 
 export function TarefasProvider({ children }: { children: React.ReactNode }) {
@@ -55,6 +52,25 @@ export function TarefasProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await taskService.list(user.id);
       setTarefas(data);
+
+      // Persiste em background o status "Passou do Prazo" para tarefas que
+      // expiraram desde a última visita — sem bloquear a UI.
+      const aExpirar = data.filter(
+        (t) => t.status !== "Concluída" && t.status !== "Passou do Prazo" && isExpirada(t),
+      );
+      if (aExpirar.length > 0) {
+        Promise.all(
+          aExpirar.map((t) =>
+            taskService.update(t.id, { status: "Passou do Prazo" }).catch(() => null),
+          ),
+        ).then((res) => {
+          const atualizadas = res.filter((r): r is Tarefa => r !== null);
+          if (atualizadas.length === 0) return;
+          setTarefas((prev) =>
+            prev.map((t) => atualizadas.find((u) => u.id === t.id) ?? t),
+          );
+        });
+      }
     } finally {
       setCarregando(false);
     }
@@ -87,10 +103,20 @@ export function TarefasProvider({ children }: { children: React.ReactNode }) {
       return true;
     })
     .sort((a, b) => {
-      const aUrgente = isUrgente(a);
-      const bUrgente = isUrgente(b);
-      if (aUrgente && !bUrgente) return -1;
-      if (!aUrgente && bUrgente) return 1;
+      // Bucket: 0 = pendente urgente, 1 = pendente normal, 2 = concluída, 3 = expirada
+      const bucket = (t: Tarefa): number => {
+        const eff = getStatusEfetivo(t);
+        if (eff === "Passou do Prazo") return 3;
+        if (eff === "Concluída") return 2;
+        return isUrgente(t) ? 0 : 1;
+      };
+      const ba = bucket(a);
+      const bb = bucket(b);
+      if (ba !== bb) return ba - bb;
+      // Dentro do mesmo bucket: prazo mais próximo primeiro (ou criação mais recente quando sem prazo)
+      if (a.due_date && b.due_date) return a.due_date.localeCompare(b.due_date);
+      if (a.due_date) return -1;
+      if (b.due_date) return 1;
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
@@ -119,23 +145,26 @@ export function TarefasProvider({ children }: { children: React.ReactNode }) {
   const toggleConcluida = async (id: string) => {
     const tarefa = tarefas.find((t) => t.id === id);
     if (!tarefa) return;
+    // Tarefa expirada não pode ser concluída — apenas editada.
+    if (getStatusEfetivo(tarefa) === "Passou do Prazo") return;
     const atualizada = await taskService.toggle(id, tarefa.status);
     setTarefas((prev) => prev.map((t) => (t.id === id ? atualizada : t)));
   };
 
   const total = tarefas.length;
-  const concluidas = tarefas.filter((t) => t.status === "Concluída").length;
-  const emAndamento = tarefas.filter((t) => t.status === "Em Andamento").length;
-  const passouPrazo = tarefas.filter((t) => t.status === "Passou do Prazo").length;
-  const pendentes = tarefas.filter((t) => t.status === "Não iniciada").length;
+  const concluidas = tarefas.filter((t) => getStatusEfetivo(t) === "Concluída").length;
+  const emAndamento = tarefas.filter((t) => getStatusEfetivo(t) === "Em Andamento").length;
+  const passouPrazo = tarefas.filter((t) => getStatusEfetivo(t) === "Passou do Prazo").length;
+  const pendentes = tarefas.filter((t) => getStatusEfetivo(t) === "Não iniciada").length;
   const percentualConcluido = total > 0 ? Math.round((concluidas / total) * 100) : 0;
 
   const porMateria: Record<string, number> = {};
   const porStatus: Record<string, number> = {};
   const porSetor: Record<string, number> = {};
   tarefas.forEach((t) => {
+    const eff = getStatusEfetivo(t);
     porMateria[t.subject_name] = (porMateria[t.subject_name] ?? 0) + 1;
-    porStatus[t.status] = (porStatus[t.status] ?? 0) + 1;
+    porStatus[eff] = (porStatus[eff] ?? 0) + 1;
     if (t.sector) porSetor[t.sector] = (porSetor[t.sector] ?? 0) + 1;
   });
 

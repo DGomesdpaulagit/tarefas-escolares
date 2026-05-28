@@ -151,8 +151,30 @@ Registro de bugs resolvidos e bugs conhecidos/pendentes.
 ### BUG-015 — Tarefas urgentes não são priorizadas na listagem
 - **Severidade:** UX menor
 - **Descrição:** Tarefas com prazo ≤ 3 dias aparecem com badge "Urgente" mas não sobem automaticamente para o topo da lista.
-- **Status:** 🔜 Pendente (Fase 1)
+- **Status:** ✅ Resolvido (Sessão 017 — buckets de ordenação)
 
 ---
 
-*Atualizado em: 2026-05-20*
+### BUG-016 — Cálculo de dias restantes incorreto (timezone bug)
+- **Severidade:** ALTA — afeta lógica central
+- **Descrição:** `new Date("YYYY-MM-DD")` era interpretado como UTC midnight; em UTC-3 (Brasília) virava 21h do dia anterior. Após `setHours(0,0,0,0)` ficava o dia anterior, resultando em "Faltam 7 dias" quando o correto era 8. Tarefas expiravam 1 dia antes.
+- **Status:** ✅ Resolvido (Sessão 017 — `parseDueDateLocal` em `lib/tarefasData.ts`)
+
+### BUG-017 — Tarefas com prazo vencido podiam ser marcadas como concluídas
+- **Severidade:** ALTA — quebra integridade lógica
+- **Descrição:** Após o prazo, o botão "concluir" continuava ativo, permitindo conclusão fora do prazo. Status visual também não refletia expiração automaticamente.
+- **Status:** ✅ Resolvido (Sessão 017 — `getStatusEfetivo`, `toggleConcluida` bloqueia expiradas, card com visual dedicado)
+
+### BUG-018 — Tarefas expiradas continuavam no topo da lista
+- **Severidade:** UX média
+- **Descrição:** Sem ordenação por status efetivo, expiradas poluíam a área prioritária da listagem.
+- **Status:** ✅ Resolvido (Sessão 017 — buckets: urgentes → normais → concluídas → expiradas)
+
+### BUG-019 — Textos invisíveis em light mode
+- **Severidade:** Média — afeta legibilidade no tema claro
+- **Descrição:** Componentes usavam `text-slate-100`/`text-white`/`bg-white/5` diretamente, ficando invisíveis em fundo claro.
+- **Status:** ✅ Resolvido (Sessão 017 — overrides CSS `html:not(.dark)` em `index.css`)
+
+---
+
+*Atualizado em: 2026-05-28*

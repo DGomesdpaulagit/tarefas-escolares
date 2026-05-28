@@ -12,10 +12,42 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 9 - Fase 3 / Web Push Notifications
-## SESSÃO ATUAL: [Sessão 016] - Web Push Notifications ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 10 - Fase 1 / Correções críticas do sistema
+## SESSÃO ATUAL: [Sessão 017] - FASE 1: status, datas, expiração, ordenação, light/dark ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: ✅ ATIVO — Fase 0, Fase 1, Fase 2, Fase 3 (Push) implementadas
+## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 10 / Sessão 017] - FASE 1: Correções críticas do sistema
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Datas corrigidas** — `new Date("YYYY-MM-DD")` interpretava como UTC, perdendo 1 dia em fuso BR. Novo helper `parseDueDateLocal()` em `lib/tarefasData.ts` parseia como data local no final do dia (23:59:59.999).
+- **Cálculo de dias** — `diasAteVencimento()` substitui o `Math.ceil()` por `Math.round()` sobre datas normalizadas; agora "hoje" = 0 (Último dia), "amanhã" = 1 (Falta 1 dia), 28/05 → 05/06 = 8 (Faltam 8 dias).
+- **Expiração automática** — helper `isExpirada()` verifica `Date.now() > fim do dia local`. Status só vira "Passou do Prazo" APÓS 23:59:59 do dia final.
+- **Status efetivo** — `getStatusEfetivo()` projeta "Passou do Prazo" na UI mesmo antes do DB ser atualizado. Tarefas concluídas nunca expiram.
+- **Persistência em background** — `TarefasContext.recarregar()` agora detecta tarefas expiradas e atualiza o status no Supabase em background (sem bloquear UI).
+- **Bloqueio de conclusão** — `toggleConcluida()` ignora tarefas expiradas; botão de check no card fica desabilitado com aviso.
+- **Visual expirada** — card com fundo `bg-red-500/5`, borda vermelha, ícone `XCircle`, badge "✕ Prazo encerrado", título riscado. Edição continua liberada.
+- **Ordenação correta** — buckets: 0=pendentes urgentes, 1=pendentes normais, 2=concluídas, 3=expiradas. Dentro do bucket, prazo mais próximo primeiro.
+- **Notificações** — `notificationService.checkAndNotify()` reescrita com `diasAteVencimento()` (timezone-safe); ignora tarefas já expiradas; `todayStr` calculado em local time.
+- **Light/Dark mode** — em `index.css`, adicionado bloco `html:not(.dark)` que remapeia `.text-white`, `.text-slate-100..500`, bordas/bg `white/*` para tons escuros no tema claro. Corrige textos invisíveis em todas as páginas sem refatorar componentes.
+
+### Arquivos modificados
+- `client/src/lib/tarefasData.ts` — novos helpers de data, status, label
+- `client/src/contexts/TarefasContext.tsx` — sort por buckets, auto-bump de expiradas, bloqueio de toggle, métricas via status efetivo
+- `client/src/components/TarefaCard.tsx` — visual expirada, botão desabilitado, label e cores theme-aware
+- `client/src/pages/Agenda.tsx` — usa `parseDueDateLocal`, `getStatusEfetivo`, `labelDiasRestantes`
+- `client/src/services/notificationService.ts` — cálculo de dias corrigido, filtro de expiradas
+- `client/src/index.css` — overrides de cores neutras para tema claro
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 29s
+
+### Próximo passo
+Testes em produção (desktop, mobile Android/iOS, troca de tema, criação de tarefa hoje/amanhã/8 dias) — depois Fase 2 conforme roadmap.
 
 ---
 

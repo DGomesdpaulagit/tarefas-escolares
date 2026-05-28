@@ -1,0 +1,214 @@
+{
+  "main": {
+    "id": "b1e7bedcecd8c35f",
+    "type": "split",
+    "children": [
+      {
+        "id": "74e38535b8da5464",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f72d07eb060c78d9",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "daf6befbc7a3ca3f",
+    "type": "split",
+    "children": [
+      {
+        "id": "efa481b1c268f046",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ab73d081774352d6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "fc2cf8972f6b376d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "1d24c5334a58e363",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4d6fff80c6b6dd6d",
+    "type": "split",
+    "children": [
+      {
+        "id": "0c8c48a654239a80",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "46c4b95ca7888c33",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos"
+            }
+          },
+          {
+            "id": "6ff10b2fe32e9df2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída"
+            }
+          },
+          {
+            "id": "019d4a087e56cedc",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "23ba3595128b66fb",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:Criar nova base": false,
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false
+    }
+  },
+  "active": "f72d07eb060c78d9",
+  "lastOpenFiles": [
+    "MEMORY_CORE.md.tmp.21336.d34162896dbe",
+    "MEMORY.md.tmp.21336.4ea9178dab1c",
+    "MEMORY.md.tmp.21336.ff4c9623d1de",
+    "cloud.md.tmp.21336.3e44dab36c46",
+    "SESSIONS/016.md",
+    "SESSIONS/016.md.tmp.21336.7999c48fd44e",
+    "dist/index.html",
+    "dist/assets/index-g41SWjiH.js",
+    "dist/assets/index-D-nhM9MP.css",
+    "dist/assets",
+    "dist/sw.js",
+    "client/src/main.tsx.tmp.21336.f5ac07375587",
+    "SESSIONS/015.md",
+    "LINKS.md",
+    "dist/maskable-icon-512x512.png",
+    "dist/favicon-32x32.png",
+    "dist/favicon-16x16.png",
+    "dist/apple-touch-icon.png",
+    "dist/android-chrome-512x512.png",
+    "dist/android-chrome-192x192.png",
+    "MEMORY.md",
+    "PROMPTS.md",
+    "MEMORY_CORE.md",
+    "SESSIONS/011.md",
+    "SESSIONS/012.md",
+    "SESSIONS/013.md",
+    "SESSIONS/014.md",
+    "SESSIONS/007.md",
+    "SESSIONS/010.md",
+    "SESSIONS/009.md",
+    "SESSIONS/008.md",
+    "SESSIONS/006.md",
+    "SESSIONS/005.md",
+    "SESSIONS/004.md",
+    "SESSIONS/003.md",
+    "SESSIONS/002.md",
+    "SESSIONS/001.md",
+    "client/public/maskable-icon-512x512.png",
+    "client/public/favicon-32x32.png",
+    "client/public/favicon-16x16.png",
+    "client/public/apple-touch-icon.png",
+    "node_modules/recharts/CHANGELOG.md",
+    "cloud.md",
+    "CLAUDE.md",
+    "node_modules/tailwind-merge/LICENSE.md",
+    "README.md"
+  ]
+}
