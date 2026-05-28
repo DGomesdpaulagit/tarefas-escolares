@@ -225,4 +225,22 @@ REGRAS:
 
 ---
 
+### P-014 — Onboarding pós-cadastro com seleção visual
+**Validado em:** 2026-05-28
+**Sessão:** 019
+**Escopo aprovado:**
+- Fluxo em passos curto para não cansar
+- Seleção visual de disciplinas (grade com emoji + cor) em vez de checklist
+- Botão "Pular" sempre disponível
+- Marcação persistente em `profiles.onboarding_completed` para nunca repetir
+- Pré-preenche nome a partir do user_metadata se já existir
+- Cria as disciplinas selecionadas em lote (Promise.all) ao concluir
+
+**Estratégia adotada:**
+- Migration nullable-safe (`NOT NULL DEFAULT false`) — usuários antigos veem o onboarding 1x
+- Gate em `App.tsx` antes do Router das rotas autenticadas
+- "Pular" também salva a flag (sem desistir de marcar — evita loop infinito)
+
+---
+
 *Atualizado em: 2026-05-28*

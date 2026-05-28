@@ -5,14 +5,15 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { TarefasProvider } from "./contexts/TarefasContext";
-import { DisciplinasProvider } from "./contexts/DisciplinasContext";
+import { DisciplinasProvider, useDisciplinas } from "./contexts/DisciplinasContext";
 import { ArquivosProvider } from "./contexts/ArquivosContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { profileService } from "@/services/profileService";
 import { notificationService } from "@/services/notificationService";
 import { settingsService } from "@/services/settingsService";
@@ -36,13 +37,15 @@ function Router() {
       <ArquivosProvider>
         <DisciplinasProvider>
         <TarefasProvider>
-          <Switch>
-            {/* Rota de reset acessível mesmo quando já autenticado */}
-            <Route path="/reset-password" component={ResetPassword} />
-            <Route path="" component={Home} />
-            <Route path="/404" component={NotFound} />
-            <Route component={NotFound} />
-          </Switch>
+          <OnboardingGate>
+            <Switch>
+              {/* Rota de reset acessível mesmo quando já autenticado */}
+              <Route path="/reset-password" component={ResetPassword} />
+              <Route path="" component={Home} />
+              <Route path="/404" component={NotFound} />
+              <Route component={NotFound} />
+            </Switch>
+          </OnboardingGate>
         </TarefasProvider>
         </DisciplinasProvider>
       </ArquivosProvider>
@@ -57,6 +60,40 @@ function Router() {
       <Route component={Login} />
     </Switch>
   );
+}
+
+function OnboardingGate({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const { recarregar } = useDisciplinas();
+  const [estado, setEstado] = useState<"carregando" | "onboarding" | "ok">("carregando");
+
+  useEffect(() => {
+    if (!user) return;
+    profileService.get(user.id).then((p) => {
+      setEstado(p?.onboarding_completed ? "ok" : "onboarding");
+    }).catch(() => setEstado("ok")); // fail-open
+  }, [user?.id]);
+
+  if (estado === "carregando") {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-base)]">
+        <Loader2 size={24} className="text-amber-400 animate-spin" />
+      </div>
+    );
+  }
+
+  if (estado === "onboarding") {
+    return (
+      <Onboarding
+        onConcluir={() => {
+          recarregar();
+          setEstado("ok");
+        }}
+      />
+    );
+  }
+
+  return <>{children}</>;
 }
 
 function ThemeLoader() {

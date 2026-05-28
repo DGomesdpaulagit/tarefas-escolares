@@ -12,10 +12,43 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 10 - Fase 2 / Estrutura visual das Disciplinas
-## SESSÃO ATUAL: [Sessão 018] - FASE 2: Catálogo de Disciplinas (emoji, cor, cards, modal) ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 11 - Onboarding pós-cadastro
+## SESSÃO ATUAL: [Sessão 019] - Onboarding com 3 passos (boas-vindas, disciplinas, revisão) ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 11 / Sessão 019] - Onboarding pós-cadastro
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Migration `004_profiles_add_onboarding_completed`** — coluna `onboarding_completed boolean NOT NULL DEFAULT false` em `profiles`
+- **`Perfil.onboarding_completed`** adicionado ao type
+- **Página `Onboarding.tsx`** — fluxo de 3 passos para novos usuários:
+  - **Passo 1 — Boas-vindas:** nome + ano/série opcional (pré-preenche nome do user_metadata se existir)
+  - **Passo 2 — Disciplinas:** grade de cards selecionáveis com emoji + cor; multiselect com check visual e tonalização ao selecionar
+  - **Passo 3 — Revisão:** resumo do que foi configurado (nome, ano, disciplinas com chips) + dica para ajustar nas Configurações
+  - Stepper visual no topo + botão "Pular" + navegação Voltar/Próximo
+  - Ao concluir: `profileService.upsert({name, bio: "Ano: X", onboarding_completed: true})` + cria todas as disciplinas selecionadas em paralelo via `DisciplinasContext.criar()`
+- **`OnboardingGate`** em `App.tsx` — busca o perfil ao logar; se `onboarding_completed === false` renderiza `<Onboarding>` no lugar da Home. "Pular" também marca a flag para não exibir de novo.
+- Animação `scaleIn` no card do onboarding; theme-aware (cores legíveis em light e dark)
+
+### Arquivos criados
+- `client/src/pages/Onboarding.tsx`
+- Migration Supabase: `004_profiles_add_onboarding_completed`
+
+### Arquivos modificados
+- `client/src/types/index.ts` — `Perfil.onboarding_completed: boolean`
+- `client/src/App.tsx` — `OnboardingGate` envolvendo o Switch das rotas autenticadas
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 19s
+
+### Próximo passo
+- Visão geral / Dashboard de disciplinas em destaque
+- Calendário semanal
 
 ---
 

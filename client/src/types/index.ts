@@ -38,6 +38,7 @@ export interface Perfil {
   bio: string | null;
   language: string;
   theme: string;
+  onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -25,6 +25,15 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## Onboarding pós-cadastro (Sessão 019 — 2026-05-28)
+
+- [x] Migration `004_profiles_add_onboarding_completed`
+- [x] Fluxo em 3 passos: boas-vindas (nome + ano) → seleção de disciplinas → revisão
+- [x] Grade visual de cards selecionáveis com emoji + cor
+- [x] OnboardingGate detecta usuário sem onboarding e direciona
+- [x] Botão "Pular" disponível em qualquer passo
+- [x] Criação em lote das disciplinas selecionadas
+
 ## FASE 2 — Estrutura visual das Disciplinas (Sessão 018 — 2026-05-28)
 
 - [x] Rename global "Matéria" → "Disciplina" na UI

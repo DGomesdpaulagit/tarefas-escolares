@@ -8,6 +8,16 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 11 / Sessão 019 — 2026-05-28) — Onboarding pós-cadastro
+- **Migration `004_profiles_add_onboarding_completed`** — coluna `onboarding_completed boolean NOT NULL DEFAULT false` em `profiles`
+- **Página de Onboarding em 3 passos** mostrada uma única vez após o primeiro login:
+  - Passo 1: nome + ano/série opcional
+  - Passo 2: seleção visual de disciplinas (grade de cards com emoji + cor, multiselect com check)
+  - Passo 3: revisão final com chips das disciplinas escolhidas
+- **`OnboardingGate`** em `App.tsx` — detecta `onboarding_completed === false` e renderiza o fluxo no lugar da Home; "Pular" também marca a flag para não exibir novamente
+- Ao concluir: cria todas as disciplinas selecionadas em paralelo + salva nome/ano + marca flag como `true`
+- Stepper visual + animação `scaleIn` no card; theme-aware
+
 ### Adicionado (Etapa 10 / Sessão 018 — 2026-05-28) — FASE 2: Estrutura visual das Disciplinas
 - **Migração `003_subjects_add_emoji`** — coluna `emoji text NULL` em `subjects`
 - **Nova página "Disciplinas"** — catálogo visual com cards (grade responsiva 1/2/3/4 col), cada card com emoji grande, cor própria, contadores (pendentes/feitas/vencidas) e ações inline. Clique no card filtra tarefas pela disciplina.
