@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 019)
+> **Última atualização:** 2026-05-28 (Sessão 020)
 
 ---
 
@@ -460,8 +460,8 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ### Próximas opções
 - [x] Onboarding pós-cadastro com seleção visual de disciplinas — Sessão 019
+- [x] Calendário semanal moderno com long-press — Sessão 020
 - [ ] Visão geral / Dashboard com cards de disciplinas em destaque
-- [ ] Calendário semanal (extensão da Agenda)
 - [ ] Testes manuais em mobile (Android/iOS, troca de tema)
 
 ### Estado atual (após Sessão 018)
@@ -511,6 +511,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 10 / Sessão 017] FASE 1 crítica: timezone das datas, expiração automática (23:59:59), status efetivo (pending/completed/expired), buckets de ordenação, light mode cores neutras corrigidas |
 | 2026-05-28 | [Etapa 10 / Sessão 018] FASE 2 visual: rename Matéria→Disciplina, página Disciplinas com cards, modal moderno (emoji+cor+preview), DisciplinasContext, migration `003_subjects_add_emoji`, emoji em TarefaCard/TarefaForm/Sidebar |
 | 2026-05-28 | [Etapa 11 / Sessão 019] Onboarding pós-cadastro em 3 passos (nome+ano, seleção visual de disciplinas, revisão), migration `004_profiles_add_onboarding_completed`, OnboardingGate no App.tsx |
+| 2026-05-28 | [Etapa 12 / Sessão 020] FASE 3 calendário semanal: Agenda.tsx reescrita (7 colunas, mini-cards com emoji/cor/status, long-press 450ms para criar tarefa, useLongPress hook com vibração, navegação prev/next+Hoje), TarefaForm com initialDueDate |
 
 ---
 

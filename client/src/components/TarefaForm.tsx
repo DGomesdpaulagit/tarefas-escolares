@@ -20,6 +20,7 @@ import { toast } from "sonner";
 
 interface TarefaFormProps {
   tarefa?: Tarefa;
+  initialDueDate?: string;
   onClose: () => void;
 }
 
@@ -32,7 +33,7 @@ const STATUS_OPTIONS: StatusTarefa[] = [
 
 const PRIORIDADE_OPTIONS: PrioridadeTarefa[] = ["Alta", "Média", "Baixa"];
 
-export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
+export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFormProps) {
   const { adicionarTarefa, atualizarTarefa } = useTarefas();
   const { disciplinas } = useDisciplinas();
   const isEdicao = !!tarefa;
@@ -55,7 +56,7 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
     priority: tarefa?.priority ?? ("Média" as PrioridadeTarefa),
     sector: tarefa?.sector ?? "Trabalho",
     origin: tarefa?.origin ?? "SALA",
-    due_date: tarefa?.due_date ?? "",
+    due_date: tarefa?.due_date ?? initialDueDate ?? "",
     progress: tarefa?.progress ?? 0,
     notes: tarefa?.notes ?? "",
     link: tarefa?.link ?? "",

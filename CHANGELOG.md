@@ -8,6 +8,19 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 12 / Sessão 020 — 2026-05-28) — FASE 3: Calendário Semanal Moderno
+- **Agenda redesenhada** como calendário semanal: 7 colunas (Dom→Sáb), navegação prev/next + botão "Hoje"
+- **Mini-cards de tarefa por dia** com emoji da disciplina, cor de fundo, dot de status, badge "!" para urgentes; estados visuais para concluída (opacity + line-through) e expirada (vermelho + line-through)
+- **Long-press de 450ms** em qualquer dia abre criação rápida com `due_date` pré-preenchido (hook `useLongPress` com cancelamento por movimento e vibração tátil em mobile)
+- **Tap rápido** em mini-card → editar tarefa; tap em coluna vazia → criar tarefa
+- **Coluna "hoje" destacada** com borda âmbar e fundo de identidade
+- **Performance**: agrupamento `useMemo` por YYYY-MM-DD, lookup O(1) por dia, animação leve na troca de semana
+- **Responsivo** em mobile (min-h 260px) e desktop (min-h 420px); theme-aware
+
+### Alterado (Sessão 020)
+- `Agenda.tsx` — reescrita completa, removendo o calendário mensal anterior
+- `TarefaForm.tsx` — nova prop `initialDueDate?: string` para criação rápida com data pré-preenchida
+
 ### Adicionado (Etapa 11 / Sessão 019 — 2026-05-28) — Onboarding pós-cadastro
 - **Migration `004_profiles_add_onboarding_completed`** — coluna `onboarding_completed boolean NOT NULL DEFAULT false` em `profiles`
 - **Página de Onboarding em 3 passos** mostrada uma única vez após o primeiro login:

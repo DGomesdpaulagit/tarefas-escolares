@@ -25,6 +25,19 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## FASE 3 — Calendário Semanal Moderno (Sessão 020 — 2026-05-28)
+
+- [x] Agenda reescrita em formato semanal (7 colunas)
+- [x] Mini-cards com emoji + cor + status visual
+- [x] Long-press (450ms) abre criação rápida com data pré-preenchida
+- [x] Hook `useLongPress` com cancelamento por movimento + vibração tátil
+- [x] Navegação prev/next semana + botão "Hoje"
+- [x] Coluna "hoje" destacada
+- [x] Estados visuais para concluída/expirada/urgente
+- [x] Theme-aware (dark e light)
+- [x] Performance otimizada (`useMemo` + lookup O(1))
+- [x] TarefaForm aceita `initialDueDate` para criação rápida
+
 ## Onboarding pós-cadastro (Sessão 019 — 2026-05-28)
 
 - [x] Migration `004_profiles_add_onboarding_completed`

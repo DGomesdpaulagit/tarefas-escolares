@@ -12,10 +12,51 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 11 - Onboarding pós-cadastro
-## SESSÃO ATUAL: [Sessão 019] - Onboarding com 3 passos (boas-vindas, disciplinas, revisão) ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 12 - Fase 3 / Calendário Semanal Moderno
+## SESSÃO ATUAL: [Sessão 020] - Calendário semanal com long-press para criar tarefa ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 12 / Sessão 020] - FASE 3: Calendário Semanal Moderno
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Agenda reescrita** em formato semanal — substituiu o calendário mensal antigo
+  - Grade `grid-cols-7` exibe a semana inteira (Dom a Sáb) em colunas
+  - Coluna de "hoje" destacada com borda âmbar e fundo `bg-amber-500/5`
+  - Cabeçalho com nome curto do dia + número grande + contador de tarefas
+- **Mini-cards de tarefa** por dia com:
+  - emoji da disciplina + título truncado (2 linhas)
+  - cor de fundo da disciplina (tonalidade 12%)
+  - dot de status (cor efetiva via `getStatusEfetivo`)
+  - badge "!" para tarefas urgentes (≤3 dias, não concluídas/expiradas)
+  - estados visuais: concluída (opacity-60 + line-through), expirada (vermelho + line-through), urgente (badge)
+- **Long-press** (450ms) em qualquer dia abre o `TarefaForm` com `due_date` pré-preenchido
+  - Hook `useLongPress` próprio com cancelamento por movimento (>4px) e `Pointer*` events
+  - Vibração tátil (15ms) em dispositivos compatíveis
+  - Tap rápido em mini-card → editar tarefa
+  - Tap em coluna vazia (botão "+") → criar
+- **Navegação semanal** — botões prev/next + "Hoje" (volta para semana atual)
+  - Animação `fadeSlideIn` na troca de semana (key=ymd(inicio))
+- **TarefaForm estendido** — nova prop `initialDueDate?: string` para criação rápida
+- **Helpers de semana** internos: `inicioDaSemana(d)`, `addDays`, `ymd`, `rotuloSemana`
+- **Theme-aware** (legível em dark e light), responsivo (min-h adapta sm:420px / 260px mobile)
+- **Performance** — agrupamento de tarefas em `useMemo` por YYYY-MM-DD; lookup O(1) por dia
+- **Sincronização real-time** — mantida via `useTarefas()` (qualquer mudança atualiza imediatamente)
+
+### Arquivos modificados
+- `client/src/pages/Agenda.tsx` — reescrito como calendário semanal
+- `client/src/components/TarefaForm.tsx` — prop `initialDueDate`
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 19s
+
+### Próximo passo
+- Visão Geral / Dashboard com cards de disciplinas em destaque
+- Refinamentos visuais conforme feedback de uso
 
 ---
 

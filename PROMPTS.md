@@ -243,4 +243,26 @@ REGRAS:
 
 ---
 
+### P-015 — Mega prompt FASE 3 (calendário semanal moderno)
+**Validado em:** 2026-05-28
+**Sessão:** 020
+**Escopo aprovado:**
+- Visão semanal (7 colunas) em vez do calendário mensal anterior
+- Mini-cards de tarefa com identidade visual (emoji + cor + status)
+- Long-press para criação rápida com data pré-preenchida
+- Navegação fluida entre semanas + atalho "Hoje"
+- Coluna "hoje" destacada
+- Estados visuais para concluída/expirada/urgente
+- Responsivo (mobile + desktop) e theme-aware
+- Performance otimizada (useMemo, lookup O(1))
+
+**Estratégia adotada:**
+- Hook `useLongPress` próprio (sem dependência extra) com `Pointer*` events,
+  cancelamento por movimento (>4px) e vibração tátil (15ms)
+- `TarefaForm` ganhou prop `initialDueDate` em vez de criar modal separado
+- Agrupamento de tarefas por YYYY-MM-DD via `useMemo` para evitar re-render
+- Animação `fadeSlideIn` na grade ao trocar de semana (key=ymd(início))
+
+---
+
 *Atualizado em: 2026-05-28*
