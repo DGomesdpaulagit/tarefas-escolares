@@ -1,4 +1,5 @@
 import { useTarefas, calcularDiasRestantes, isUrgente } from "@/contexts/TarefasContext";
+import { useDisciplinas } from "@/contexts/DisciplinasContext";
 import { soundService } from "@/services/soundService";
 import type { Tarefa } from "@/types";
 import {
@@ -7,6 +8,7 @@ import {
   getStatusColor,
   getDiasRestantesColor,
   getStatusEfetivo,
+  getMateriaEmoji,
   labelDiasRestantes,
 } from "@/lib/tarefasData";
 import { AlertTriangle, Calendar, Clock, ExternalLink, Pencil, Trash2, XCircle } from "lucide-react";
@@ -34,11 +36,14 @@ const PRIORIDADE_LABELS: Record<string, string> = {
 
 export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   const { toggleConcluida, removerTarefa } = useTarefas();
+  const { disciplinas } = useDisciplinas();
   const [editando, setEditando] = useState(false);
   const [confirmandoRemocao, setConfirmandoRemocao] = useState(false);
 
+  const disciplina = disciplinas.find((d) => d.name === tarefa.subject_name);
   const statusEfetivo = getStatusEfetivo(tarefa);
-  const materiaColor = getMateriaColor(tarefa.subject_name);
+  const materiaColor = disciplina?.color ?? getMateriaColor(tarefa.subject_name);
+  const materiaEmoji = getMateriaEmoji(tarefa.subject_name, disciplina?.emoji);
   const statusColor = getStatusColor(statusEfetivo);
   const diasRestantes = calcularDiasRestantes(tarefa.due_date);
   const diasColor = getDiasRestantesColor(diasRestantes);
@@ -154,13 +159,14 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
 
               <div className="flex flex-wrap items-center gap-1.5 mt-2">
                 <span
-                  className="text-xs px-2 py-0.5 rounded-full font-medium"
+                  className="text-xs px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1"
                   style={{
                     backgroundColor: `${materiaColor}20`,
                     color: materiaColor,
                     border: `1px solid ${materiaColor}40`,
                   }}
                 >
+                  <span aria-hidden="true">{materiaEmoji}</span>
                   {tarefa.subject_name}
                 </span>
 

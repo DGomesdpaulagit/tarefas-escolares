@@ -8,6 +8,23 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 10 / Sessão 018 — 2026-05-28) — FASE 2: Estrutura visual das Disciplinas
+- **Migração `003_subjects_add_emoji`** — coluna `emoji text NULL` em `subjects`
+- **Nova página "Disciplinas"** — catálogo visual com cards (grade responsiva 1/2/3/4 col), cada card com emoji grande, cor própria, contadores (pendentes/feitas/vencidas) e ações inline. Clique no card filtra tarefas pela disciplina.
+- **Modal moderno de criação/edição de disciplina** — preview ao vivo + picker de emoji em grade (com input para emoji custom) + paleta de 15 cores em círculos + sugestão automática para nomes conhecidos
+- **Contexto `DisciplinasProvider`** — fonte única de verdade para CRUD de disciplinas em todo o app
+- **Emojis nas tarefas** — chip da disciplina no TarefaCard exibe emoji da disciplina cadastrada; Select do TarefaForm mostra emoji em cada opção
+- **Sidebar** — novo item de navegação "Disciplinas" + seção "Por Disciplina" exibe emoji + cor configurados pelo usuário
+- **Helpers** `MATERIAS_EMOJIS`, `PALETA_DISCIPLINAS`, `EMOJI_SUGERIDOS`, `getMateriaEmoji(nome, custom?)` em `lib/tarefasData.ts`
+- **Sugestões rápidas** — bloco com botões para adicionar disciplinas padrão (Matemática, Física, etc.) em um clique, com emoji e cor pré-definidos
+- **Animações** — `fadeSlideIn` nos cards (stagger), `scaleIn` no modal, hover-lift sutil
+
+### Alterado (Sessão 018)
+- "Matéria" → "Disciplina" em todos os labels de UI (Tarefas filtros, Sidebar, TarefaForm, Configurações). Schema do banco preservado (`subjects`, `subject_name`).
+- Aba "Matérias" das Configurações removida (funcionalidade movida para página dedicada)
+- `Materia.emoji: string | null` adicionado ao tipo
+- `subjectService.create()` / `update()` agora aceitam objeto `{ name, color, emoji }`
+
 ### Corrigido (Etapa 10 / Sessão 017 — 2026-05-28) — FASE 1: Correções críticas
 - **Bug crítico de timezone nas datas** — `new Date("YYYY-MM-DD")` era interpretado como UTC midnight, em UTC-3 (Brasília) caía 1 dia atrás. Novo helper `parseDueDateLocal()` parseia como data local no final do dia.
 - **Cálculo de dias restantes incorreto** — antes mostrava "Faltam 7 dias" quando o correto era 8 (dia atual e dia final contam). Novo `diasAteVencimento()` retorna 0 = "Último dia", 1 = "Falta 1 dia", N = "Faltam N dias".

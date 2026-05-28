@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { TarefasProvider } from "./contexts/TarefasContext";
+import { DisciplinasProvider } from "./contexts/DisciplinasContext";
 import { ArquivosProvider } from "./contexts/ArquivosContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
@@ -33,6 +34,7 @@ function Router() {
   if (estaAutenticado) {
     return (
       <ArquivosProvider>
+        <DisciplinasProvider>
         <TarefasProvider>
           <Switch>
             {/* Rota de reset acessível mesmo quando já autenticado */}
@@ -42,6 +44,7 @@ function Router() {
             <Route component={NotFound} />
           </Switch>
         </TarefasProvider>
+        </DisciplinasProvider>
       </ArquivosProvider>
     );
   }

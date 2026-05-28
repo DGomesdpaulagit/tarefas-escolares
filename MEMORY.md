@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28
+> **Última atualização:** 2026-05-28 (Sessão 018)
 
 ---
 
@@ -459,12 +459,20 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - Light/Dark mode: cores neutras adaptam via overrides em `index.css`
 
 ### Próximas opções
-- [ ] Onboarding (fluxo pós-cadastro: escolha de matérias, preferências)
-- [ ] Agenda melhorada (visão semanal, drag-and-drop)
-- [ ] Testes manuais ampliados (mobile Android/iOS, troca de tema, criação de tarefa hoje/amanhã/8 dias)
+- [ ] Onboarding pós-cadastro com seleção visual de disciplinas
+- [ ] Visão geral / Dashboard com cards de disciplinas em destaque
+- [ ] Calendário semanal (extensão da Agenda)
+- [ ] Testes manuais em mobile (Android/iOS, troca de tema)
+
+### Estado atual (após Sessão 018)
+- Página "Disciplinas" com catálogo visual em cards (emoji + cor + contadores)
+- Modal moderno de criação/edição com preview, emoji picker e paleta
+- "Matéria" renomeado para "Disciplina" em toda a UI; schema do banco preservado
+- Coluna `emoji` em `subjects` (migration `003_subjects_add_emoji`)
+- Emoji da disciplina aparece em TarefaCard, TarefaForm e Sidebar
 
 ### Último commit
-A criar — Sessão 017 (Fase 1 correções críticas)
+`293d80e` (Sessão 017) — próximo: Sessão 018 (Fase 2 disciplinas)
 
 ---
 
@@ -501,6 +509,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-21 | [Sessão 015] Bugfixes: avatar via Canvas base64, perfil sem linha no banco (upsert + SQL fix), notification_settings 409 |
 | 2026-05-22 | [Etapa 9 / Sessão 016] Web Push Notifications completo: sw.js, notificationService, Edge Function, VAPID secrets, pg_cron, UI em Configurações |
 | 2026-05-28 | [Etapa 10 / Sessão 017] FASE 1 crítica: timezone das datas, expiração automática (23:59:59), status efetivo (pending/completed/expired), buckets de ordenação, light mode cores neutras corrigidas |
+| 2026-05-28 | [Etapa 10 / Sessão 018] FASE 2 visual: rename Matéria→Disciplina, página Disciplinas com cards, modal moderno (emoji+cor+preview), DisciplinasContext, migration `003_subjects_add_emoji`, emoji em TarefaCard/TarefaForm/Sidebar |
 
 ---
 

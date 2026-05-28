@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTarefas } from "@/contexts/TarefasContext";
+import { useDisciplinas } from "@/contexts/DisciplinasContext";
 import { soundService } from "@/services/soundService";
-import { MATERIAS_PADRAO, SETORES, ORIGENS } from "@/lib/tarefasData";
+import { MATERIAS_PADRAO, SETORES, ORIGENS, getMateriaEmoji } from "@/lib/tarefasData";
 import type { Tarefa, PrioridadeTarefa, StatusTarefa } from "@/types";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -33,7 +34,18 @@ const PRIORIDADE_OPTIONS: PrioridadeTarefa[] = ["Alta", "Média", "Baixa"];
 
 export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
   const { adicionarTarefa, atualizarTarefa } = useTarefas();
+  const { disciplinas } = useDisciplinas();
   const isEdicao = !!tarefa;
+
+  // Combina disciplinas cadastradas + padrões não cadastradas (com emojis)
+  const opcoesDisciplina = (() => {
+    const nomesCadastradas = new Set(disciplinas.map((d) => d.name));
+    const padraoExtras = MATERIAS_PADRAO.filter((m) => m !== "Outra" && !nomesCadastradas.has(m));
+    return [
+      ...disciplinas.map((d) => ({ nome: d.name, emoji: getMateriaEmoji(d.name, d.emoji) })),
+      ...padraoExtras.map((nome) => ({ nome, emoji: getMateriaEmoji(nome) })),
+    ];
+  })();
 
   const [form, setForm] = useState({
     title: tarefa?.title ?? "",
@@ -117,15 +129,18 @@ export default function TarefaForm({ tarefa, onClose }: TarefaFormProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="subject" className="text-slate-300 text-sm">Matéria</Label>
+              <Label htmlFor="subject" className="text-slate-300 text-sm">Disciplina</Label>
               <Select value={form.subject_name} onValueChange={(v) => set("subject_name", v)}>
                 <SelectTrigger id="subject" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
-                  {MATERIAS_PADRAO.map((m) => (
-                    <SelectItem key={m} value={m} className="text-slate-200 focus:bg-white/10">
-                      {m}
+                  {opcoesDisciplina.map(({ nome, emoji }) => (
+                    <SelectItem key={nome} value={nome} className="text-slate-200 focus:bg-white/10">
+                      <span className="inline-flex items-center gap-2">
+                        <span aria-hidden="true">{emoji}</span>
+                        {nome}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>

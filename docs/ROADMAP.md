@@ -25,6 +25,21 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## FASE 2 — Estrutura visual das Disciplinas (Sessão 018 — 2026-05-28)
+
+- [x] Rename global "Matéria" → "Disciplina" na UI
+- [x] Página dedicada "Disciplinas" com catálogo em cards
+- [x] Emoji por disciplina (picker + custom)
+- [x] Paleta de cores em círculos com preview
+- [x] Modal moderno de criação/edição com pré-visualização ao vivo
+- [x] Contadores por card (pendentes, feitas, vencidas, urgentes)
+- [x] Clique no card filtra tarefas pela disciplina
+- [x] Sugestões rápidas para adicionar padrões em um clique
+- [x] Sidebar exibe emoji + cor das disciplinas configuradas
+- [x] TarefaCard e TarefaForm exibem emoji da disciplina
+- [x] Migration `003_subjects_add_emoji` aplicada no Supabase
+- [x] Aba "Matérias" removida das Configurações (página dedicada)
+
 ## FASE 1 — Correções estruturais críticas (Sessão 017 — 2026-05-28)
 
 - [x] Sistema de datas com timezone correto (parseDueDateLocal)

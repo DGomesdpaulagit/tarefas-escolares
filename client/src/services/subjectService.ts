@@ -1,6 +1,18 @@
 import { supabase } from "@/supabase/client";
 import type { Materia } from "@/types";
 
+export interface SubjectInsert {
+  name: string;
+  color: string;
+  emoji?: string | null;
+}
+
+export interface SubjectUpdate {
+  name?: string;
+  color?: string;
+  emoji?: string | null;
+}
+
 export const subjectService = {
   async list(userId: string): Promise<Materia[]> {
     const { data, error } = await supabase
@@ -13,10 +25,10 @@ export const subjectService = {
     return (data ?? []) as Materia[];
   },
 
-  async create(userId: string, name: string, color: string): Promise<Materia> {
+  async create(userId: string, input: SubjectInsert): Promise<Materia> {
     const { data, error } = await supabase
       .from("subjects")
-      .insert({ user_id: userId, name, color })
+      .insert({ user_id: userId, name: input.name, color: input.color, emoji: input.emoji ?? null })
       .select()
       .single();
 
@@ -24,7 +36,7 @@ export const subjectService = {
     return data as Materia;
   },
 
-  async update(id: string, updates: { name?: string; color?: string }): Promise<Materia> {
+  async update(id: string, updates: SubjectUpdate): Promise<Materia> {
     const { data, error } = await supabase
       .from("subjects")
       .update(updates)

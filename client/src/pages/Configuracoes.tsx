@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { profileService } from "@/services/profileService";
-import { subjectService } from "@/services/subjectService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,15 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import React from "react";
-import { Camera, Loader2, Plus, Save, Trash2, User, Bell, Palette, BookOpen } from "lucide-react";
-import type { Materia, Perfil } from "@/types";
-import { MATERIAS_PADRAO, MATERIAS_CORES } from "@/lib/tarefasData";
+import { Camera, Loader2, Save, User, Bell, Palette } from "lucide-react";
+import type { Perfil } from "@/types";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
 import { notificationService } from "@/services/notificationService";
 import { useTheme } from "@/contexts/ThemeContext";
 
-type Aba = "perfil" | "tema" | "notificacoes" | "materias";
+type Aba = "perfil" | "tema" | "notificacoes";
 
 function compressImage(file: File, maxSize = 256): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -59,7 +57,6 @@ export default function Configuracoes() {
             { id: "perfil", label: "Perfil", icon: User },
             { id: "tema", label: "Aparência", icon: Palette },
             { id: "notificacoes", label: "Notificações", icon: Bell },
-            { id: "materias", label: "Matérias", icon: BookOpen },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -91,7 +88,6 @@ export default function Configuracoes() {
           {abaAtiva === "perfil" && <AbaPerfil user={user} atualizarSenha={atualizarSenha} />}
           {abaAtiva === "tema" && <AbaTema />}
           {abaAtiva === "notificacoes" && <AbaNotificacoes userId={user?.id} />}
-          {abaAtiva === "materias" && <AbaMaterias />}
         </div>
       </div>
     </div>
@@ -485,141 +481,3 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
   );
 }
 
-function AbaMaterias() {
-  const { user } = useAuth();
-  const [materias, setMaterias] = useState<Materia[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [novaMateria, setNovaMateria] = useState("");
-  const [adicionando, setAdicionando] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    subjectService.list(user.id).then((data) => {
-      setMaterias(data);
-      setCarregando(false);
-    }).catch(() => setCarregando(false));
-  }, [user]);
-
-  const adicionarPadrao = async (nome: string) => {
-    if (!user || materias.some((m) => m.name === nome)) return;
-    const cor = MATERIAS_CORES[nome] ?? "#94a3b8";
-    try {
-      const nova = await subjectService.create(user.id, nome, cor);
-      setMaterias((prev) => [...prev, nova].sort((a, b) => a.name.localeCompare(b.name)));
-      toast.success(`${nome} adicionada!`);
-    } catch {
-      toast.error("Erro ao adicionar matéria");
-    }
-  };
-
-  const adicionarPersonalizada = async () => {
-    const nome = novaMateria.trim();
-    if (!nome || !user) return;
-    if (materias.some((m) => m.name.toLowerCase() === nome.toLowerCase())) {
-      toast.error("Matéria já existe"); return;
-    }
-    setAdicionando(true);
-    try {
-      const nova = await subjectService.create(user.id, nome, "#94a3b8");
-      setMaterias((prev) => [...prev, nova].sort((a, b) => a.name.localeCompare(b.name)));
-      setNovaMateria("");
-      toast.success(`${nome} adicionada!`);
-    } catch {
-      toast.error("Erro ao adicionar matéria");
-    } finally {
-      setAdicionando(false);
-    }
-  };
-
-  const remover = async (id: string, nome: string) => {
-    try {
-      await subjectService.delete(id);
-      setMaterias((prev) => prev.filter((m) => m.id !== id));
-      toast.success(`${nome} removida`);
-    } catch {
-      toast.error("Erro ao remover matéria");
-    }
-  };
-
-  const materiasPadraoNaoAdicionadas = MATERIAS_PADRAO
-    .filter((m) => m !== "Outra" && !materias.some((x) => x.name === m));
-
-  return (
-    <div className="space-y-4">
-      {/* Matérias ativas */}
-      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Suas Matérias</h2>
-          {!carregando && <span className="text-xs text-slate-500">{materias.length} matéria{materias.length !== 1 ? "s" : ""}</span>}
-        </div>
-
-        {carregando ? (
-          <div className="flex justify-center py-4">
-            <Loader2 size={18} className="animate-spin text-amber-400" />
-          </div>
-        ) : materias.length === 0 ? (
-          <p className="text-xs text-slate-500 py-2">Nenhuma matéria adicionada ainda. Adicione abaixo.</p>
-        ) : (
-          <div className="space-y-1.5">
-            {materias.map((m) => (
-              <div key={m.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/8 group">
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: m.color }} />
-                <span className="text-sm text-slate-200 flex-1">{m.name}</span>
-                <button
-                  onClick={() => remover(m.id, m.name)}
-                  className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all focus:outline-none focus:ring-1 focus:ring-red-500 rounded"
-                  aria-label={`Remover ${m.name}`}
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Adicionar personalizada */}
-        <div className="flex gap-2 pt-1">
-          <Input
-            value={novaMateria}
-            onChange={(e) => setNovaMateria(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && adicionarPersonalizada()}
-            placeholder="Nova matéria personalizada..."
-            className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 h-9 text-sm"
-          />
-          <Button
-            onClick={adicionarPersonalizada}
-            disabled={adicionando || !novaMateria.trim()}
-            size="sm"
-            className="bg-amber-500 hover:bg-amber-400 text-black font-semibold h-9 gap-1.5 flex-shrink-0"
-          >
-            {adicionando ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
-            Adicionar
-          </Button>
-        </div>
-      </div>
-
-      {/* Matérias padrão para adicionar rapidamente */}
-      {materiasPadraoNaoAdicionadas.length > 0 && (
-        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Adicionar Matéria Padrão</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {materiasPadraoNaoAdicionadas.map((nome) => {
-              const cor = MATERIAS_CORES[nome] ?? "#94a3b8";
-              return (
-                <button
-                  key={nome}
-                  onClick={() => adicionarPadrao(nome)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs border border-white/8 text-slate-400 hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} />
-                  <span className="truncate">{nome}</span>
-                  <Plus size={11} className="ml-auto flex-shrink-0" />
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}

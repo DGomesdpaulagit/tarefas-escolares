@@ -82,6 +82,46 @@ export const MATERIAS_CORES: Record<string, string> = {
   Inglês: "#60a5fa",
 };
 
+export const MATERIAS_EMOJIS: Record<string, string> = {
+  Português: "📚",
+  Artes: "🎨",
+  Filosofia: "🧠",
+  Química: "🧪",
+  "Interfaces Web": "💻",
+  "Banco de Dados": "🗄️",
+  Matemática: "📘",
+  Física: "🔬",
+  História: "🏛️",
+  Geografia: "🌎",
+  Biologia: "🧬",
+  "Educação Física": "⚽",
+  Inglês: "🇬🇧",
+};
+
+/** Paleta de cores recomendada para disciplinas (uniforme, funciona em ambos os temas). */
+export const PALETA_DISCIPLINAS: string[] = [
+  "#f59e0b", "#f97316", "#ef4444", "#ec4899", "#a78bfa",
+  "#8b5cf6", "#3b82f6", "#60a5fa", "#06b6d4", "#22d3ee",
+  "#10b981", "#34d399", "#84cc16", "#f43f5e", "#94a3b8",
+];
+
+/** Emojis sugeridos para o picker. */
+export const EMOJI_SUGERIDOS: string[] = [
+  "📚", "📘", "📗", "📕", "📙", "📓", "📔", "📒", "📝", "✏️",
+  "🧠", "💡", "🔬", "🧪", "🧬", "⚗️", "🔭", "🌡️",
+  "🌎", "🗺️", "🌍", "🌏", "🏛️", "⚖️", "📜",
+  "🎨", "🎭", "🎬", "🎵", "🎤", "🎹", "🎸",
+  "💻", "⌨️", "🖥️", "🗄️", "📊", "📈", "🔢",
+  "⚽", "🏀", "🏈", "🏐", "🎾", "🏃", "🤸",
+  "🇬🇧", "🇪🇸", "🇫🇷", "🇩🇪", "🇮🇹", "🇯🇵", "🇧🇷",
+  "🍎", "🌱", "🐛", "🐝", "🦋",
+];
+
+export function getMateriaEmoji(materia: string, custom?: string | null): string {
+  if (custom) return custom;
+  return MATERIAS_EMOJIS[materia] ?? "📘";
+}
+
 export const MATERIAS_PADRAO = [
   "Português",
   "Artes",

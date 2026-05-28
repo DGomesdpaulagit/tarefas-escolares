@@ -29,7 +29,7 @@ const ORDENACAO_OPTIONS = [
   { value: "recente", label: "Mais recentes" },
   { value: "prazo", label: "Por prazo" },
   { value: "prioridade", label: "Por prioridade" },
-  { value: "materia", label: "Por matéria" },
+  { value: "materia", label: "Por disciplina" },
 ];
 
 type Ordenacao = "urgente" | "recente" | "prazo" | "prioridade" | "materia";
@@ -175,10 +175,10 @@ export default function Tarefas() {
             </div>
 
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-slate-500 px-1">Matéria</span>
+              <span className="text-xs text-slate-500 px-1">Disciplina</span>
               <Select value={filtros.materia} onValueChange={(v) => setFiltros({ materia: v })}>
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
-                  <SelectValue placeholder="Matéria" />
+                  <SelectValue placeholder="Disciplina" />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {materiasDisponiveis.map((m) => (
@@ -220,7 +220,7 @@ export default function Tarefas() {
               : `${tarefasOrdenadas.length} tarefa${tarefasOrdenadas.length !== 1 ? "s" : ""}`}
           </p>
           {filtros.materia !== "Todas" && (
-            <button onClick={() => setFiltros({ materia: "Todas" })} className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1" aria-label={`Remover filtro de matéria: ${filtros.materia}`}>
+            <button onClick={() => setFiltros({ materia: "Todas" })} className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1" aria-label={`Remover filtro de disciplina: ${filtros.materia}`}>
               <X size={11} />
               {filtros.materia}
             </button>

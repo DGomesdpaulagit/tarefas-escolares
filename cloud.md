@@ -12,10 +12,67 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 10 - Fase 1 / Correções críticas do sistema
-## SESSÃO ATUAL: [Sessão 017] - FASE 1: status, datas, expiração, ordenação, light/dark ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 10 - Fase 2 / Estrutura visual das Disciplinas
+## SESSÃO ATUAL: [Sessão 018] - FASE 2: Catálogo de Disciplinas (emoji, cor, cards, modal) ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 10 / Sessão 018] - FASE 2: Estrutura visual das Disciplinas
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Migração no Supabase** — coluna `emoji text NULL` adicionada à tabela `subjects` (migration `003_subjects_add_emoji`).
+- **Renomeação global** — "Matéria" → "Disciplina" em todos os labels de UI (Tarefas, Sidebar, TarefaForm, Tarefa filtros, Configurações). Schema interno do banco preservado.
+- **`DisciplinasContext`** — novo provider centralizando CRUD de disciplinas (`disciplinas`, `criar`, `atualizar`, `remover`, `buscarPorNome`).
+- **Página `Disciplinas.tsx`** — catálogo visual em grade responsiva (1/2/3/4 colunas conforme tela), cada card com:
+  - emoji grande (`getMateriaEmoji`)
+  - faixa colorida no topo + caixa do emoji tonalizada
+  - contagem de tarefas (Pendentes, Feitas, Vencidas) com destaque para urgentes
+  - botões Editar/Remover (visível mobile, hover desktop)
+  - clique no card filtra tarefas dessa disciplina e navega
+  - card "+" para criar nova disciplina
+- **`DisciplinaModal.tsx`** — modal moderno para criar/editar:
+  - preview ao vivo
+  - picker de emoji com presets em grade scrollable + input para emoji custom
+  - paleta de 15 cores em círculos com check
+  - sugestão automática "Usar visual sugerido" quando o nome bate com presets conhecidos
+- **`MATERIAS_EMOJIS`** + `PALETA_DISCIPLINAS` + `EMOJI_SUGERIDOS` adicionados a `lib/tarefasData.ts`
+- **Helper `getMateriaEmoji(nome, custom?)`** — emoji custom > preset por nome > fallback 📘
+- **TarefaCard** — chip da disciplina agora exibe emoji ao lado do nome; cor usa preferência da disciplina cadastrada
+- **TarefaForm** — Select de disciplina lista as cadastradas + padrões com emoji visível em cada item
+- **Sidebar** — novo item "Disciplinas" no menu (ícone `GraduationCap`); seção "Por Disciplina" mostra emoji + cor da disciplina cadastrada
+- **Configurações** — aba "Matérias" removida (funcionalidade movida para página dedicada). Apenas Perfil, Aparência e Notificações.
+- **Animações** — `fadeSlideIn` em cards (stagger por index), `scaleIn` no modal, hover lift -translate-y nos cards
+- **Theme-aware** — todo o novo código usa `text-slate-900 dark:text-white` / `text-slate-700 dark:text-slate-300` para legibilidade nos dois temas
+
+### Arquivos criados
+- `client/src/contexts/DisciplinasContext.tsx`
+- `client/src/components/DisciplinaModal.tsx`
+- `client/src/pages/Disciplinas.tsx`
+- Migration Supabase: `003_subjects_add_emoji`
+
+### Arquivos modificados
+- `client/src/types/index.ts` — `Materia.emoji: string | null`
+- `client/src/services/subjectService.ts` — API `create({name,color,emoji})`/`update({...emoji})`
+- `client/src/lib/tarefasData.ts` — `MATERIAS_EMOJIS`, `PALETA_DISCIPLINAS`, `EMOJI_SUGERIDOS`, `getMateriaEmoji()`
+- `client/src/App.tsx` — `DisciplinasProvider` no wrapper
+- `client/src/pages/Home.tsx` — rota `disciplinas`, `navegarComFiltro`
+- `client/src/components/Sidebar.tsx` — nav item, label "Por Disciplina", emoji+cor por disciplina cadastrada
+- `client/src/components/TarefaCard.tsx` — emoji no chip da disciplina
+- `client/src/components/TarefaForm.tsx` — Select com disciplinas + emojis
+- `client/src/pages/Tarefas.tsx` — strings "Matéria" → "Disciplina"
+- `client/src/pages/Configuracoes.tsx` — aba Matérias removida
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 16s
+
+### Próximo passo
+- Onboarding pós-cadastro (cadastrar disciplinas no fluxo inicial)
+- Visão geral / dashboard com cards de disciplinas em destaque
+- Calendário semanal (extensão da Agenda)
 
 ---
 

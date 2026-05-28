@@ -204,4 +204,25 @@ REGRAS:
 
 ---
 
+### P-013 — Mega prompt FASE 2 (estrutura visual das Disciplinas)
+**Validado em:** 2026-05-28
+**Sessão:** 018
+**Escopo aprovado:**
+- Rename "Matéria" → "Disciplina" em toda a UI (schema do banco preservado)
+- Catálogo visual de disciplinas com cards modernos (emoji + cor + contadores + ações)
+- Modal moderno de criação/edição (preview ao vivo, emoji picker, paleta de cores)
+- Animações suaves (fadeSlideIn stagger, scaleIn modal, hover lift)
+- Sugestões rápidas para adicionar disciplinas padrão em 1 clique
+- Emoji da disciplina propagado em TarefaCard, TarefaForm e Sidebar
+- Theme-aware (legível em dark e light mode)
+- Responsividade total (grade adapta de 1 a 4 colunas)
+
+**Estratégia adotada:**
+- Coluna `emoji` nullable em `subjects` (via Supabase MCP `apply_migration`)
+- Novo `DisciplinasContext` separado do `TarefasContext`, fonte única de verdade
+- Página dedicada `Disciplinas.tsx` substitui aba das Configurações
+- Helper `getMateriaEmoji()` com fallback hierárquico: custom > preset por nome > 📘
+
+---
+
 *Atualizado em: 2026-05-28*

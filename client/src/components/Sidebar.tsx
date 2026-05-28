@@ -1,5 +1,6 @@
 import { useTarefas } from "@/contexts/TarefasContext";
-import { getMateriaColor } from "@/lib/tarefasData";
+import { useDisciplinas } from "@/contexts/DisciplinasContext";
+import { getMateriaColor, getMateriaEmoji } from "@/lib/tarefasData";
 import type { StatusTarefa } from "@/types";
 import {
   BookOpen,
@@ -7,6 +8,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock,
+  GraduationCap,
   LayoutDashboard,
   ListTodo,
   Settings,
@@ -30,9 +32,11 @@ const STATUS_FILTROS: { label: string; valor: StatusTarefa | "Todas"; cor: strin
 
 export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: SidebarProps) {
   const { metricas, filtros, setFiltros } = useTarefas();
+  const { disciplinas } = useDisciplinas();
 
   const navItems = [
     { id: "tarefas", label: "Tarefas", icon: ListTodo },
+    { id: "disciplinas", label: "Disciplinas", icon: GraduationCap },
     { id: "agenda", label: "Agenda", icon: Calendar },
     { id: "metricas", label: "Métricas", icon: LayoutDashboard },
     { id: "arquivos", label: "Arquivos", icon: BookOpen },
@@ -40,6 +44,14 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
   ];
 
   const materias = Object.entries(metricas.porMateria).sort((a, b) => b[1] - a[1]);
+  const emojiDe = (nome: string) => {
+    const d = disciplinas.find((x) => x.name === nome);
+    return getMateriaEmoji(nome, d?.emoji);
+  };
+  const corDe = (nome: string) => {
+    const d = disciplinas.find((x) => x.name === nome);
+    return d?.color ?? getMateriaColor(nome);
+  };
 
   return (
     <>
@@ -139,9 +151,10 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
 
           {materias.length > 0 && (
             <div className="px-3 py-3">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Por Matéria</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Por Disciplina</p>
               {materias.map(([materia, qtd]) => {
-                const cor = getMateriaColor(materia);
+                const cor = corDe(materia);
+                const emoji = emojiDe(materia);
                 const ativo = filtros.materia === materia;
                 return (
                   <button
@@ -152,7 +165,8 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
                     }`}
                     aria-pressed={ativo}
                   >
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} aria-hidden="true" />
+                    <span className="text-base leading-none flex-shrink-0" aria-hidden="true">{emoji}</span>
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: cor }} aria-hidden="true" />
                     <span className={`truncate ${ativo ? "text-slate-200" : "text-slate-400"}`}>{materia}</span>
                     <span className="ml-auto text-xs text-slate-500 font-['Space_Grotesk']">{qtd}</span>
                   </button>

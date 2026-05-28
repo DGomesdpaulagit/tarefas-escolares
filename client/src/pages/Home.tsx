@@ -4,12 +4,15 @@ import Metricas from "@/pages/Metricas";
 import Arquivos from "@/pages/Arquivos";
 import Configuracoes from "@/pages/Configuracoes";
 import Agenda from "@/pages/Agenda";
+import Disciplinas from "@/pages/Disciplinas";
 import UserMenu from "@/components/UserMenu";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { useTarefas } from "@/contexts/TarefasContext";
 
 const PAGINA_LABELS: Record<string, string> = {
   tarefas: "📚 Tarefas",
+  disciplinas: "🎯 Disciplinas",
   metricas: "📊 Métricas",
   arquivos: "📁 Arquivos",
   configuracoes: "⚙️ Configurações",
@@ -19,6 +22,12 @@ const PAGINA_LABELS: Record<string, string> = {
 export default function Home() {
   const [pagina, setPagina] = useState("tarefas");
   const [sidebarAberta, setSidebarAberta] = useState(false);
+  const { setFiltros } = useTarefas();
+
+  const navegarComFiltro = (nomeDisciplina: string) => {
+    setFiltros({ materia: nomeDisciplina });
+    setPagina("tarefas");
+  };
 
   return (
     <div className="flex h-screen bg-[var(--bg-base)] overflow-hidden">
@@ -55,6 +64,7 @@ export default function Home() {
 
         <main className="flex-1 overflow-hidden" id="main-content">
           {pagina === "tarefas" && <Tarefas />}
+          {pagina === "disciplinas" && <Disciplinas onAbrirTarefasFiltradas={navegarComFiltro} />}
           {pagina === "metricas" && <Metricas />}
           {pagina === "arquivos" && <Arquivos />}
           {pagina === "configuracoes" && <Configuracoes />}
