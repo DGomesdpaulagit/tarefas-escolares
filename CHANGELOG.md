@@ -8,6 +8,26 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 13 / Sessão 023 — 2026-05-28) — FASES 4 e 5: Dashboard + Configurações Acadêmicas
+
+#### FASE 4 — Dashboard "Visão Geral"
+- **Migration `005_profiles_add_school_year`** — coluna `school_year text NULL` em `profiles`
+- **Nova página Visão Geral** como landing padrão do app
+- **Saudação dinâmica** (Bom dia / Boa tarde / Boa noite) + nome do usuário
+- **Ring de progresso SVG animado** (110px, transição 0.6s) com percentual da semana
+- **Card Desempenho** com taxa de conclusão (barra gradient âmbar) + 3 mini-stats
+- **Seção Próximos Prazos** (top 5 pendentes ordenadas por data)
+- **Seção Tarefas Expiradas** (top 5 vencidas com visual vermelho)
+- **Seção Disciplinas** (top 6 por pendências, grid 2/3/6 cols, clique filtra tarefas)
+- **Sidebar**: novo item "Visão Geral" com ícone Home
+
+#### FASE 5 — Configurações Acadêmicas
+- **Aba "Acadêmico"** nas Configurações
+- **Ano escolar**: 13 cards selecionáveis (6º Ano → Pós-graduação + Outro)
+- **Idioma**: 3 opções com bandeira (pt-BR padrão, en, es)
+- **Onboarding** agora salva `school_year` na coluna dedicada (em vez de bio)
+- Sem campo "escola" (confirmado que nunca existiu)
+
 ### Corrigido (Etapa 12 / Sessão 022 — 2026-05-28) — Agenda semanal: criar tarefa em dia ocupado
 - **BUG-020 resolvido** — na visão semanal, dias com tarefas não permitiam criar nova tarefa direto pela Agenda (long-press estava só no header e o botão "+" sumia)
 - Long-press agora cobre a coluna inteira (`DiaColuna` recebe `useLongPress` no wrapper)

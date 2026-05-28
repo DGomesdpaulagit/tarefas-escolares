@@ -265,4 +265,24 @@ REGRAS:
 
 ---
 
+### P-016 — Mega prompt FASES 4 e 5 (Dashboard + Configurações)
+**Validado em:** 2026-05-28
+**Sessão:** 023
+**Escopo aprovado:**
+- Nova landing "Visão Geral" estilo dashboard premium com 5 seções
+- Ring SVG animado para progresso da semana
+- Sectionização por blocos (próximos prazos, expiradas, disciplinas, desempenho)
+- Configurações simplificadas (apenas ano + idioma + disciplinas)
+- Remoção de qualquer campo "escola" (já inexistente)
+- Onboarding salvando em coluna dedicada `school_year`
+
+**Estratégia adotada:**
+- Reuso máximo de helpers existentes (`getStatusEfetivo`, `parseDueDateLocal`, `diasAteVencimento`)
+- Ring SVG nativo (sem libs extras) com `strokeDashoffset` para animação
+- `useMemo` em todas as derivações (semana, expiradas, próximos prazos, disciplinas)
+- Aba "Acadêmico" com grade de pills selecionáveis (mais visual que dropdown)
+- Idioma persistido em `profiles.language` (i18n em runtime virá depois)
+
+---
+
 *Atualizado em: 2026-05-28*

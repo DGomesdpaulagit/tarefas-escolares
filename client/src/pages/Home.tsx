@@ -5,12 +5,14 @@ import Arquivos from "@/pages/Arquivos";
 import Configuracoes from "@/pages/Configuracoes";
 import Agenda from "@/pages/Agenda";
 import Disciplinas from "@/pages/Disciplinas";
+import VisaoGeral from "@/pages/VisaoGeral";
 import UserMenu from "@/components/UserMenu";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useTarefas } from "@/contexts/TarefasContext";
 
 const PAGINA_LABELS: Record<string, string> = {
+  "visao-geral": "🏠 Visão Geral",
   tarefas: "📚 Tarefas",
   disciplinas: "🎯 Disciplinas",
   metricas: "📊 Métricas",
@@ -20,7 +22,7 @@ const PAGINA_LABELS: Record<string, string> = {
 };
 
 export default function Home() {
-  const [pagina, setPagina] = useState("tarefas");
+  const [pagina, setPagina] = useState("visao-geral");
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const { setFiltros } = useTarefas();
 
@@ -63,6 +65,9 @@ export default function Home() {
         </div>
 
         <main className="flex-1 overflow-hidden" id="main-content">
+          {pagina === "visao-geral" && (
+            <VisaoGeral onNavegar={setPagina} onAbrirTarefasFiltradas={navegarComFiltro} />
+          )}
           {pagina === "tarefas" && <Tarefas />}
           {pagina === "disciplinas" && <Disciplinas onAbrirTarefasFiltradas={navegarComFiltro} />}
           {pagina === "metricas" && <Metricas />}

@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 022)
+> **Última atualização:** 2026-05-28 (Sessão 023)
 
 ---
 
@@ -461,8 +461,10 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 ### Próximas opções
 - [x] Onboarding pós-cadastro com seleção visual de disciplinas — Sessão 019
 - [x] Calendário semanal moderno com long-press — Sessão 020
-- [ ] Visão geral / Dashboard com cards de disciplinas em destaque
+- [x] Visão geral / Dashboard com cards de disciplinas em destaque — Sessão 023
+- [x] Configurações simplificadas (ano + idioma) — Sessão 023
 - [ ] Testes manuais em mobile (Android/iOS, troca de tema)
+- [ ] Implementação real de i18n (tradução em runtime)
 
 ### Estado atual (após Sessão 018)
 - Página "Disciplinas" com catálogo visual em cards (emoji + cor + contadores)
@@ -514,6 +516,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 12 / Sessão 020] FASE 3 calendário semanal: Agenda.tsx reescrita (7 colunas, mini-cards com emoji/cor/status, long-press 450ms para criar tarefa, useLongPress hook com vibração, navegação prev/next+Hoje), TarefaForm com initialDueDate |
 | 2026-05-28 | [Etapa 12 / Sessão 021] Agenda toggle Semana/Mês: visão mensal modernizada (dots coloridos, emoji do dia, pulso vermelho para expiradas, long-press na célula, painel lateral com mini-cards) |
 | 2026-05-28 | [Etapa 12 / Sessão 022] Bugfix BUG-020: Agenda semanal — long-press na coluna inteira + botão "+ Nova" sempre visível quando há tarefas |
+| 2026-05-28 | [Etapa 13 / Sessão 023] FASES 4 e 5: nova página Visão Geral (dashboard com 5 seções, ring SVG, saudação dinâmica) como landing, aba Configurações → Acadêmico (ano escolar + idioma), migration `005_profiles_add_school_year`, Onboarding usa school_year |
 
 ---
 

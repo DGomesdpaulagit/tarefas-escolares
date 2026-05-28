@@ -58,11 +58,11 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
     if (!user) return;
     setSalvando(true);
     try {
-      // 1. Salva nome + ano (bio) + marca onboarding completo
+      // 1. Salva nome + ano escolar + marca onboarding completo
       await profileService.upsert({
         id: user.id,
         name: nome.trim() || null,
-        bio: ano.trim() ? `Ano: ${ano.trim()}` : null,
+        school_year: ano.trim() || null,
         onboarding_completed: true,
       });
 

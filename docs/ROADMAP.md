@@ -25,6 +25,26 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## FASES 4 e 5 — Dashboard + Configurações Acadêmicas (Sessão 023 — 2026-05-28)
+
+**FASE 4 — Dashboard "Visão Geral":**
+- [x] Nova página `VisaoGeral` como landing padrão do app
+- [x] Saudação dinâmica + botão de criação rápida
+- [x] Card "Progresso da Semana" com ring SVG animado e stats inline
+- [x] Card "Desempenho Geral" com barra gradient e mini-stats
+- [x] Seção "Próximos Prazos" (top 5)
+- [x] Seção "Tarefas Expiradas" (top 5)
+- [x] Seção "Disciplinas" (top 6 por pendências) com filtro ao clicar
+- [x] Sidebar com item "Visão Geral"
+- [x] Migration `005_profiles_add_school_year`
+
+**FASE 5 — Configurações Acadêmicas:**
+- [x] Aba "Acadêmico" nas Configurações
+- [x] Ano escolar com 13 opções (6º Ano → Pós-graduação)
+- [x] Idioma com 3 opções (pt-BR, en, es) e bandeiras
+- [x] Onboarding salva `school_year` na coluna dedicada
+- [x] Sem campo "escola"
+
 ## Agenda: visão mensal restaurada (Sessão 021 — 2026-05-28)
 
 - [x] Toggle Semana/Mês no cabeçalho

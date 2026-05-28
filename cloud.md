@@ -12,10 +12,57 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 12 - Fase 3 / Calendário Semanal + Mensal
-## SESSÃO ATUAL: [Sessão 022] - Bugfix: criação de tarefa em dia com tarefas (Agenda semanal) ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 13 - Fases 4 e 5 / Dashboard "Visão Geral" + Configurações Acadêmicas
+## SESSÃO ATUAL: [Sessão 023] - FASES 4 e 5: Dashboard Visão Geral + aba Acadêmico (ano + idioma) ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 13 / Sessão 023] - FASES 4 e 5: Dashboard "Visão Geral" + Configurações Acadêmicas
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+**FASE 4 — Dashboard "Visão Geral":**
+- **Migration `005_profiles_add_school_year`** — coluna `school_year text NULL` em `profiles`
+- **Página `VisaoGeral.tsx`** — nova landing page do app com 5 seções:
+  - **Saudação dinâmica** ("Bom dia/Boa tarde/Boa noite, [primeiro_nome]!") + botão de criação rápida
+  - **Card Progresso da Semana** (lg:col-span-2) com ring SVG animado (110px), percentual grande âmbar, stats inline (concluídas, pendentes, total)
+  - **Card Desempenho Geral** com barra de gradient âmbar + 3 mini-stats (feitas/ativas/expiradas)
+  - **Seção Próximos Prazos** (lg:col-span-2) — top 5 tarefas pendentes ordenadas por prazo, com emoji+cor+nome+contagem de dias; clique abre edição
+  - **Seção Tarefas Expiradas** — top 5 expiradas com visual vermelho e line-through
+  - **Seção Disciplinas** (lg:col-span-3) — grid 2/3/6 cols com cards mini de disciplinas (top 6 por pendências), clique filtra tarefas
+- **`RingProgress`** SVG animado com `strokeDashoffset` + transição 0.6s
+- **Grid responsivo**: 1 col mobile, 3 cols desktop com spans adequados
+- **Sidebar** ganhou item "Visão Geral" (ícone Home) no topo do menu
+- **Home.tsx** — `VisaoGeral` agora é a landing (default `pagina = "visao-geral"`)
+
+**FASE 5 — Configurações Acadêmicas:**
+- **Aba "Acadêmico"** nas Configurações com:
+  - **Ano escolar** — 13 opções em grade 2/3 cols, cards com check visual ao selecionar (6º Ano → Pós-graduação + Outro)
+  - **Idioma** — 3 opções com bandeira (🇧🇷 pt-BR padrão, 🇺🇸 en, 🇪🇸 es) em lista vertical
+  - Bloco informativo redirecionando para a página de Disciplinas (que já é dedicada)
+- **Onboarding** — agora salva `school_year` direto na coluna dedicada (não mais como bio), mantendo separação semântica
+- **Sem campo "escola"** — confirmado que nunca existiu; spec atendida
+
+### Arquivos criados
+- `client/src/pages/VisaoGeral.tsx`
+- Migration Supabase: `005_profiles_add_school_year`
+
+### Arquivos modificados
+- `client/src/types/index.ts` — `Perfil.school_year`
+- `client/src/components/Sidebar.tsx` — nav item "Visão Geral" + ícone Home
+- `client/src/pages/Home.tsx` — landing padrão + rota da Visão Geral
+- `client/src/pages/Configuracoes.tsx` — aba Acadêmico (`AbaAcademico`)
+- `client/src/pages/Onboarding.tsx` — usa `school_year` em vez de `bio`
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 22s
+
+### Próximo passo
+- Testes mobile reais (mobile Android/iOS, dashboard + configurações)
+- Refinamentos visuais conforme feedback
 
 ---
 

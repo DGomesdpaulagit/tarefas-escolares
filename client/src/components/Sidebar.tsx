@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Clock,
   GraduationCap,
+  Home as HomeIcon,
   LayoutDashboard,
   ListTodo,
   Settings,
@@ -35,6 +36,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
   const { disciplinas } = useDisciplinas();
 
   const navItems = [
+    { id: "visao-geral", label: "Visão Geral", icon: HomeIcon },
     { id: "tarefas", label: "Tarefas", icon: ListTodo },
     { id: "disciplinas", label: "Disciplinas", icon: GraduationCap },
     { id: "agenda", label: "Agenda", icon: Calendar },

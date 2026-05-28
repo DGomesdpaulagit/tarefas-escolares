@@ -8,14 +8,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import React from "react";
-import { Camera, Loader2, Save, User, Bell, Palette } from "lucide-react";
+import { Camera, Loader2, Save, User, Bell, Palette, GraduationCap, Languages, Check } from "lucide-react";
 import type { Perfil } from "@/types";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
 import { notificationService } from "@/services/notificationService";
 import { useTheme } from "@/contexts/ThemeContext";
 
-type Aba = "perfil" | "tema" | "notificacoes";
+type Aba = "perfil" | "academico" | "tema" | "notificacoes";
+
+const ANOS_ESCOLARES = [
+  "6º Ano",
+  "7º Ano",
+  "8º Ano",
+  "9º Ano",
+  "1º Ano - Ensino Médio",
+  "2º Ano - Ensino Médio",
+  "3º Ano - Ensino Médio",
+  "1º Ano - Técnico",
+  "2º Ano - Técnico",
+  "3º Ano - Técnico",
+  "Graduação",
+  "Pós-graduação",
+  "Outro",
+];
+
+const IDIOMAS = [
+  { code: "pt-BR", label: "Português (Brasil)", flag: "🇧🇷" },
+  { code: "en", label: "English", flag: "🇺🇸" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+];
 
 function compressImage(file: File, maxSize = 256): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -55,6 +77,7 @@ export default function Configuracoes() {
         <nav className="lg:w-48 flex lg:flex-col gap-1 flex-wrap" aria-label="Seções de configurações">
           {([
             { id: "perfil", label: "Perfil", icon: User },
+            { id: "academico", label: "Acadêmico", icon: GraduationCap },
             { id: "tema", label: "Aparência", icon: Palette },
             { id: "notificacoes", label: "Notificações", icon: Bell },
           ] as const).map(({ id, label, icon: Icon }) => (
@@ -86,6 +109,7 @@ export default function Configuracoes() {
         {/* Conteúdo */}
         <div className="flex-1 max-w-lg">
           {abaAtiva === "perfil" && <AbaPerfil user={user} atualizarSenha={atualizarSenha} />}
+          {abaAtiva === "academico" && <AbaAcademico userId={user?.id} />}
           {abaAtiva === "tema" && <AbaTema />}
           {abaAtiva === "notificacoes" && <AbaNotificacoes userId={user?.id} />}
         </div>
@@ -476,6 +500,149 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
       <Button onClick={salvar} disabled={salvando} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
         {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
         Salvar
+      </Button>
+    </div>
+  );
+}
+
+// ============================================================
+// Aba Acadêmico — ano escolar + idioma + atalho disciplinas
+// ============================================================
+
+function AbaAcademico({ userId }: { userId?: string }) {
+  const [anoEscolar, setAnoEscolar] = useState<string>("");
+  const [idioma, setIdioma] = useState<string>("pt-BR");
+  const [salvando, setSalvando] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+    profileService.get(userId).then((p) => {
+      if (p) {
+        setAnoEscolar(p.school_year ?? "");
+        setIdioma(p.language ?? "pt-BR");
+      }
+      setCarregando(false);
+    }).catch(() => setCarregando(false));
+  }, [userId]);
+
+  const salvar = async () => {
+    if (!userId) return;
+    setSalvando(true);
+    try {
+      await profileService.upsert({
+        id: userId,
+        school_year: anoEscolar || null,
+        language: idioma,
+      });
+      toast.success("Preferências acadêmicas atualizadas!");
+    } catch {
+      toast.error("Erro ao salvar");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  if (carregando) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loader2 size={20} className="animate-spin text-amber-400" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Ano escolar */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <GraduationCap size={14} className="text-amber-400" />
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
+            Ano escolar
+          </h2>
+        </div>
+        <p className="text-xs text-slate-500">
+          Em qual etapa você está estudando?
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {ANOS_ESCOLARES.map((ano) => {
+            const ativo = anoEscolar === ano;
+            return (
+              <button
+                key={ano}
+                onClick={() => setAnoEscolar(ativo ? "" : ano)}
+                className={`relative p-2.5 rounded-lg border-2 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  ativo
+                    ? "border-amber-500 bg-amber-500/10 text-amber-500"
+                    : "border-white/10 bg-white/5 text-slate-500 hover:border-white/20 hover:text-slate-700 dark:hover:text-slate-300"
+                }`}
+                aria-pressed={ativo}
+              >
+                {ativo && (
+                  <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-amber-500 flex items-center justify-center">
+                    <Check size={9} className="text-black" strokeWidth={3} />
+                  </span>
+                )}
+                {ano}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Idioma */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <Languages size={14} className="text-amber-400" />
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
+            Idioma
+          </h2>
+        </div>
+        <p className="text-xs text-slate-500">
+          Escolha o idioma da interface. (Tradução completa em breve.)
+        </p>
+        <div className="space-y-2">
+          {IDIOMAS.map((i) => {
+            const ativo = idioma === i.code;
+            return (
+              <button
+                key={i.code}
+                onClick={() => setIdioma(i.code)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  ativo
+                    ? "border-amber-500 bg-amber-500/10"
+                    : "border-white/10 bg-white/5 hover:border-white/20"
+                }`}
+                aria-pressed={ativo}
+              >
+                <span className="text-2xl">{i.flag}</span>
+                <span className={`flex-1 text-sm font-medium ${ativo ? "text-amber-500" : "text-slate-700 dark:text-slate-300"}`}>
+                  {i.label}
+                </span>
+                {ativo && (
+                  <Check size={16} className="text-amber-500" strokeWidth={3} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Atalho para Disciplinas */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
+        <p className="text-xs text-slate-500">
+          As disciplinas agora têm uma página dedicada com cards visuais,
+          emoji e cor própria. Acesse pelo menu lateral em <strong className="text-slate-700 dark:text-slate-300">Disciplinas</strong>.
+        </p>
+      </div>
+
+      <Button
+        onClick={salvar}
+        disabled={salvando}
+        className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
+      >
+        {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+        Salvar preferências
       </Button>
     </div>
   );
