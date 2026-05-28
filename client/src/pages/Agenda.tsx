@@ -68,6 +68,8 @@ function rotuloSemana(inicio: Date): string {
 // Página
 // ============================================================
 
+type Visao = "semana" | "mes";
+
 export default function Agenda() {
   const { tarefas, carregando } = useTarefas();
   const { disciplinas } = useDisciplinas();
@@ -78,9 +80,17 @@ export default function Agenda() {
     return d;
   }, []);
 
+  const [visao, setVisao] = useState<Visao>("semana");
   const [inicioSemana, setInicioSemana] = useState<Date>(() => inicioDaSemana(new Date()));
+  const [mesAtual, setMesAtual] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(1);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
   const [editando, setEditando] = useState<Tarefa | null>(null);
   const [criandoData, setCriandoData] = useState<string | null>(null);
+  const [diaSelecionadoMes, setDiaSelecionadoMes] = useState<string | null>(null);
 
   // Agrupar tarefas por YYYY-MM-DD para acesso O(1)
   const tarefasPorDia = useMemo(() => {
@@ -125,9 +135,45 @@ export default function Agenda() {
 
   const semanaAnterior = () => setInicioSemana((d) => addDays(d, -7));
   const proximaSemana = () => setInicioSemana((d) => addDays(d, 7));
-  const irHoje = () => setInicioSemana(inicioDaSemana(new Date()));
+  const mesAnterior = () =>
+    setMesAtual((m) => {
+      const x = new Date(m);
+      x.setMonth(x.getMonth() - 1);
+      return x;
+    });
+  const proximoMes = () =>
+    setMesAtual((m) => {
+      const x = new Date(m);
+      x.setMonth(x.getMonth() + 1);
+      return x;
+    });
+  const irHoje = () => {
+    if (visao === "semana") setInicioSemana(inicioDaSemana(new Date()));
+    else {
+      const d = new Date();
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      setMesAtual(d);
+    }
+  };
 
   const totalDaSemana = dias.reduce((acc, d) => acc + (tarefasPorDia[ymd(d)]?.length ?? 0), 0);
+  const totalDoMes = useMemo(() => {
+    let n = 0;
+    const ano = mesAtual.getFullYear();
+    const mes = mesAtual.getMonth();
+    for (const k of Object.keys(tarefasPorDia)) {
+      const [y, m] = k.split("-").map(Number);
+      if (y === ano && m - 1 === mes) n += tarefasPorDia[k].length;
+    }
+    return n;
+  }, [tarefasPorDia, mesAtual]);
+
+  const rotuloCabecalho =
+    visao === "semana"
+      ? rotuloSemana(inicioSemana)
+      : `${["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"][mesAtual.getMonth()]} ${mesAtual.getFullYear()}`;
+  const totalRotulo = visao === "semana" ? totalDaSemana : totalDoMes;
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
@@ -135,37 +181,66 @@ export default function Agenda() {
       <div className="mb-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            Agenda semanal
+            {visao === "semana" ? "Agenda semanal" : "Agenda mensal"}
           </h1>
-          <p className="text-slate-500 text-sm mt-1 flex items-center gap-1.5">
+          <p className="text-slate-500 text-sm mt-1 flex items-center gap-1.5 flex-wrap">
             <CalendarDays size={13} />
-            {rotuloSemana(inicioSemana)}
+            {rotuloCabecalho}
             <span className="text-slate-600">·</span>
-            <span>{totalDaSemana} tarefa{totalDaSemana !== 1 ? "s" : ""} esta semana</span>
+            <span>{totalRotulo} tarefa{totalRotulo !== 1 ? "s" : ""}</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={semanaAnterior}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-            aria-label="Semana anterior"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            onClick={irHoje}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-500 hover:bg-amber-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-          >
-            Hoje
-          </button>
-          <button
-            onClick={proximaSemana}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-            aria-label="Próxima semana"
-          >
-            <ChevronRight size={18} />
-          </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Toggle Semana/Mês */}
+          <div className="inline-flex p-0.5 rounded-lg border border-white/10 bg-white/5">
+            <button
+              onClick={() => setVisao("semana")}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                visao === "semana"
+                  ? "bg-amber-500 text-black"
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              }`}
+              aria-pressed={visao === "semana"}
+            >
+              Semana
+            </button>
+            <button
+              onClick={() => setVisao("mes")}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                visao === "mes"
+                  ? "bg-amber-500 text-black"
+                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              }`}
+              aria-pressed={visao === "mes"}
+            >
+              Mês
+            </button>
+          </div>
+
+          {/* Navegação */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={visao === "semana" ? semanaAnterior : mesAnterior}
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+              aria-label={visao === "semana" ? "Semana anterior" : "Mês anterior"}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={irHoje}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-500 hover:bg-amber-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              Hoje
+            </button>
+            <button
+              onClick={visao === "semana" ? proximaSemana : proximoMes}
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+              aria-label={visao === "semana" ? "Próxima semana" : "Próximo mês"}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -173,7 +248,7 @@ export default function Agenda() {
         <div className="flex justify-center py-20">
           <Loader2 size={24} className="text-amber-400 animate-spin" />
         </div>
-      ) : (
+      ) : visao === "semana" ? (
         <>
           {/* Grade semanal */}
           <div
@@ -206,6 +281,18 @@ export default function Agenda() {
             Toque rápido para editar. Pressione e segure um dia para criar tarefa.
           </p>
         </>
+      ) : (
+        <VisaoMensal
+          mesAtual={mesAtual}
+          hoje={hoje}
+          tarefasPorDia={tarefasPorDia}
+          corDaTarefa={corDaTarefa}
+          emojiDaTarefa={emojiDaTarefa}
+          diaSelecionado={diaSelecionadoMes}
+          onSelecionarDia={setDiaSelecionadoMes}
+          onClicarTarefa={(t) => setEditando(t)}
+          onCriarRapido={(data) => setCriandoData(data)}
+        />
       )}
 
       {editando && <TarefaForm tarefa={editando} onClose={() => setEditando(null)} />}
@@ -381,6 +468,235 @@ function MiniCard({
           </div>
         </div>
       </div>
+    </button>
+  );
+}
+
+// ============================================================
+// Visão mensal
+// ============================================================
+
+interface VisaoMensalProps {
+  mesAtual: Date;
+  hoje: Date;
+  tarefasPorDia: Record<string, Tarefa[]>;
+  corDaTarefa: (t: Tarefa) => string;
+  emojiDaTarefa: (t: Tarefa) => string;
+  diaSelecionado: string | null;
+  onSelecionarDia: (k: string | null) => void;
+  onClicarTarefa: (t: Tarefa) => void;
+  onCriarRapido: (data: string) => void;
+}
+
+function VisaoMensal({
+  mesAtual,
+  hoje,
+  tarefasPorDia,
+  corDaTarefa,
+  emojiDaTarefa,
+  diaSelecionado,
+  onSelecionarDia,
+  onClicarTarefa,
+  onCriarRapido,
+}: VisaoMensalProps) {
+  const ano = mesAtual.getFullYear();
+  const mes = mesAtual.getMonth();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+  const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+
+  const tarefasDoDiaSelecionado = diaSelecionado
+    ? (tarefasPorDia[diaSelecionado] ?? [])
+    : [];
+  const diaSelecionadoData = diaSelecionado ? parseDueDateLocal(diaSelecionado) : null;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" key={`${ano}-${mes}`} style={{ animation: "fadeSlideIn 0.25s ease-out both" }}>
+      <div className="lg:col-span-2 bg-[var(--bg-card)] border border-white/8 rounded-2xl p-4 sm:p-5">
+        {/* Dias da semana */}
+        <div className="grid grid-cols-7 mb-2">
+          {DIAS_CURTOS.map((d) => (
+            <div key={d} className="text-center text-xs text-slate-500 font-semibold py-1.5 uppercase tracking-wider">
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* Grade de dias */}
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: primeiroDiaSemana }).map((_, i) => (
+            <div key={`empty-${i}`} />
+          ))}
+          {Array.from({ length: diasNoMes }).map((_, i) => {
+            const dia = i + 1;
+            const dataObj = new Date(ano, mes, dia);
+            dataObj.setHours(0, 0, 0, 0);
+            const k = ymd(dataObj);
+            const tarefasDia = tarefasPorDia[k] ?? [];
+            const isHoje = dataObj.getTime() === hoje.getTime();
+            const selecionado = diaSelecionado === k;
+            const temExpirada = tarefasDia.some((t) => getStatusEfetivo(t) === "Passou do Prazo");
+
+            return (
+              <CelulaMes
+                key={k}
+                ymdKey={k}
+                dia={dia}
+                tarefas={tarefasDia}
+                isHoje={isHoje}
+                selecionado={selecionado}
+                temExpirada={temExpirada}
+                corDaTarefa={corDaTarefa}
+                emojiDaTarefa={emojiDaTarefa}
+                onClick={() => onSelecionarDia(selecionado ? null : k)}
+                onLongPress={() => onCriarRapido(k)}
+              />
+            );
+          })}
+        </div>
+
+        <p className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1.5">
+          <Sparkles size={11} className="text-amber-400" />
+          Toque para ver tarefas do dia. Pressione e segure para criar.
+        </p>
+      </div>
+
+      {/* Painel lateral */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-2xl p-4 sm:p-5">
+        {diaSelecionadoData ? (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  {DIAS_CURTOS[diaSelecionadoData.getDay()]}
+                </p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
+                  {diaSelecionadoData.getDate()} de {MESES_CURTOS[diaSelecionadoData.getMonth()]}
+                </p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {tarefasDoDiaSelecionado.length} tarefa{tarefasDoDiaSelecionado.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+              {diaSelecionado && (
+                <button
+                  onClick={() => onCriarRapido(diaSelecionado)}
+                  className="p-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  aria-label="Criar tarefa neste dia"
+                  title="Criar tarefa"
+                >
+                  <Plus size={14} />
+                </button>
+              )}
+            </div>
+
+            {tarefasDoDiaSelecionado.length === 0 ? (
+              <p className="text-slate-500 text-sm text-center py-8">
+                Sem tarefas neste dia.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {tarefasDoDiaSelecionado.map((t) => (
+                  <MiniCard
+                    key={t.id}
+                    tarefa={t}
+                    cor={corDaTarefa(t)}
+                    emoji={emojiDaTarefa(t)}
+                    onClick={() => onClicarTarefa(t)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-10 text-slate-500">
+            <CalendarDays size={28} className="mx-auto opacity-40 mb-2" />
+            <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Selecione um dia</p>
+            <p className="text-xs">Toque numa data para ver as tarefas</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// Célula do mês
+// ============================================================
+
+interface CelulaMesProps {
+  ymdKey: string;
+  dia: number;
+  tarefas: Tarefa[];
+  isHoje: boolean;
+  selecionado: boolean;
+  temExpirada: boolean;
+  corDaTarefa: (t: Tarefa) => string;
+  emojiDaTarefa: (t: Tarefa) => string;
+  onClick: () => void;
+  onLongPress: () => void;
+}
+
+function CelulaMes({
+  dia,
+  tarefas,
+  isHoje,
+  selecionado,
+  temExpirada,
+  corDaTarefa,
+  emojiDaTarefa,
+  onClick,
+  onLongPress,
+}: CelulaMesProps) {
+  const longPress = useLongPress(onLongPress, 450);
+
+  return (
+    <button
+      onClick={onClick}
+      {...longPress}
+      className={`relative aspect-square flex flex-col items-center pt-1.5 rounded-lg text-sm transition-all touch-none select-none focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+        isHoje ? "ring-2 ring-amber-500/70" : ""
+      } ${
+        selecionado
+          ? "bg-amber-500/20"
+          : tarefas.length > 0
+          ? "hover:bg-white/10 bg-white/3"
+          : "hover:bg-white/5"
+      }`}
+      title="Toque para ver tarefas, segure para criar"
+    >
+      <span
+        className={`text-xs font-semibold ${
+          isHoje ? "text-amber-500" : selecionado ? "text-amber-400" : "text-slate-700 dark:text-slate-300"
+        }`}
+      >
+        {dia}
+      </span>
+      {tarefas.length > 0 && (
+        <>
+          <div className="flex gap-0.5 mt-0.5 flex-wrap justify-center max-w-full px-0.5">
+            {tarefas.slice(0, 3).map((t, ti) => {
+              const eff = getStatusEfetivo(t);
+              const cor = eff === "Passou do Prazo" ? "#ef4444" : corDaTarefa(t);
+              return (
+                <span
+                  key={ti}
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: cor, opacity: eff === "Concluída" ? 0.4 : 1 }}
+                />
+              );
+            })}
+            {tarefas.length > 3 && (
+              <span className="text-[8px] text-slate-500 leading-none">+{tarefas.length - 3}</span>
+            )}
+          </div>
+          {/* Emoji da primeira disciplina como mini-identidade */}
+          <span className="text-[10px] leading-none mt-0.5 opacity-70" aria-hidden="true">
+            {emojiDaTarefa(tarefas[0])}
+          </span>
+        </>
+      )}
+      {temExpirada && !selecionado && (
+        <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
+      )}
     </button>
   );
 }

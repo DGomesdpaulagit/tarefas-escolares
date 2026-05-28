@@ -12,10 +12,42 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 12 - Fase 3 / Calendário Semanal Moderno
-## SESSÃO ATUAL: [Sessão 020] - Calendário semanal com long-press para criar tarefa ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 12 - Fase 3 / Calendário Semanal + Mensal
+## SESSÃO ATUAL: [Sessão 021] - Toggle Semana/Mês na Agenda ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 12 / Sessão 021] - Agenda: toggle Semana/Mês
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+- **Toggle "Semana | Mês"** no cabeçalho da Agenda (segmented control com pill âmbar no ativo)
+- **Visão mensal** restaurada e modernizada:
+  - Grade 7×N do mês (com células vazias antes do dia 1)
+  - Cabeçalho com nomes curtos dos dias (DOM, SEG, TER…)
+  - Cada célula: número do dia, até 3 dots coloridos (cor da disciplina/vermelho se expirada/opaco se concluída), contador "+N" se exceder, emoji da 1ª disciplina como mini-identidade, pulso vermelho se houver tarefa expirada
+  - Ring âmbar no "hoje", destaque âmbar quando selecionado
+  - **Long-press na célula** abre criação rápida com data pré-preenchida (mesmo hook `useLongPress` da semana)
+  - **Toque rápido** seleciona o dia → painel lateral mostra mini-cards das tarefas
+- **Painel lateral mensal** com:
+  - Cabeçalho com dia da semana + dia/mês grandes + contador
+  - Botão "+" para criar tarefa no dia selecionado
+  - Lista de mini-cards reutilizando `MiniCard` da visão semanal
+- **Navegação contextual** — botões prev/next ajustam semana ou mês conforme visão; "Hoje" volta para a unidade atual da visão ativa
+- **Cabeçalho dinâmico** — título muda entre "Agenda semanal" / "Agenda mensal"; rótulo de contagem usa total da unidade
+- **Animação `fadeSlideIn`** ao trocar de mês (key=ano-mês)
+
+### Arquivos modificados
+- `client/src/pages/Agenda.tsx` — toggle, `VisaoMensal`, `CelulaMes`
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 19s
+
+### Próximo passo
+Visão geral / Dashboard de disciplinas em destaque.
 
 ---
 

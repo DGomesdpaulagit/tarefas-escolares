@@ -25,6 +25,16 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## Agenda: visão mensal restaurada (Sessão 021 — 2026-05-28)
+
+- [x] Toggle Semana/Mês no cabeçalho
+- [x] Visão mensal com dots coloridos por disciplina
+- [x] Emoji da 1ª disciplina como mini-identidade
+- [x] Pulso vermelho para dias com tarefa expirada
+- [x] Long-press na célula → criação rápida
+- [x] Painel lateral com mini-cards do dia selecionado
+- [x] Navegação contextual prev/next + "Hoje"
+
 ## FASE 3 — Calendário Semanal Moderno (Sessão 020 — 2026-05-28)
 
 - [x] Agenda reescrita em formato semanal (7 colunas)

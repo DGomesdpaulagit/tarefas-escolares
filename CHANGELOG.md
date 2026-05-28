@@ -8,6 +8,13 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 12 / Sessão 021 — 2026-05-28) — Agenda: visão mensal de volta
+- **Toggle Semana/Mês** no topo da Agenda (pill âmbar no ativo)
+- **Visão mensal modernizada** integrada ao novo padrão visual: dots coloridos com cor da disciplina, opacidade para concluídas, vermelho para expiradas, contador "+N" para sobras, emoji da 1ª disciplina como mini-identidade do dia, pulso vermelho na borda quando houver expiradas
+- **Painel lateral mensal** com mini-cards do dia selecionado e botão de criação rápida
+- **Long-press na célula do mês** também abre criação rápida (mesmo hook `useLongPress` da visão semanal)
+- Navegação contextual (prev/next ajusta semana ou mês), "Hoje" volta para a unidade atual da visão ativa
+
 ### Adicionado (Etapa 12 / Sessão 020 — 2026-05-28) — FASE 3: Calendário Semanal Moderno
 - **Agenda redesenhada** como calendário semanal: 7 colunas (Dom→Sáb), navegação prev/next + botão "Hoje"
 - **Mini-cards de tarefa por dia** com emoji da disciplina, cor de fundo, dot de status, badge "!" para urgentes; estados visuais para concluída (opacity + line-through) e expirada (vermelho + line-through)
