@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 12 / Sessão 022 — 2026-05-28) — Agenda semanal: criar tarefa em dia ocupado
+- **BUG-020 resolvido** — na visão semanal, dias com tarefas não permitiam criar nova tarefa direto pela Agenda (long-press estava só no header e o botão "+" sumia)
+- Long-press agora cobre a coluna inteira (`DiaColuna` recebe `useLongPress` no wrapper)
+- Novo botão "+ Nova" tracejado aparece sempre ao final da coluna quando há tarefas
+- `stopPropagation()` em mini-cards e botões internos evita disparos acidentais de long-press
+
 ### Adicionado (Etapa 12 / Sessão 021 — 2026-05-28) — Agenda: visão mensal de volta
 - **Toggle Semana/Mês** no topo da Agenda (pill âmbar no ativo)
 - **Visão mensal modernizada** integrada ao novo padrão visual: dots coloridos com cor da disciplina, opacidade para concluídas, vermelho para expiradas, contador "+N" para sobras, emoji da 1ª disciplina como mini-identidade do dia, pulso vermelho na borda quando houver expiradas

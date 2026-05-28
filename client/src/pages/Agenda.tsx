@@ -328,23 +328,24 @@ function DiaColuna({
   onClicarTarefa,
   onCriarRapido,
 }: DiaColunaProps) {
+  // Long-press na coluna inteira — funciona mesmo em dias com tarefas
   const longPress = useLongPress(() => onCriarRapido(ymdKey), 450);
 
   return (
     <div
-      className={`flex flex-col rounded-2xl border transition-all overflow-hidden min-h-[260px] sm:min-h-[420px] ${
+      className={`flex flex-col rounded-2xl border transition-all overflow-hidden min-h-[260px] sm:min-h-[420px] touch-none select-none ${
         isHoje
           ? "border-amber-500/60 bg-amber-500/5"
           : "border-white/8 bg-[var(--bg-card)] hover:border-white/15"
       }`}
+      {...longPress}
+      title="Pressione e segure para criar tarefa neste dia"
     >
       {/* Cabeçalho do dia */}
       <div
-        className={`flex flex-col items-center pt-2 pb-1.5 select-none cursor-pointer touch-none ${
+        className={`flex flex-col items-center pt-2 pb-1.5 ${
           isHoje ? "bg-amber-500/10" : "bg-white/2"
         }`}
-        {...longPress}
-        title="Pressione e segure para criar tarefa neste dia"
       >
         <span
           className={`text-[10px] uppercase tracking-wider font-semibold ${
@@ -366,26 +367,44 @@ function DiaColuna({
       </div>
 
       {/* Lista de tarefas */}
-      <div className="flex-1 px-1 sm:px-1.5 py-1.5 space-y-1 overflow-y-auto">
+      <div className="flex-1 px-1 sm:px-1.5 py-1.5 space-y-1 overflow-y-auto flex flex-col">
         {tarefas.length === 0 ? (
           <button
-            onClick={() => onCriarRapido(ymdKey)}
-            className="w-full h-full min-h-[120px] flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 text-slate-600 hover:border-amber-500/40 hover:text-amber-500 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCriarRapido(ymdKey);
+            }}
+            className="w-full flex-1 min-h-[120px] flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 text-slate-600 hover:border-amber-500/40 hover:text-amber-500 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
             aria-label={`Adicionar tarefa em ${dia.getDate()}`}
           >
             <Plus size={14} className="opacity-50" />
             <span className="text-[9px] sm:text-[10px] mt-0.5 opacity-70">Adicionar</span>
           </button>
         ) : (
-          tarefas.map((t) => (
-            <MiniCard
-              key={t.id}
-              tarefa={t}
-              cor={corDaTarefa(t)}
-              emoji={emojiDaTarefa(t)}
-              onClick={() => onClicarTarefa(t)}
-            />
-          ))
+          <>
+            {tarefas.map((t) => (
+              <MiniCard
+                key={t.id}
+                tarefa={t}
+                cor={corDaTarefa(t)}
+                emoji={emojiDaTarefa(t)}
+                onClick={() => onClicarTarefa(t)}
+              />
+            ))}
+            {/* Botão "+" sempre disponível mesmo quando o dia tem tarefas */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onCriarRapido(ymdKey);
+              }}
+              className="mt-1 w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-dashed border-white/10 text-slate-500 hover:border-amber-500/40 hover:text-amber-500 hover:bg-amber-500/5 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+              aria-label={`Adicionar nova tarefa em ${dia.getDate()}`}
+              title="Adicionar tarefa neste dia"
+            >
+              <Plus size={11} />
+              <span className="text-[9px] sm:text-[10px] font-medium">Nova</span>
+            </button>
+          </>
         )}
       </div>
     </div>

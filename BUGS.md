@@ -170,6 +170,11 @@ Registro de bugs resolvidos e bugs conhecidos/pendentes.
 - **Descrição:** Sem ordenação por status efetivo, expiradas poluíam a área prioritária da listagem.
 - **Status:** ✅ Resolvido (Sessão 017 — buckets: urgentes → normais → concluídas → expiradas)
 
+### BUG-020 — Agenda semanal: impossível criar 2ª tarefa em dia ocupado
+- **Severidade:** UX média — bloqueava criação rápida em dias com agenda
+- **Descrição:** Na Agenda semanal, dias que já tinham tarefas listadas não exibiam o botão "+ Adicionar" (ele só aparecia em colunas vazias), e o long-press estava registrado apenas no cabeçalho da coluna. O usuário não conseguia criar uma nova tarefa em um dia que já tinha pelo menos uma.
+- **Status:** ✅ Resolvido (Sessão 022 — long-press migrado para o wrapper da coluna + botão "+ Nova" sempre visível ao fim da lista)
+
 ### BUG-019 — Textos invisíveis em light mode
 - **Severidade:** Média — afeta legibilidade no tema claro
 - **Descrição:** Componentes usavam `text-slate-100`/`text-white`/`bg-white/5` diretamente, ficando invisíveis em fundo claro.

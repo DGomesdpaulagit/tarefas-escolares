@@ -13,9 +13,32 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 12 - Fase 3 / Calendário Semanal + Mensal
-## SESSÃO ATUAL: [Sessão 021] - Toggle Semana/Mês na Agenda ✅ CONCLUÍDA
+## SESSÃO ATUAL: [Sessão 022] - Bugfix: criação de tarefa em dia com tarefas (Agenda semanal) ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 12 / Sessão 022] - Bugfix: Agenda semanal — criar tarefa em dia ocupado
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### Bug reportado
+Na visão semanal, dias que já tinham tarefas não exibiam o botão "Adicionar", e o long-press estava só no cabeçalho do dia (não no corpo da coluna). Resultado: era impossível criar uma segunda tarefa para o mesmo dia direto pela Agenda semanal.
+
+### Correção
+- **Long-press na coluna inteira** — movido o handler `useLongPress` do header para o wrapper de `DiaColuna`. Agora pressionar e segurar em qualquer parte da coluna abre o modal de criação com a data pré-preenchida, mesmo se houver tarefas listadas.
+- **Botão "Nova" sempre visível** — quando o dia tem tarefas, um botão "+ Nova" pequeno e tracejado aparece logo abaixo da última tarefa, permitindo criar mais com um clique simples.
+- `stopPropagation()` nos cliques internos (mini-cards e botões "+") evita que o tap acidentalmente dispare o long-press do contêiner.
+
+### Arquivos modificados
+- `client/src/pages/Agenda.tsx` — `DiaColuna` refeito
+
+### Build
+- ✅ `npm run build` — 0 erros TS, 20s
+
+### Próximo passo
+Visão geral / Dashboard de disciplinas em destaque.
 
 ---
 

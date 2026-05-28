@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 021)
+> **Última atualização:** 2026-05-28 (Sessão 022)
 
 ---
 
@@ -513,6 +513,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 11 / Sessão 019] Onboarding pós-cadastro em 3 passos (nome+ano, seleção visual de disciplinas, revisão), migration `004_profiles_add_onboarding_completed`, OnboardingGate no App.tsx |
 | 2026-05-28 | [Etapa 12 / Sessão 020] FASE 3 calendário semanal: Agenda.tsx reescrita (7 colunas, mini-cards com emoji/cor/status, long-press 450ms para criar tarefa, useLongPress hook com vibração, navegação prev/next+Hoje), TarefaForm com initialDueDate |
 | 2026-05-28 | [Etapa 12 / Sessão 021] Agenda toggle Semana/Mês: visão mensal modernizada (dots coloridos, emoji do dia, pulso vermelho para expiradas, long-press na célula, painel lateral com mini-cards) |
+| 2026-05-28 | [Etapa 12 / Sessão 022] Bugfix BUG-020: Agenda semanal — long-press na coluna inteira + botão "+ Nova" sempre visível quando há tarefas |
 
 ---
 
