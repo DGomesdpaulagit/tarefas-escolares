@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
+import Welcome, { welcomeJaVisto } from "./pages/Welcome";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { profileService } from "@/services/profileService";
@@ -50,6 +51,16 @@ function Router() {
         </DisciplinasProvider>
       </ArquivosProvider>
     );
+  }
+
+  return <PublicRoutes />;
+}
+
+function PublicRoutes() {
+  const [welcomeOk, setWelcomeOk] = useState<boolean>(() => welcomeJaVisto());
+
+  if (!welcomeOk) {
+    return <Welcome onConcluir={() => setWelcomeOk(true)} />;
   }
 
   return (

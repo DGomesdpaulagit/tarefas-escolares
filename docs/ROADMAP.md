@@ -25,6 +25,23 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## FASE 6 — Notificações + Onboarding pré-login (Sessão 024 — 2026-05-28)
+
+**Notificações:**
+- [x] Service Worker v2 (data.url, SHOW_NOTIFICATION via postMessage, vibração)
+- [x] `sendTest()` + botão "Enviar notificação de teste" nas Configurações
+- [x] `notifyTaskCreated()` — notificação local ao criar (opt-in)
+- [x] Alerta de tarefas expiradas em `checkAndNotify` (agrupado, 1x por dia)
+- [x] Migration `006_notification_settings_notify_on_create`
+- [x] Aba Configurações reorganizada em 3 caixas com descrições por opção
+
+**Welcome pré-login:**
+- [x] 5 slides curtos com emoji + ícone + título + texto
+- [x] Bolhas coloridas (uma cor por slide), botão "Pular" sempre visível
+- [x] Dots clicáveis + animação de transição
+- [x] Persistência em localStorage (`tarefas_welcome_seen_v1`)
+- [x] Mostra apenas na primeira visita (anônima)
+
 ## FASES 4 e 5 — Dashboard + Configurações Acadêmicas (Sessão 023 — 2026-05-28)
 
 **FASE 4 — Dashboard "Visão Geral":**

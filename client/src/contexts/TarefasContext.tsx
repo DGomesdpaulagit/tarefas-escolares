@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { taskService } from "@/services/taskService";
+import { settingsService } from "@/services/settingsService";
+import { notificationService } from "@/services/notificationService";
 import { useAuth } from "@/contexts/AuthContext";
 import { diasAteVencimento, isExpirada, getStatusEfetivo } from "@/lib/tarefasData";
 import type { Tarefa, FiltrosTarefas, MetricasTarefas, PrioridadeTarefa, StatusTarefa } from "@/types";
@@ -124,6 +126,13 @@ export function TarefasProvider({ children }: { children: React.ReactNode }) {
     if (!user) throw new Error("Usuário não autenticado");
     const nova = await taskService.create({ ...t, user_id: user.id });
     setTarefas((prev) => [nova, ...prev]);
+    // Notificação local opcional ao criar (não bloqueia o fluxo)
+    settingsService
+      .getNotifications(user.id)
+      .then((s) => {
+        if (s?.notify_on_create) notificationService.notifyTaskCreated(nova, true);
+      })
+      .catch(() => {});
   };
 
   const atualizarTarefa = async (id: string, dados: TarefaUpdate) => {

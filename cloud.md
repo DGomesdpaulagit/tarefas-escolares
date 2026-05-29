@@ -12,10 +12,67 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 13 - Fases 4 e 5 / Dashboard "Visão Geral" + Configurações Acadêmicas
-## SESSÃO ATUAL: [Sessão 023] - FASES 4 e 5: Dashboard Visão Geral + aba Acadêmico (ano + idioma) ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 14 - Fase 6 / Notificações + Onboarding pré-login
+## SESSÃO ATUAL: [Sessão 024] - FASE 6: Welcome pré-login + Notificações reorganizadas ✅ CONCLUÍDA
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 14 / Sessão 024] - FASE 6: Notificações + Onboarding pré-login
+**Data:** 2026-05-28
+**Status:** ✅ Concluída
+
+### O que foi feito
+
+**A — Notificações:**
+- **Service Worker v2** (`sw.js`):
+  - Suporte a campo `data.url` (clique foca/abre tab no URL específico)
+  - Listener `message` para notificações locais via `postMessage` (`SHOW_NOTIFICATION`)
+  - Vibração `[120, 60, 120]` padrão
+  - `requireInteraction` opcional no payload
+  - `client.navigate()` quando o app já está aberto
+- **`notificationService` ampliado**:
+  - `sendTest()` — envia notificação de teste local via SW (com fallback à API nativa)
+  - `notifyTaskCreated(task, enabled)` — notificação imediata ao criar tarefa (opcional)
+  - `checkAndNotify` agora também alerta sobre **tarefas já expiradas** (1x por dia, agrupado: "X tarefas com prazo encerrado")
+- **Migration `006_notification_settings_notify_on_create`** — coluna `notify_on_create boolean NOT NULL DEFAULT false`
+- **`NotificationSettings.notify_on_create`** no tipo
+- **`TarefasContext.adicionarTarefa`** dispara `notifyTaskCreated` em background (não bloqueia UI) se o usuário ativou a opção
+- **Configurações > Notificações reorganizadas** em 3 caixas modernas:
+  1. Status push (banner verde/âmbar com ícone grande 🔔/🔕 + botão Ativar/Desativar + botão "Enviar notificação de teste")
+  2. "Quando avisar" (4 toggles: 3 dias, 2 dias, 1 dia/hoje, ao criar) com descrição em cada linha
+  3. "Sons no app" (toggle único isolado)
+
+**B — Welcome pré-login:**
+- **Página `Welcome.tsx`** mostrada antes do `Login` na primeira visita (anônima)
+  - 5 slides curtos com emoji grande + ícone + título + texto
+  - Slides: Tarefas → Disciplinas → Agenda → Notificações → Visão Geral
+  - Cada slide com cor própria (âmbar, lilás, verde, vermelho, azul) na bolha do emoji
+  - Botões "Voltar" (a partir do 2º slide) + "Próximo" / "Começar agora"
+  - Dots indicadores clicáveis no rodapé
+  - Botão "Pular" no canto superior direito
+  - Persistência via `localStorage` (`tarefas_welcome_seen_v1`) — só aparece uma vez
+  - Animação `scaleIn` no container + `fadeSlideIn` em cada slide (key=indice)
+- **`App.tsx`** — novo wrapper `PublicRoutes` checa `welcomeJaVisto()` antes de renderizar o Switch público
+
+### Arquivos criados
+- `client/src/pages/Welcome.tsx`
+- Migration Supabase: `006_notification_settings_notify_on_create`
+
+### Arquivos modificados
+- `client/public/sw.js` — v2 com URL handling e SHOW_NOTIFICATION
+- `client/src/services/notificationService.ts` — sendTest, notifyTaskCreated, alerta de expiradas
+- `client/src/contexts/TarefasContext.tsx` — notificação ao criar
+- `client/src/types/index.ts` — `notify_on_create`
+- `client/src/pages/Configuracoes.tsx` — aba reorganizada em 3 caixas
+- `client/src/App.tsx` — wrapper `PublicRoutes` com gate de welcome
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 19s
+
+### Próximo passo
+Testes manuais reais em mobile (iOS Safari precisa do app instalado como PWA pra push funcionar) + implementação efetiva de i18n.
 
 ---
 

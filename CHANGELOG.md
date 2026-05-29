@@ -8,6 +8,23 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 14 / Sessão 024 — 2026-05-28) — FASE 6: Notificações + Onboarding pré-login
+
+#### Notificações
+- **Service Worker v2** com suporte a `data.url` para redirecionamento, listener `message` para notificações locais, vibração padrão `[120,60,120]`, `requireInteraction` opcional
+- **`sendTest()`** no `notificationService` — botão de teste em Configurações
+- **`notifyTaskCreated()`** — notificação local imediata ao criar tarefa (opt-in)
+- **Alerta de tarefas expiradas** em `checkAndNotify` (1x por dia, agrupado)
+- **Migration `006_notification_settings_notify_on_create`** — coluna `notify_on_create boolean NOT NULL DEFAULT false`
+- **Aba Configurações > Notificações reorganizada** em 3 caixas: Status push, "Quando avisar" (com descrição em cada toggle), Sons no app
+
+#### Onboarding pré-login
+- **Página `Welcome.tsx`** com 5 slides (Tarefas, Disciplinas, Agenda, Notificações, Visão Geral)
+- Cada slide com bolha colorida do emoji + ícone + título + texto curto
+- Navegação por botões "Voltar/Próximo" + dots clicáveis + botão "Pular"
+- Persistência via `localStorage` (`tarefas_welcome_seen_v1`) — só aparece uma vez
+- Animação `scaleIn` no container + `fadeSlideIn` por slide
+
 ### Adicionado (Etapa 13 / Sessão 023 — 2026-05-28) — FASES 4 e 5: Dashboard + Configurações Acadêmicas
 
 #### FASE 4 — Dashboard "Visão Geral"

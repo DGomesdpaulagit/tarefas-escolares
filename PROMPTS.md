@@ -285,4 +285,25 @@ REGRAS:
 
 ---
 
+### P-017 — Mega prompt FASE 6 (Notificações + Onboarding pré-login)
+**Validado em:** 2026-05-28
+**Sessão:** 024
+**Escopo aprovado:**
+- NÃO mexer no visual geral do sistema (dashboard, calendário, disciplinas, cards intactos)
+- Melhorar SOMENTE: notificações + apresentação antes do login
+- Push real funcionando com app fechado (SW + VAPID + Edge Function já existiam)
+- Botão de teste pra confirmar funcionamento
+- Notificação opcional ao criar tarefa
+- Alerta agrupado pra tarefas expiradas
+- Welcome leve (5 slides), aparece só na 1ª visita
+
+**Estratégia adotada:**
+- Service Worker bumpado pra v2 com listener `message` para acionar
+  notificações locais sem servidor — útil pra `sendTest()` e `notifyTaskCreated`
+- Alerta de expiradas reusa o flag `notify_last_check` (não duplica avisos)
+- Welcome persiste em `localStorage` (não em DB) — não depende de login
+- Configurações dividida em 3 caixas para hierarquia visual sem refatorar UI global
+
+---
+
 *Atualizado em: 2026-05-28*

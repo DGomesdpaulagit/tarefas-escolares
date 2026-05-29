@@ -1,5 +1,5 @@
 import { supabase } from "@/supabase/client";
-import { diasAteVencimento, isExpirada } from "@/lib/tarefasData";
+import { diasAteVencimento, isExpirada, parseDueDateLocal } from "@/lib/tarefasData";
 import type { Tarefa, NotificationSettings } from "@/types";
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
@@ -75,6 +75,57 @@ export const notificationService = {
     } catch {}
   },
 
+  // Envia uma notificação de teste para confirmar que o sistema funciona
+  async sendTest(): Promise<boolean> {
+    if (!this.isSupported() || Notification.permission !== "granted") return false;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      reg.active?.postMessage({
+        type: "SHOW_NOTIFICATION",
+        payload: {
+          title: "🔔 Notificações ativas!",
+          body: "Tudo certo — você vai receber alertas dos seus prazos.",
+          tag: "test-notification",
+          url: "/",
+        },
+      });
+      return true;
+    } catch {
+      try {
+        new Notification("🔔 Notificações ativas!", {
+          body: "Tudo certo — você vai receber alertas dos seus prazos.",
+          icon: "/android-chrome-192x192.png",
+          tag: "test-notification",
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  },
+
+  // Notificação local imediata ao criar uma tarefa nova
+  async notifyTaskCreated(task: Tarefa, enabled: boolean): Promise<void> {
+    if (!enabled) return;
+    if (!this.isSupported() || Notification.permission !== "granted") return;
+    const data = task.due_date ? new Date(parseDueDateLocal(task.due_date)) : null;
+    const dataLabel = data
+      ? `${String(data.getDate()).padStart(2, "0")}/${String(data.getMonth() + 1).padStart(2, "0")}`
+      : "sem prazo";
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      reg.active?.postMessage({
+        type: "SHOW_NOTIFICATION",
+        payload: {
+          title: `➕ ${task.title}`,
+          body: `Adicionada em ${task.subject_name} · ${dataLabel}`,
+          tag: `created-${task.id}`,
+          url: "/",
+        },
+      });
+    } catch { /* ignore */ }
+  },
+
   // Exibe notificações locais ao abrir o app (funciona sem servidor)
   async checkAndNotify(tasks: Tarefa[], settings: NotificationSettings): Promise<void> {
     if (!this.isSupported() || Notification.permission !== "granted") return;
@@ -89,9 +140,33 @@ export const notificationService = {
 
     const notified: string[] = [];
 
+    // 1. Notifica tarefas que JÁ expiraram (1x por dia, agrupado)
+    const expiradas = tasks.filter((t) => t.status !== "Concluída" && isExpirada(t));
+    if (expiradas.length > 0) {
+      const titulo = expiradas.length === 1
+        ? `⚠️ Prazo encerrado: ${expiradas[0].title}`
+        : `⚠️ ${expiradas.length} tarefas com prazo encerrado`;
+      const corpo = expiradas.length === 1
+        ? `${expiradas[0].subject_name} — você ainda pode editar`
+        : `Veja a Visão Geral para revisar`;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        reg.active?.postMessage({
+          type: "SHOW_NOTIFICATION",
+          payload: { title: titulo, body: corpo, tag: "expired-today", url: "/" },
+        });
+      } catch {
+        try {
+          new Notification(titulo, { body: corpo, icon: "/android-chrome-192x192.png", tag: "expired-today" });
+        } catch {}
+      }
+      notified.push("expired");
+    }
+
+    // 2. Notifica tarefas pendentes próximas do prazo
     for (const task of tasks) {
       if (task.status === "Concluída" || !task.due_date) continue;
-      if (isExpirada(task)) continue; // não notifica tarefas já expiradas
+      if (isExpirada(task)) continue; // já notificadas acima
 
       const diff = diasAteVencimento(task.due_date);
       if (diff === null) continue;

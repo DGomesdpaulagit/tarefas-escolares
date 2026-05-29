@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 023)
+> **Última atualização:** 2026-05-28 (Sessão 024)
 
 ---
 
@@ -517,6 +517,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 12 / Sessão 021] Agenda toggle Semana/Mês: visão mensal modernizada (dots coloridos, emoji do dia, pulso vermelho para expiradas, long-press na célula, painel lateral com mini-cards) |
 | 2026-05-28 | [Etapa 12 / Sessão 022] Bugfix BUG-020: Agenda semanal — long-press na coluna inteira + botão "+ Nova" sempre visível quando há tarefas |
 | 2026-05-28 | [Etapa 13 / Sessão 023] FASES 4 e 5: nova página Visão Geral (dashboard com 5 seções, ring SVG, saudação dinâmica) como landing, aba Configurações → Acadêmico (ano escolar + idioma), migration `005_profiles_add_school_year`, Onboarding usa school_year |
+| 2026-05-28 | [Etapa 14 / Sessão 024] FASE 6: Welcome pré-login (5 slides + dots + skip), Service Worker v2 (data.url, message), sendTest, notifyTaskCreated, alerta de expiradas, Configurações reorganizada em 3 caixas, migration `006_notification_settings_notify_on_create` |
 
 ---
 

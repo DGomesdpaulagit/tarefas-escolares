@@ -60,6 +60,7 @@ export interface NotificationSettings {
   notify_3_days: boolean;
   notify_2_days: boolean;
   notify_1_day: boolean;
+  notify_on_create: boolean;
   sound_enabled: boolean;
 }
 

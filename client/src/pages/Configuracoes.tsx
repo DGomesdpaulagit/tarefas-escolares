@@ -370,6 +370,7 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     notify_3_days: true,
     notify_2_days: true,
     notify_1_day: true,
+    notify_on_create: false,
     sound_enabled: false,
   });
   const [salvando, setSalvando] = useState(false);
@@ -385,6 +386,7 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
           notify_3_days: data.notify_3_days,
           notify_2_days: data.notify_2_days,
           notify_1_day: data.notify_1_day,
+          notify_on_create: data.notify_on_create ?? false,
           sound_enabled: data.sound_enabled,
         });
         soundService.setEnabled(data.sound_enabled);
@@ -435,71 +437,175 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
   };
 
   const pushSuportado = notificationService.isSupported();
+  const ativo = permissao === "granted";
+
+  const enviarTeste = async () => {
+    const ok = await notificationService.sendTest();
+    if (ok) toast.success("Notificação de teste enviada!");
+    else toast.error("Não foi possível enviar (verifique permissão).");
+  };
 
   return (
-    <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Notificações</h2>
-      <p className="text-xs text-slate-500">Configure alertas de prazo</p>
+    <div className="space-y-4">
+      {/* Status do push */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <Bell size={14} className="text-amber-400" />
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
+            Notificações push
+          </h2>
+        </div>
+        <p className="text-xs text-slate-500">
+          Receba alertas mesmo com o app/site fechado, direto no seu celular ou computador.
+        </p>
 
-      {/* Push Notification Status */}
-      {pushSuportado && (
-        <div className={`rounded-lg p-3 border flex items-center justify-between gap-3 ${
-          permissao === "granted"
-            ? "bg-green-500/10 border-green-500/30"
-            : "bg-amber-500/10 border-amber-500/30"
-        }`}>
-          <div>
-            <p className={`text-sm font-medium ${permissao === "granted" ? "text-green-300" : "text-amber-300"}`}>
-              {permissao === "granted" ? "🔔 Notificações push ativas" : "🔕 Notificações push desativadas"}
-            </p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {permissao === "granted"
-                ? "Você será avisado mesmo com o site fechado"
-                : "Ative para receber alertas com o site fechado"}
+        {pushSuportado ? (
+          <>
+            <div className={`rounded-xl p-4 border flex items-center justify-between gap-3 transition-all ${
+              ativo
+                ? "bg-green-500/10 border-green-500/30"
+                : "bg-amber-500/10 border-amber-500/30"
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${
+                  ativo ? "bg-green-500/20" : "bg-amber-500/20"
+                }`}>
+                  {ativo ? "🔔" : "🔕"}
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${ativo ? "text-green-400" : "text-amber-400"}`}>
+                    {ativo ? "Notificações ativas" : "Notificações desativadas"}
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {ativo
+                      ? "Avisos chegam mesmo com o app fechado"
+                      : "Ative para receber alertas em segundo plano"}
+                  </p>
+                </div>
+              </div>
+              {ativo ? (
+                <Button size="sm" variant="outline" onClick={desativarPush}
+                  className="border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-xs">
+                  Desativar
+                </Button>
+              ) : (
+                <Button size="sm" onClick={ativarPush} disabled={ativandoPush}
+                  className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs gap-1">
+                  {ativandoPush ? <Loader2 size={12} className="animate-spin" /> : null}
+                  Ativar
+                </Button>
+              )}
+            </div>
+
+            {ativo && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={enviarTeste}
+                className="w-full border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent text-xs"
+              >
+                Enviar notificação de teste
+              </Button>
+            )}
+          </>
+        ) : (
+          <div className="rounded-xl p-3 border border-white/10 bg-white/5">
+            <p className="text-xs text-slate-500">
+              ⚠️ Seu navegador não suporta notificações push.
+              No iPhone, abra pelo Safari e adicione o app à tela inicial.
             </p>
           </div>
-          {permissao === "granted" ? (
-            <Button size="sm" variant="outline" onClick={desativarPush}
-              className="border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-xs">
-              Desativar
-            </Button>
-          ) : (
-            <Button size="sm" onClick={ativarPush} disabled={ativandoPush}
-              className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs gap-1">
-              {ativandoPush ? <Loader2 size={12} className="animate-spin" /> : null}
-              Ativar
-            </Button>
-          )}
-        </div>
-      )}
-
-      {!pushSuportado && (
-        <div className="rounded-lg p-3 border border-white/10 bg-white/5">
-          <p className="text-xs text-slate-500">⚠️ Seu navegador não suporta notificações push</p>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {([
-          { key: "notify_3_days" as const, label: "Alertar 3 dias antes" },
-          { key: "notify_2_days" as const, label: "Alertar 2 dias antes" },
-          { key: "notify_1_day" as const, label: "Alertar 1 dia antes" },
-          { key: "sound_enabled" as const, label: "Habilitar sons de transição" },
-        ]).map(({ key, label }) => (
-          <div key={key} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-            <Label htmlFor={key} className="text-slate-300 text-sm cursor-pointer">{label}</Label>
-            <Switch
-              id={key}
-              checked={settings[key]}
-              onCheckedChange={() => toggle(key)}
-              aria-label={label}
-            />
-          </div>
-        ))}
+        )}
       </div>
+
+      {/* Quando notificar */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-1">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk'] mb-1">
+          Quando avisar
+        </h2>
+        <p className="text-xs text-slate-500 mb-3">
+          Escolha em que momentos você quer ser lembrado das suas tarefas.
+        </p>
+
+        <div className="space-y-1">
+          {([
+            {
+              key: "notify_3_days" as const,
+              label: "3 dias antes do prazo",
+              desc: "Tempo de sobra pra começar",
+            },
+            {
+              key: "notify_2_days" as const,
+              label: "2 dias antes do prazo",
+              desc: "Hora de focar",
+            },
+            {
+              key: "notify_1_day" as const,
+              label: "1 dia antes / no dia",
+              desc: "Lembrete do dia da entrega",
+            },
+            {
+              key: "notify_on_create" as const,
+              label: "Ao criar uma tarefa",
+              desc: "Confirmação imediata local",
+            },
+          ]).map(({ key, label, desc }) => (
+            <div
+              key={key}
+              className="flex items-center justify-between gap-3 py-2.5 border-b border-white/5 last:border-0"
+            >
+              <div className="flex-1 min-w-0">
+                <Label
+                  htmlFor={key}
+                  className="text-sm font-medium text-slate-900 dark:text-slate-200 cursor-pointer"
+                >
+                  {label}
+                </Label>
+                <p className="text-[11px] text-slate-500 mt-0.5">{desc}</p>
+              </div>
+              <Switch
+                id={key}
+                checked={settings[key]}
+                onCheckedChange={() => toggle(key)}
+                aria-label={label}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sons */}
+      <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-1">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk'] mb-1">
+          Sons no app
+        </h2>
+        <p className="text-xs text-slate-500 mb-3">
+          Feedback sonoro suave para ações como concluir tarefas.
+        </p>
+        <div className="flex items-center justify-between gap-3 py-2.5">
+          <div className="flex-1 min-w-0">
+            <Label
+              htmlFor="sound_enabled"
+              className="text-sm font-medium text-slate-900 dark:text-slate-200 cursor-pointer"
+            >
+              Ativar sons de transição
+            </Label>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Concluir, adicionar e remover tarefas tocam um som leve
+            </p>
+          </div>
+          <Switch
+            id="sound_enabled"
+            checked={settings.sound_enabled}
+            onCheckedChange={() => toggle("sound_enabled")}
+            aria-label="Ativar sons de transição"
+          />
+        </div>
+      </div>
+
       <Button onClick={salvar} disabled={salvando} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
         {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-        Salvar
+        Salvar preferências
       </Button>
     </div>
   );
