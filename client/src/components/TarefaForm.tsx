@@ -12,9 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTarefas } from "@/contexts/TarefasContext";
 import { useDisciplinas } from "@/contexts/DisciplinasContext";
 import { soundService } from "@/services/soundService";
-import { MATERIAS_PADRAO, SETORES, ORIGENS, getMateriaEmoji } from "@/lib/tarefasData";
+import { MATERIAS_PADRAO, SETORES, ORIGENS, getMateriaEmoji, getStatusEfetivo } from "@/lib/tarefasData";
 import type { Tarefa, PrioridadeTarefa, StatusTarefa } from "@/types";
-import { X } from "lucide-react";
+import { Loader2, Trash2, X, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,9 +34,12 @@ const STATUS_OPTIONS: StatusTarefa[] = [
 const PRIORIDADE_OPTIONS: PrioridadeTarefa[] = ["Alta", "Média", "Baixa"];
 
 export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFormProps) {
-  const { adicionarTarefa, atualizarTarefa } = useTarefas();
+  const { adicionarTarefa, atualizarTarefa, removerTarefa, toggleConcluida } = useTarefas();
   const { disciplinas } = useDisciplinas();
   const isEdicao = !!tarefa;
+  const statusEfetivo = tarefa ? getStatusEfetivo(tarefa) : null;
+  const podeConcluir = isEdicao && statusEfetivo !== "Passou do Prazo";
+  const estaConcluida = statusEfetivo === "Concluída";
 
   // Combina disciplinas cadastradas + padrões não cadastradas (com emojis)
   const opcoesDisciplina = (() => {
@@ -63,6 +66,53 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
     description: tarefa?.description ?? "",
   });
   const [salvando, setSalvando] = useState(false);
+  const [confirmandoRemocao, setConfirmandoRemocao] = useState(false);
+  const [removendo, setRemovendo] = useState(false);
+  const [alternandoConclusao, setAlternandoConclusao] = useState(false);
+
+  const handleRemover = async () => {
+    if (!tarefa) return;
+    if (!confirmandoRemocao) {
+      setConfirmandoRemocao(true);
+      setTimeout(() => setConfirmandoRemocao(false), 3000);
+      return;
+    }
+    setRemovendo(true);
+    try {
+      await removerTarefa(tarefa.id);
+      soundService.playRemovida();
+      toast.success("Tarefa removida");
+      onClose();
+    } catch {
+      toast.error("Erro ao remover tarefa");
+      setRemovendo(false);
+      setConfirmandoRemocao(false);
+    }
+  };
+
+  const handleAlternarConclusao = async () => {
+    if (!tarefa) return;
+    if (statusEfetivo === "Passou do Prazo") {
+      toast.error("Tarefa expirada não pode ser concluída");
+      return;
+    }
+    setAlternandoConclusao(true);
+    try {
+      await toggleConcluida(tarefa.id);
+      if (estaConcluida) {
+        soundService.playDesmarcada();
+        toast.success("Tarefa marcada como pendente");
+      } else {
+        soundService.playConcluida();
+        toast.success("Tarefa concluída! 🎉");
+      }
+      onClose();
+    } catch {
+      toast.error("Erro ao atualizar tarefa");
+    } finally {
+      setAlternandoConclusao(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,22 +316,70 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
             />
           </div>
 
-          <div className="flex gap-3 pt-2">
+          {/* Ações rápidas (somente em edição) */}
+          {isEdicao && podeConcluir && (
+            <Button
+              type="button"
+              onClick={handleAlternarConclusao}
+              disabled={alternandoConclusao || salvando || removendo}
+              variant="outline"
+              className={`w-full gap-2 ${
+                estaConcluida
+                  ? "border-amber-500/40 text-amber-500 hover:bg-amber-500/10 bg-transparent"
+                  : "border-green-500/40 text-green-500 hover:bg-green-500/10 bg-transparent"
+              }`}
+            >
+              {alternandoConclusao ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <CheckCircle2 size={14} />
+              )}
+              {estaConcluida ? "Marcar como pendente" : "Marcar como concluída"}
+            </Button>
+          )}
+
+          <div className="flex gap-2 pt-2">
+            {/* Excluir — apenas em edição */}
+            {isEdicao && (
+              <Button
+                type="button"
+                onClick={handleRemover}
+                disabled={removendo || salvando || alternandoConclusao}
+                variant="outline"
+                className={`gap-1.5 border bg-transparent transition-all ${
+                  confirmandoRemocao
+                    ? "border-red-500 bg-red-500/10 text-red-400"
+                    : "border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+                }`}
+                title={confirmandoRemocao ? "Clique novamente para confirmar" : "Excluir tarefa"}
+                aria-label={confirmandoRemocao ? "Confirmar exclusão" : "Excluir tarefa"}
+              >
+                {removendo ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Trash2 size={14} />
+                )}
+                <span className="hidden sm:inline">
+                  {confirmandoRemocao ? "Confirmar?" : "Excluir"}
+                </span>
+              </Button>
+            )}
+
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               className="flex-1 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white bg-transparent"
-              disabled={salvando}
+              disabled={salvando || removendo || alternandoConclusao}
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold"
-              disabled={salvando}
+              disabled={salvando || removendo || alternandoConclusao}
             >
-              {salvando ? "Salvando..." : isEdicao ? "Salvar Alterações" : "Adicionar Tarefa"}
+              {salvando ? "Salvando..." : isEdicao ? "Salvar" : "Adicionar"}
             </Button>
           </div>
         </form>

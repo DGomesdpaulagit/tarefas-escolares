@@ -25,6 +25,13 @@
 - [x] Notificações push/browser — entregue na Sessão 016 (Web Push + VAPID + Edge Function + pg_cron)
 - [ ] Filtro por matéria no formulário de criação
 
+## FECHAMENTO — Ações completas no TarefaForm (Sessão 025 — 2026-05-28) 🎉 PROJETO FINALIZADO
+
+- [x] Botão "Marcar como concluída" / "pendente" no rodapé do modal de edição
+- [x] Botão "Excluir" vermelho com dupla confirmação
+- [x] Sons e toasts em cada ação
+- [x] Acessível em todas as origens (Agenda semanal/mensal, Tarefas, Visão Geral, Disciplinas)
+
 ## FASE 6 — Notificações + Onboarding pré-login (Sessão 024 — 2026-05-28)
 
 **Notificações:**

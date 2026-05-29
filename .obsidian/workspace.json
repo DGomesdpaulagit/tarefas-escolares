@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/BANCO_DE_DADOS.md",
+                "file": "MEMORY_CORE.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "BANCO_DE_DADOS"
+              "title": "MEMORY_CORE"
             }
           }
         ]
@@ -168,17 +168,19 @@
   },
   "active": "f72d07eb060c78d9",
   "lastOpenFiles": [
+    "cloud.md.tmp.40100.641a7819eab7",
+    "dist/index.html",
+    "dist/assets/index-LaSOz5gI.js",
+    "dist/assets/index-CM-ySxN4.css",
+    "dist/assets",
+    "PROMPTS.md",
+    "docs/BANCO_DE_DADOS.md",
     "docs/ROADMAP.md.tmp.40100.719217c1de58",
     "MEMORY.md.tmp.40100.6fe31289fc1c",
     "MEMORY.md.tmp.40100.bb85961324f5",
     "cloud.md.tmp.40100.d86e39a314de",
-    "dist/index.html",
     "dist/assets/index-D6ZboLN4.css",
     "dist/assets/index-CLzjf3Qi.js",
-    "dist/assets",
-    "client/src/App.tsx.tmp.40100.aa9062a23711",
-    "client/src/pages/Welcome.tsx",
-    "client/src/contexts/TarefasContext.tsx.tmp.40100.cdb8897d39e7",
     "MEMORY.md",
     "cloud.md",
     "ideas.md",
@@ -191,7 +193,6 @@
     "dist/apple-touch-icon.png",
     "dist/android-chrome-512x512.png",
     "dist/android-chrome-192x192.png",
-    "PROMPTS.md",
     "MEMORY_CORE.md",
     "SESSIONS/011.md",
     "SESSIONS/012.md",
@@ -212,7 +213,6 @@
     "client/public/favicon-16x16.png",
     "client/public/apple-touch-icon.png",
     "node_modules/recharts/CHANGELOG.md",
-    "CLAUDE.md",
-    "node_modules/tailwind-merge/LICENSE.md"
+    "CLAUDE.md"
   ]
 }

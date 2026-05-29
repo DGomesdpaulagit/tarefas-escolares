@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 024)
+> **Última atualização:** 2026-05-28 (Sessão 025 — PROJETO FINALIZADO)
 
 ---
 
@@ -447,6 +447,28 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
+**🎉 PROJETO FINALIZADO — todas as fases entregues**
+
+**Fases concluídas:**
+- ✅ Fase 0 — Setup base + Supabase + Auth
+- ✅ Fase 1 — Correções críticas (datas, status, expiração, light/dark) — Sessão 017
+- ✅ Fase 2 — Catálogo visual de Disciplinas — Sessão 018
+- ✅ Onboarding pós-cadastro — Sessão 019
+- ✅ Fase 3 — Calendário semanal (Sessão 020) + mensal (Sessão 021) + bugfix BUG-020 (Sessão 022)
+- ✅ Fase 4 — Dashboard "Visão Geral" — Sessão 023
+- ✅ Fase 5 — Configurações Acadêmicas — Sessão 023
+- ✅ Fase 6 — Notificações reorganizadas + Welcome pré-login — Sessão 024
+- ✅ Fechamento — Ações completas no TarefaForm — Sessão 025
+
+**Pós-projeto (opcional, fora do escopo original):**
+- [ ] Implementação real de i18n em runtime (pt-BR/en/es)
+- [ ] Testes manuais ampliados em mobile real (iOS PWA)
+- [ ] Otimização de bundle (chunks > 500kB)
+
+---
+
+## 22b. Fases Históricas
+
 **✅ Fase 0 ✅ | Fase 1 ✅ | Fase 2 ✅ | Bugfixes ✅ | Fase 3 (Push) ✅ | Fase 1 Crítica (Sessão 017) ✅**
 
 ### Estado atual
@@ -518,6 +540,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 12 / Sessão 022] Bugfix BUG-020: Agenda semanal — long-press na coluna inteira + botão "+ Nova" sempre visível quando há tarefas |
 | 2026-05-28 | [Etapa 13 / Sessão 023] FASES 4 e 5: nova página Visão Geral (dashboard com 5 seções, ring SVG, saudação dinâmica) como landing, aba Configurações → Acadêmico (ano escolar + idioma), migration `005_profiles_add_school_year`, Onboarding usa school_year |
 | 2026-05-28 | [Etapa 14 / Sessão 024] FASE 6: Welcome pré-login (5 slides + dots + skip), Service Worker v2 (data.url, message), sendTest, notifyTaskCreated, alerta de expiradas, Configurações reorganizada em 3 caixas, migration `006_notification_settings_notify_on_create` |
+| 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
 
 ---
 

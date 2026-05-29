@@ -8,6 +8,13 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 15 / Sessão 025 — 2026-05-28) — Ações completas no TarefaForm (PROJETO FINALIZADO 🎉)
+- **Botão "Marcar como concluída/pendente"** dentro do `TarefaForm` em modo edição (verde/âmbar, largura total). Não aparece em tarefas expiradas.
+- **Botão "Excluir"** vermelho com **dupla confirmação** (clique 1 → "Confirmar?", clique 2 dentro de 3s → exclui)
+- Sons e toasts informativos em todas as ações; botões mutuamente bloqueados durante operações
+- Resultado: **um único clique** em qualquer mini-card da Agenda, Tarefas, Visão Geral ou Disciplinas abre o modal com **todas** as ações (editar campos, concluir/desmarcar, excluir)
+- Versão `2.1.0` — projeto considerado completo
+
 ### Adicionado (Etapa 14 / Sessão 024 — 2026-05-28) — FASE 6: Notificações + Onboarding pré-login
 
 #### Notificações

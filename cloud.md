@@ -12,10 +12,47 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 14 - Fase 6 / Notificações + Onboarding pré-login
-## SESSÃO ATUAL: [Sessão 024] - FASE 6: Welcome pré-login + Notificações reorganizadas ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 15 - Agenda: editar/excluir tarefas direto no modal
+## SESSÃO ATUAL: [Sessão 025] - FECHAMENTO: editar/excluir/concluir no TarefaForm ✅ CONCLUÍDA — PROJETO FINALIZADO
+
+## STATUS DO PROJETO: 🎉 FINALIZADO — todas as fases concluídas
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 15 / Sessão 025] - FECHAMENTO: editar/excluir/concluir no TarefaForm
+**Data:** 2026-05-28
+**Status:** ✅ Concluída — **PROJETO FINALIZADO**
+
+### O que foi feito
+- **TarefaForm** agora tem ações completas no rodapé, em modo edição:
+  - **Botão "Marcar como concluída"** (verde) / **"Marcar como pendente"** (âmbar) acima dos botões finais — destacado em largura total. Não aparece se a tarefa estiver expirada (respeita BUG-017).
+  - **Botão "Excluir"** (vermelho, ícone Trash2) à esquerda do "Cancelar" com padrão de **dupla confirmação**: clique 1 → texto vira "Confirmar?" + cor sólida; clique 2 dentro de 3s → exclui e fecha o modal.
+  - Som `playRemovida` ao excluir; som `playConcluida`/`playDesmarcada` ao alternar conclusão; toasts informativos em cada ação.
+  - Todos os botões inferiores ficam desabilitados durante qualquer operação em andamento (evita race conditions).
+- **Resultado:** clicar em qualquer mini-card da Agenda (semanal ou mensal), card da página Tarefas, item da Visão Geral ou listagem da Disciplinas abre o modal com **todas** as ações disponíveis — editar campos, marcar concluída/pendente, excluir.
+
+### Por que isso fecha o projeto
+A solicitação final foi "Agenda melhorada (visão semanal, clique para editar/excluir tarefas)". Como o `TarefaForm` é o componente único de edição usado por toda a aplicação, melhorar ele significa que toda a navegação por tarefas (Agenda, Tarefas, VisaoGeral, Disciplinas) ganha as mesmas ações. Não houve necessidade de duplicar lógica em cada local.
+
+### Arquivos modificados
+- `client/src/components/TarefaForm.tsx` — ações de excluir + concluir/desmarcar com confirmação visual
+
+### Build
+- ✅ `npm run build` — 0 erros TS, vite build OK em 17s
+
+### Estado final do projeto
+**Todas as fases entregues:**
+- ✅ FASE 0 — Setup base + Supabase + Auth
+- ✅ FASE 1 — Correções críticas (datas, status, expiração, light/dark)
+- ✅ FASE 2 — Catálogo visual de Disciplinas (emoji, cor, modal)
+- ✅ FASE 3 — Calendário semanal + mensal moderno
+- ✅ FASE 4 — Dashboard "Visão Geral"
+- ✅ FASE 5 — Configurações Acadêmicas (ano + idioma)
+- ✅ FASE 6 — Notificações reorganizadas + Welcome pré-login
+- ✅ Onboarding pós-cadastro
+- ✅ Fechamento: editar/excluir/concluir em qualquer lugar
 
 ---
 

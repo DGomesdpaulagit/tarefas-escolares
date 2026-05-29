@@ -306,4 +306,24 @@ REGRAS:
 
 ---
 
+### P-018 — Fechamento: editar/excluir tarefas direto no modal
+**Validado em:** 2026-05-28
+**Sessão:** 025 (final)
+**Escopo aprovado:**
+- Última alteração antes de considerar o projeto terminado
+- "Agenda melhorada (visão semanal, clique para editar/excluir tarefas)"
+
+**Estratégia adotada:**
+- Em vez de duplicar lógica em mini-cards (Agenda) e cards (Tarefas/VisaoGeral),
+  adicionar Excluir + Concluir/Pendente diretamente no `TarefaForm` que já é
+  aberto por TODOS os pontos de clique do app.
+- Padrão de dupla confirmação (3s) para evitar exclusão acidental.
+- Botão "Concluir" oculto quando a tarefa está expirada (consistente com BUG-017).
+
+---
+
+🎉 **PROJETO FINALIZADO** — todas as fases entregues conforme escopo.
+
+---
+
 *Atualizado em: 2026-05-28*
