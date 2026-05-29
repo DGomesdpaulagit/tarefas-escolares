@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-28 (Sessão 025 — PROJETO FINALIZADO)
+> **Última atualização:** 2026-05-29 (Sessão 026 — hotfix BUG-021)
 
 ---
 
@@ -541,6 +541,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 13 / Sessão 023] FASES 4 e 5: nova página Visão Geral (dashboard com 5 seções, ring SVG, saudação dinâmica) como landing, aba Configurações → Acadêmico (ano escolar + idioma), migration `005_profiles_add_school_year`, Onboarding usa school_year |
 | 2026-05-28 | [Etapa 14 / Sessão 024] FASE 6: Welcome pré-login (5 slides + dots + skip), Service Worker v2 (data.url, message), sendTest, notifyTaskCreated, alerta de expiradas, Configurações reorganizada em 3 caixas, migration `006_notification_settings_notify_on_create` |
 | 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
+| 2026-05-29 | [Etapa 16 / Sessão 026] HOTFIX BUG-021: erro 400 ao salvar tarefa sem data — TarefaForm.handleSubmit normaliza strings vazias para null em due_date/notes/link/sector/origin/description antes de enviar ao Supabase |
 
 ---
 

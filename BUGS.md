@@ -170,6 +170,12 @@ Registro de bugs resolvidos e bugs conhecidos/pendentes.
 - **Descrição:** Sem ordenação por status efetivo, expiradas poluíam a área prioritária da listagem.
 - **Status:** ✅ Resolvido (Sessão 017 — buckets: urgentes → normais → concluídas → expiradas)
 
+### BUG-021 — "Erro ao salvar tarefa" (400 Bad Request) ao criar sem data
+- **Severidade:** ALTA — bloqueava criação de qualquer tarefa sem data preenchida
+- **Descrição:** O `TarefaForm` enviava `due_date: ""` (string vazia) quando o campo de data ficava em branco. A coluna `tasks.due_date` é do tipo `date` no Postgres, que rejeita strings vazias e retorna 400 Bad Request. O Supabase respondia "Failed to load resource: 400" e o toast "Erro ao salvar tarefa" aparecia.
+- **Reproduzido em:** Sessão 026 (usuário reportou com print do DevTools)
+- **Status:** ✅ Resolvido (Sessão 026 — normalização de strings vazias para `null` antes do submit no `TarefaForm.handleSubmit`, aplicada a `due_date`, `notes`, `link`, `sector`, `origin`, `description`)
+
 ### BUG-020 — Agenda semanal: impossível criar 2ª tarefa em dia ocupado
 - **Severidade:** UX média — bloqueava criação rápida em dias com agenda
 - **Descrição:** Na Agenda semanal, dias que já tinham tarefas listadas não exibiam o botão "+ Adicionar" (ele só aparecia em colunas vazias), e o long-press estava registrado apenas no cabeçalho da coluna. O usuário não conseguia criar uma nova tarefa em um dia que já tinha pelo menos uma.

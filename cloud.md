@@ -12,12 +12,39 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 15 - Agenda: editar/excluir tarefas direto no modal
-## SESSÃO ATUAL: [Sessão 025] - FECHAMENTO: editar/excluir/concluir no TarefaForm ✅ CONCLUÍDA — PROJETO FINALIZADO
+## ETAPA ATUAL: Etapa 16 - Hotfix pós-fechamento
+## SESSÃO ATUAL: [Sessão 026] - HOTFIX BUG-021: erro 400 ao salvar tarefa sem data ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 FINALIZADO — todas as fases concluídas
+## STATUS DO PROJETO: 🎉 FINALIZADO (com hotfix de bug crítico)
 
 ## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+
+---
+
+## [Etapa 16 / Sessão 026] - HOTFIX BUG-021: erro 400 ao salvar tarefa sem data
+**Data:** 2026-05-29
+**Status:** ✅ Concluída
+
+### Bug reportado
+Usuário reportou com print: ao tentar salvar uma "Nova Tarefa" deixando o campo "Data de Entrega" em branco (placeholder `dd/mm/aaaa`), aparecia toast vermelho "Erro ao salvar tarefa" e o DevTools mostrava:
+```
+POST .../rest/v1/tasks?select=* → 400 (Bad Request)
+```
+
+### Causa raiz
+`TarefaForm.handleSubmit` enviava o estado do form direto pro `taskService`, incluindo `due_date: ""` (string vazia, valor inicial do `useState`). A coluna `tasks.due_date` é do tipo `date` no Postgres, que rejeita strings vazias como entrada inválida — daí o 400.
+
+Outros campos texto opcionais (`notes`, `link`, `sector`, `origin`, `description`) aceitam string vazia, mas pra ficar semanticamente correto e evitar dados sujos no banco, também foram normalizados.
+
+### Correção
+- Em `client/src/components/TarefaForm.tsx`, antes de enviar, todos os campos opcionais com `""` são convertidos para `null` via helper `toNull()`.
+- `title` também ganha `.trim()` para evitar espaços em branco salvos.
+
+### Arquivos modificados
+- `client/src/components/TarefaForm.tsx`
+
+### Build
+- ✅ `npm run build` — 0 erros TS, 14s
 
 ---
 

@@ -118,13 +118,27 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
     e.preventDefault();
     if (!form.title.trim()) return;
 
+    // Normaliza strings vazias para null nos campos nullable.
+    // due_date é `date` no Postgres — "" causa 400 Bad Request.
+    const toNull = (v: string | null) => (v === null || v === "" ? null : v);
+    const payload = {
+      ...form,
+      title: form.title.trim(),
+      due_date: toNull(form.due_date),
+      notes: toNull(form.notes),
+      link: toNull(form.link),
+      sector: toNull(form.sector),
+      origin: toNull(form.origin),
+      description: toNull(form.description),
+    };
+
     setSalvando(true);
     try {
       if (isEdicao && tarefa) {
-        await atualizarTarefa(tarefa.id, form);
+        await atualizarTarefa(tarefa.id, payload);
         toast.success("Tarefa atualizada!");
       } else {
-        await adicionarTarefa(form);
+        await adicionarTarefa(payload);
         soundService.playAdicionada();
         toast.success("Tarefa adicionada!");
       }

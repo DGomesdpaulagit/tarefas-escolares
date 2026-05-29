@@ -8,6 +8,11 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 16 / Sessão 026 — 2026-05-29) — HOTFIX BUG-021
+- **Bug crítico de salvamento de tarefa** — quando o usuário deixava a data de entrega em branco, o Supabase retornava 400 Bad Request porque o form enviava `due_date: ""` para uma coluna `date`. Toast "Erro ao salvar tarefa" aparecia.
+- Correção: `TarefaForm.handleSubmit` agora normaliza strings vazias para `null` em todos os campos opcionais (`due_date`, `notes`, `link`, `sector`, `origin`, `description`) antes de enviar
+- `title` ganhou `.trim()` por segurança
+
 ### Adicionado (Etapa 15 / Sessão 025 — 2026-05-28) — Ações completas no TarefaForm (PROJETO FINALIZADO 🎉)
 - **Botão "Marcar como concluída/pendente"** dentro do `TarefaForm` em modo edição (verde/âmbar, largura total). Não aparece em tarefas expiradas.
 - **Botão "Excluir"** vermelho com **dupla confirmação** (clique 1 → "Confirmar?", clique 2 dentro de 3s → exclui)
