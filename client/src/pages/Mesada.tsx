@@ -1,10 +1,12 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { useMesada } from "@/contexts/MesadaContext";
 import MesadaMateriaModal from "@/components/MesadaMateriaModal";
+import MesadaImportarDisciplinasModal from "@/components/MesadaImportarDisciplinasModal";
 import type { Conceito, MesadaMateria } from "@/types";
 import {
   AlertTriangle,
   Coins,
+  Import,
   Loader2,
   Pencil,
   Plus,
@@ -388,6 +390,7 @@ function AbaConfiguracoes() {
   const { config, materias, atualizarConfig, removerMateria } = useMesada();
   const [editando, setEditando] = useState<MesadaMateria | null>(null);
   const [criando, setCriando] = useState(false);
+  const [importando, setImportando] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
   if (!config) return null;
@@ -475,12 +478,20 @@ function AbaConfiguracoes() {
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
             Matérias do boletim
           </h3>
-          <button
-            onClick={() => setCriando(true)}
-            className="text-amber-500 hover:text-amber-400 text-xs font-medium inline-flex items-center gap-1"
-          >
-            <Plus size={13} /> Adicionar
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setImportando(true)}
+              className="text-slate-400 hover:text-slate-200 text-xs font-medium inline-flex items-center gap-1"
+            >
+              <Import size={13} /> Importar Disciplinas
+            </button>
+            <button
+              onClick={() => setCriando(true)}
+              className="text-amber-500 hover:text-amber-400 text-xs font-medium inline-flex items-center gap-1"
+            >
+              <Plus size={13} /> Nova matéria
+            </button>
+          </div>
         </div>
 
         {materias.length === 0 ? (
@@ -524,6 +535,7 @@ function AbaConfiguracoes() {
 
       {criando && <MesadaMateriaModal onClose={() => setCriando(false)} />}
       {editando && <MesadaMateriaModal materia={editando} onClose={() => setEditando(null)} />}
+      {importando && <MesadaImportarDisciplinasModal onClose={() => setImportando(false)} />}
     </div>
   );
 }

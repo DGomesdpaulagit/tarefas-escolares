@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 028b — 2026-07-22) — Mesada: importar Disciplinas existentes em lote
+- **`MesadaMateriaModal` (feedback do usuário):** faltava um jeito rápido de trazer as Disciplinas já cadastradas no app (Português, Matemática, etc.) para as matérias do boletim da Mesada sem digitar uma por uma
+- **`MesadaImportarDisciplinasModal.tsx`** — novo modal com lista de checkboxes das Disciplinas ainda não vinculadas a nenhuma matéria da Mesada; seleção múltipla + botão "Importar (N)" cria todas de uma vez, herdando nome/emoji/cor
+- Botão "Importar Disciplinas" adicionado ao lado de "Nova matéria" na aba Configurações da Mesada
+- Build: 0 erros TypeScript
+
 ### Adicionado (Etapa 17 / Sessão 028 — 2026-07-22) — v3.0: Módulo de Mesada por Desempenho — implementação inicial (uso pessoal, branch `v3-mesada-pessoal`)
 - **Ambiguidades da especificação resolvidas com o usuário:** tabela de conceito única para todas as matérias (Eixo A: MB=R$22/B=R$5/R=R$2/I=-R$5) e o limite de 5 MBs por período **trava o cálculo** (o 6º MB em diante é recalculado como B)
 - **Migration `007_mesada_module`** (aplicada via Supabase MCP + salva em `supabase/migrations/`) — tabelas `mesada_config`, `mesada_materias`, `mesada_notas`, todas com RLS `auth.uid() = user_id`
