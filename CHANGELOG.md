@@ -8,6 +8,17 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 028 — 2026-07-22) — v3.0: Módulo de Mesada por Desempenho — implementação inicial (uso pessoal, branch `v3-mesada-pessoal`)
+- **Ambiguidades da especificação resolvidas com o usuário:** tabela de conceito única para todas as matérias (Eixo A: MB=R$22/B=R$5/R=R$2/I=-R$5) e o limite de 5 MBs por período **trava o cálculo** (o 6º MB em diante é recalculado como B)
+- **Migration `007_mesada_module`** (aplicada via Supabase MCP + salva em `supabase/migrations/`) — tabelas `mesada_config`, `mesada_materias`, `mesada_notas`, todas com RLS `auth.uid() = user_id`
+- **`mesadaService.ts`** — CRUD de config (upsert por ano letivo), matérias e notas (upsert por matéria/ano/mês)
+- **`MesadaContext.tsx`** — estado global do módulo; cálculo de valor por lançamento com a regra de travamento do limite de MB (ordem determinística por mês + ordem da matéria); `valorAcumulado`, `progressoPercentual`, `valorDoMes`
+- **Feature flag `VITE_ENABLE_MESADA_MODULE`** (`client/src/lib/featureFlags.ts`) — controla item de sidebar, rota `/mesada` e o `MesadaProvider` em `App.tsx`; default ausente/false, setada como `true` apenas em `.env.local` deste ambiente pessoal
+- **Página `Mesada.tsx`** com 3 abas: Lançamentos (picker de conceito MB/B/R/I por matéria/mês, resumo do mês, contador de MBs vs limite), Acompanhamento (RingProgress da meta, gráfico de evolução mensal via Recharts, lista de penalidades), Configurações da Mesada (período, valores por conceito, limite, meta, CRUD de matérias do boletim)
+- **`MesadaMateriaModal.tsx`** — reaproveita paleta de cores e emoji picker de `lib/tarefasData.ts`; permite vincular opcionalmente a uma Disciplina existente (herda emoji/cor)
+- Build validado: `npm run build` — 0 erros TypeScript
+- Cálculo conferido manualmente contra o exemplo do documento original (5 MB + 6 B + 1 R + 1 I = R$137,00 de total potencial)
+
 ### Planejamento (Etapa 17 / Sessão 027 — 2026-05-30) — v3.0: Módulo de Mesada por Desempenho (uso pessoal)
 - Criada tag `v2.1.0-publico` no commit `80adcd8` — marco de retorno seguro da versão pública, sem o módulo de Mesada
 - Criada e pushada branch `v3-mesada-pessoal` a partir de `main` — onde a v3.0 será desenvolvida

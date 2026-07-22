@@ -7,6 +7,8 @@ import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { TarefasProvider } from "./contexts/TarefasContext";
 import { DisciplinasProvider, useDisciplinas } from "./contexts/DisciplinasContext";
 import { ArquivosProvider } from "./contexts/ArquivosContext";
+import { MesadaProvider } from "./contexts/MesadaContext";
+import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -34,20 +36,24 @@ function Router() {
   }
 
   if (estaAutenticado) {
+    const conteudo = (
+      <OnboardingGate>
+        <Switch>
+          {/* Rota de reset acessível mesmo quando já autenticado */}
+          <Route path="/reset-password" component={ResetPassword} />
+          <Route path="" component={Home} />
+          <Route path="/404" component={NotFound} />
+          <Route component={NotFound} />
+        </Switch>
+      </OnboardingGate>
+    );
+
     return (
       <ArquivosProvider>
         <DisciplinasProvider>
-        <TarefasProvider>
-          <OnboardingGate>
-            <Switch>
-              {/* Rota de reset acessível mesmo quando já autenticado */}
-              <Route path="/reset-password" component={ResetPassword} />
-              <Route path="" component={Home} />
-              <Route path="/404" component={NotFound} />
-              <Route component={NotFound} />
-            </Switch>
-          </OnboardingGate>
-        </TarefasProvider>
+          <TarefasProvider>
+            {MESADA_MODULE_ENABLED ? <MesadaProvider>{conteudo}</MesadaProvider> : conteudo}
+          </TarefasProvider>
         </DisciplinasProvider>
       </ArquivosProvider>
     );

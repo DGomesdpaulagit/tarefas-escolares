@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-30 (Sessão 027 — planejamento v3.0)
+> **Última atualização:** 2026-07-22 (Sessão 028 — implementação inicial v3.0 Mesada, branch `v3-mesada-pessoal`)
 
 ---
 
@@ -461,19 +461,17 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - ✅ Fechamento — Ações completas no TarefaForm — Sessão 025
 - ✅ Hotfix BUG-021 — Sessão 026
 
-### 🚧 v3.0 EM PLANEJAMENTO — Módulo de Mesada por Desempenho (USO PESSOAL, NÃO PUBLICAR)
+### 🚧 v3.0 EM IMPLEMENTAÇÃO — Módulo de Mesada por Desempenho (USO PESSOAL, NÃO PUBLICAR)
 
-**Sessão 027 (2026-05-30):** especificação técnica completa criada em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`. Nenhum código implementado ainda — próxima conversa deve começar por lá.
+**Sessão 027 (2026-05-30):** especificação técnica completa criada em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`.
+
+**Sessão 028 (2026-07-22):** implementação inicial na branch `v3-mesada-pessoal`. Ambiguidades resolvidas com o usuário: **Eixo A** (tabela única de conceitos MB=R$22/B=R$5/R=R$2/I=-R$5 para todas as matérias) e **limite de MB trava o cálculo** (6º MB em diante vira B). Migration `007_mesada_module` aplicada (tabelas `mesada_config`, `mesada_materias`, `mesada_notas` com RLS). Criados `mesadaService.ts`, `MesadaContext.tsx`, `lib/featureFlags.ts`, página `Mesada.tsx` (3 abas), `MesadaMateriaModal.tsx`. Build 0 erros. Pendente: testes manuais reais na UI e configuração do segundo projeto Vercel pessoal.
 
 **Regra fundamental:** o módulo de Mesada é **só para o usuário**, nunca para a versão pública do app. Separação garantida por:
 - Tag `v2.1.0-publico` (commit `80adcd8`) = ponto de retorno seguro da versão pública
-- Branch `v3-mesada-pessoal` (criada a partir de `main`, já pushada) = onde a v3.0 será desenvolvida
-- Feature flag `VITE_ENABLE_MESADA_MODULE` = proteção técnica adicional (mesmo que a branch seja mesclada por engano, o módulo só aparece com a env var explicitamente setada)
-- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`)
-
-**Pendente para o início da próxima conversa (ver seção 2.1 e 5.5 do documento de especificação):**
-- Confirmar se o valor por conceito (MB/B/R/I) é igual para todas as matérias, ou se cada matéria tem valor base próprio
-- Confirmar se o limite de 5 notas "MB" por período trava o cálculo ou é só um alerta visual
+- Branch `v3-mesada-pessoal` = onde a v3.0 é desenvolvida
+- Feature flag `VITE_ENABLE_MESADA_MODULE` (default ausente/false; `true` apenas no `.env.local` deste ambiente pessoal) = proteção técnica adicional
+- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`) — ainda não configurado
 
 **Pós-projeto v2.1 (opcional, fora do escopo original, não relacionado à Mesada):**
 - [ ] Implementação real de i18n em runtime (pt-BR/en/es)
@@ -558,6 +556,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
 | 2026-05-29 | [Etapa 16 / Sessão 026] HOTFIX BUG-021: erro 400 ao salvar tarefa sem data — TarefaForm.handleSubmit normaliza strings vazias para null em due_date/notes/link/sector/origin/description antes de enviar ao Supabase |
 | 2026-05-30 | [Etapa 17 / Sessão 027] Planejamento v3.0 (Módulo de Mesada, uso pessoal): tag `v2.1.0-publico`, branch `v3-mesada-pessoal`, especificação técnica completa em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` — nenhum código implementado, implementação fica para a próxima conversa |
+| 2026-07-22 | [Etapa 17 / Sessão 028] Implementação inicial do Módulo de Mesada (branch `v3-mesada-pessoal`): migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), feature flag `VITE_ENABLE_MESADA_MODULE`, página `Mesada.tsx` (3 abas), `MesadaMateriaModal.tsx` — build 0 erros |
 
 ---
 

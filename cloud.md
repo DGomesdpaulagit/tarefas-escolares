@@ -12,10 +12,61 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 17 - Planejamento v3.0 / Módulo de Mesada (uso pessoal)
-## SESSÃO ATUAL: [Sessão 027] - Especificação técnica da v3.0 + branch dedicada ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 17 - v3.0 / Módulo de Mesada (uso pessoal)
+## SESSÃO ATUAL: [Sessão 028] - Implementação inicial do Módulo de Mesada ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 em planejamento (branch `v3-mesada-pessoal`, uso pessoal)
+## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 em implementação (branch `v3-mesada-pessoal`, uso pessoal)
+
+---
+
+## [Etapa 17 / Sessão 028] - Implementação inicial do Módulo de Mesada por Desempenho
+**Data:** 2026-07-22
+**Branch:** `v3-mesada-pessoal`
+**Status:** ✅ Concluída
+
+### Contexto
+Continuação da Sessão 027 (planejamento). Nesta sessão, as duas ambiguidades levantadas na especificação (`docs/V3_ESPECIFICACAO_MODULO_MESADA.md`, seções 2.1 e 5.5) foram esclarecidas com o usuário antes de codar:
+1. **Eixo de cálculo:** confirmado o **Eixo A** — tabela única de conceitos (MB=R$22/B=R$5/R=R$2/I=-R$5) igual para todas as matérias. O Eixo B (valor base por matéria) NÃO foi implementado.
+2. **Limite de MB:** confirmado que **trava o cálculo** — a partir do 6º lançamento MB no período (limite padrão 5), o valor extra é recalculado como B.
+
+### O que foi feito
+- Trocado para a branch `v3-mesada-pessoal` (estava em `main`)
+- **Migration `007_mesada_module`** aplicada via Supabase MCP no projeto `qnrrgkicsjdbrwhjelqn`: tabelas `mesada_config`, `mesada_materias`, `mesada_notas` com RLS (`auth.uid() = user_id`), também salva em `supabase/migrations/007_mesada_module.sql`
+- **Tipos de domínio** em `client/src/types/index.ts`: `Conceito`, `CategoriaMesada`, `MesadaConfig`, `MesadaMateria`, `MesadaNota`
+- **`client/src/services/mesadaService.ts`** — CRUD seguindo o padrão de `subjectService.ts`
+- **`client/src/contexts/MesadaContext.tsx`** — estado global + lógica de cálculo (incluindo o travamento do limite de MB com ordem determinística por mês/matéria, já que `valor_calculado` é snapshot no momento do lançamento)
+- **Feature flag `VITE_ENABLE_MESADA_MODULE`** — `client/src/lib/featureFlags.ts` + adicionada a `.env.local` (`=true`, só neste ambiente pessoal); checada em `App.tsx` (monta `MesadaProvider` só se habilitada), `Sidebar.tsx` (item "Mesada" só aparece se habilitada) e `Home.tsx` (rota só renderiza se habilitada)
+- **`client/src/pages/Mesada.tsx`** — página com 3 abas (Lançamentos, Acompanhamento, Configurações da Mesada), reaproveitando `RingProgress`, paleta de cores e padrão de cards já estabelecidos no app
+- **`client/src/components/MesadaMateriaModal.tsx`** — modal de criar/editar matéria do boletim, reaproveitando visual do `DisciplinaModal.tsx`, com opção de vincular a uma Disciplina existente (herda emoji/cor)
+
+### Arquivos criados
+- `supabase/migrations/007_mesada_module.sql`
+- `client/src/services/mesadaService.ts`
+- `client/src/contexts/MesadaContext.tsx`
+- `client/src/lib/featureFlags.ts`
+- `client/src/pages/Mesada.tsx`
+- `client/src/components/MesadaMateriaModal.tsx`
+
+### Arquivos modificados
+- `client/src/types/index.ts` — tipos da Mesada
+- `client/src/App.tsx` — `MesadaProvider` condicional
+- `client/src/components/Sidebar.tsx` — item "Mesada" condicional
+- `client/src/pages/Home.tsx` — rota "mesada" condicional
+- `.env.local` — `VITE_ENABLE_MESADA_MODULE=true`
+
+### Build
+- ✅ `npm run build` — 0 erros TS, ~27s
+
+### Validação do cálculo
+Conferido manualmente contra o exemplo do documento original: 5 matérias MB (5×22=110) + 6 matérias B (6×5=30) + 1 matéria R (1×2=2) − 1 matéria I (1×5=−5) = **R$137,00**, batendo com o "total potencial" citado na planilha manual do usuário.
+
+### Não feito nesta sessão (pendente)
+- Testes manuais reais na UI (login + lançamento de notas) — recomendado antes de considerar o módulo pronto
+- Segundo projeto Vercel apontando para `v3-mesada-pessoal` com a env var setada (seção 7.1 da especificação) — requer ação do usuário no dashboard Vercel
+- Ideias adicionais da seção 10 da especificação (histórico por ano, exportação, notificação mensal, cruzamento com Disciplinas) — fora do escopo mínimo
+
+### Próximo passo
+Testar manualmente a UI (criar matérias, lançar conceitos, conferir Acompanhamento) e, se aprovado, configurar o segundo projeto Vercel para uso pessoal.
 
 ---
 

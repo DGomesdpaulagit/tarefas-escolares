@@ -6,10 +6,12 @@ import Configuracoes from "@/pages/Configuracoes";
 import Agenda from "@/pages/Agenda";
 import Disciplinas from "@/pages/Disciplinas";
 import VisaoGeral from "@/pages/VisaoGeral";
+import Mesada from "@/pages/Mesada";
 import UserMenu from "@/components/UserMenu";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useTarefas } from "@/contexts/TarefasContext";
+import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 
 const PAGINA_LABELS: Record<string, string> = {
   "visao-geral": "🏠 Visão Geral",
@@ -19,6 +21,7 @@ const PAGINA_LABELS: Record<string, string> = {
   arquivos: "📁 Arquivos",
   configuracoes: "⚙️ Configurações",
   agenda: "📅 Agenda",
+  mesada: "💰 Mesada",
 };
 
 export default function Home() {
@@ -74,6 +77,7 @@ export default function Home() {
           {pagina === "arquivos" && <Arquivos />}
           {pagina === "configuracoes" && <Configuracoes />}
           {pagina === "agenda" && <Agenda />}
+          {pagina === "mesada" && MESADA_MODULE_ENABLED && <Mesada />}
         </main>
       </div>
     </div>

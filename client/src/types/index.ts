@@ -44,6 +44,53 @@ export interface Perfil {
   updated_at: string;
 }
 
+export type Conceito = "MB" | "B" | "R" | "I";
+export type CategoriaMesada = "principal" | "complementar" | "menor" | "outra";
+
+export interface MesadaConfig {
+  id: string;
+  user_id: string;
+  ano_letivo: number;
+  mes_inicio: number;
+  mes_fim: number;
+  valor_mb: number;
+  valor_b: number;
+  valor_r: number;
+  valor_i: number;
+  limite_mb_por_periodo: number;
+  meta_total: number;
+  criterio_aproveitamento: Record<string, number>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MesadaMateria {
+  id: string;
+  user_id: string;
+  nome: string;
+  categoria: CategoriaMesada;
+  valor_base: number | null;
+  subject_id: string | null;
+  emoji: string | null;
+  cor: string;
+  ativa: boolean;
+  ordem: number;
+  created_at: string;
+}
+
+export interface MesadaNota {
+  id: string;
+  user_id: string;
+  materia_id: string;
+  ano: number;
+  mes: number;
+  conceito: Conceito;
+  valor_calculado: number;
+  observacao: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ArquivoImportado {
   id: string;
   user_id: string;

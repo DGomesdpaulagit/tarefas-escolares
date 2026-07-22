@@ -1,6 +1,7 @@
 import { useTarefas } from "@/contexts/TarefasContext";
 import { useDisciplinas } from "@/contexts/DisciplinasContext";
 import { getMateriaColor, getMateriaEmoji } from "@/lib/tarefasData";
+import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 import type { StatusTarefa } from "@/types";
 import {
   BookOpen,
@@ -13,6 +14,7 @@ import {
   LayoutDashboard,
   ListTodo,
   Settings,
+  Wallet,
   XCircle,
 } from "lucide-react";
 
@@ -41,6 +43,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
     { id: "disciplinas", label: "Disciplinas", icon: GraduationCap },
     { id: "agenda", label: "Agenda", icon: Calendar },
     { id: "metricas", label: "Métricas", icon: LayoutDashboard },
+    ...(MESADA_MODULE_ENABLED ? [{ id: "mesada", label: "Mesada", icon: Wallet }] : []),
     { id: "arquivos", label: "Arquivos", icon: BookOpen },
     { id: "configuracoes", label: "Configurações", icon: Settings },
   ];
