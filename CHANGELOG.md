@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Planejamento (Etapa 17 / Sessão 027 — 2026-05-30) — v3.0: Módulo de Mesada por Desempenho (uso pessoal)
+- Criada tag `v2.1.0-publico` no commit `80adcd8` — marco de retorno seguro da versão pública, sem o módulo de Mesada
+- Criada e pushada branch `v3-mesada-pessoal` a partir de `main` — onde a v3.0 será desenvolvida
+- Documento de especificação técnica completo em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`: modelo de dados (`mesada_config`, `mesada_materias`, `mesada_notas`), fórmulas de cálculo, UI proposta (3 abas), estratégia de deploy com dois projetos Vercel separados, feature flag `VITE_ENABLE_MESADA_MODULE` como proteção adicional
+- **Nenhum código de produção foi alterado** — sessão exclusivamente de planejamento; implementação começa em nova conversa
+
 ### Corrigido (Etapa 16 / Sessão 026 — 2026-05-29) — HOTFIX BUG-021
 - **Bug crítico de salvamento de tarefa** — quando o usuário deixava a data de entrega em branco, o Supabase retornava 400 Bad Request porque o form enviava `due_date: ""` para uma coluna `date`. Toast "Erro ao salvar tarefa" aparecia.
 - Correção: `TarefaForm.handleSubmit` agora normaliza strings vazias para `null` em todos os campos opcionais (`due_date`, `notes`, `link`, `sector`, `origin`, `description`) antes de enviar

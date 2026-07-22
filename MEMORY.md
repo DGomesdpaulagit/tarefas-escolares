@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-05-29 (Sessão 026 — hotfix BUG-021)
+> **Última atualização:** 2026-05-30 (Sessão 027 — planejamento v3.0)
 
 ---
 
@@ -447,9 +447,9 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-**🎉 PROJETO FINALIZADO — todas as fases entregues**
+**🎉 v2.1.0 FINALIZADA E PÚBLICA (tag `v2.1.0-publico`, commit `80adcd8`) — todas as fases originais entregues**
 
-**Fases concluídas:**
+**Fases concluídas (v2.1.0):**
 - ✅ Fase 0 — Setup base + Supabase + Auth
 - ✅ Fase 1 — Correções críticas (datas, status, expiração, light/dark) — Sessão 017
 - ✅ Fase 2 — Catálogo visual de Disciplinas — Sessão 018
@@ -459,8 +459,23 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - ✅ Fase 5 — Configurações Acadêmicas — Sessão 023
 - ✅ Fase 6 — Notificações reorganizadas + Welcome pré-login — Sessão 024
 - ✅ Fechamento — Ações completas no TarefaForm — Sessão 025
+- ✅ Hotfix BUG-021 — Sessão 026
 
-**Pós-projeto (opcional, fora do escopo original):**
+### 🚧 v3.0 EM PLANEJAMENTO — Módulo de Mesada por Desempenho (USO PESSOAL, NÃO PUBLICAR)
+
+**Sessão 027 (2026-05-30):** especificação técnica completa criada em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`. Nenhum código implementado ainda — próxima conversa deve começar por lá.
+
+**Regra fundamental:** o módulo de Mesada é **só para o usuário**, nunca para a versão pública do app. Separação garantida por:
+- Tag `v2.1.0-publico` (commit `80adcd8`) = ponto de retorno seguro da versão pública
+- Branch `v3-mesada-pessoal` (criada a partir de `main`, já pushada) = onde a v3.0 será desenvolvida
+- Feature flag `VITE_ENABLE_MESADA_MODULE` = proteção técnica adicional (mesmo que a branch seja mesclada por engano, o módulo só aparece com a env var explicitamente setada)
+- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`)
+
+**Pendente para o início da próxima conversa (ver seção 2.1 e 5.5 do documento de especificação):**
+- Confirmar se o valor por conceito (MB/B/R/I) é igual para todas as matérias, ou se cada matéria tem valor base próprio
+- Confirmar se o limite de 5 notas "MB" por período trava o cálculo ou é só um alerta visual
+
+**Pós-projeto v2.1 (opcional, fora do escopo original, não relacionado à Mesada):**
 - [ ] Implementação real de i18n em runtime (pt-BR/en/es)
 - [ ] Testes manuais ampliados em mobile real (iOS PWA)
 - [ ] Otimização de bundle (chunks > 500kB)
@@ -542,6 +557,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 14 / Sessão 024] FASE 6: Welcome pré-login (5 slides + dots + skip), Service Worker v2 (data.url, message), sendTest, notifyTaskCreated, alerta de expiradas, Configurações reorganizada em 3 caixas, migration `006_notification_settings_notify_on_create` |
 | 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
 | 2026-05-29 | [Etapa 16 / Sessão 026] HOTFIX BUG-021: erro 400 ao salvar tarefa sem data — TarefaForm.handleSubmit normaliza strings vazias para null em due_date/notes/link/sector/origin/description antes de enviar ao Supabase |
+| 2026-05-30 | [Etapa 17 / Sessão 027] Planejamento v3.0 (Módulo de Mesada, uso pessoal): tag `v2.1.0-publico`, branch `v3-mesada-pessoal`, especificação técnica completa em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` — nenhum código implementado, implementação fica para a próxima conversa |
 
 ---
 

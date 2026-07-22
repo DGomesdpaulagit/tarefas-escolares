@@ -12,12 +12,43 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 16 - Hotfix pós-fechamento
-## SESSÃO ATUAL: [Sessão 026] - HOTFIX BUG-021: erro 400 ao salvar tarefa sem data ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 17 - Planejamento v3.0 / Módulo de Mesada (uso pessoal)
+## SESSÃO ATUAL: [Sessão 027] - Especificação técnica da v3.0 + branch dedicada ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 FINALIZADO (com hotfix de bug crítico)
+## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 em planejamento (branch `v3-mesada-pessoal`, uso pessoal)
 
-## STATUS DO PROJETO: ✅ ATIVO — Fase 0, 1, 2, 3 implementadas + Fase 1 (correções estruturais)
+---
+
+## [Etapa 17 / Sessão 027] - Planejamento da v3.0: Módulo de Mesada por Desempenho
+**Data:** 2026-05-30
+**Status:** ✅ Concluída (apenas planejamento — implementação fica para a PRÓXIMA conversa)
+
+### Contexto
+Usuário trouxe um documento (`Métodologia de mesada.docx`) descrevendo um sistema manual de mesada por desempenho escolar (conceitos MB/B/R/I com valores em R$, 13 matérias, acompanhamento mensal). Pediu para transformar isso em um módulo dentro do Tarefas Escolares, mas **apenas para uso pessoal** — se o app for publicado um dia, deve ser publicado sem esse módulo.
+
+### O que foi feito
+- **Tag `v2.1.0-publico`** criada no commit `80adcd8` (marco de retorno seguro da versão pública, sem Mesada) e pushada para o GitHub
+- **Branch `v3-mesada-pessoal`** criada a partir de `main` e pushada para o GitHub — é onde a v3.0 será desenvolvida
+- **Documento de especificação completo** criado em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`, contendo:
+  - Regra fundamental de separação (branch + feature flag `VITE_ENABLE_MESADA_MODULE` como dupla proteção)
+  - Transcrição da metodologia original do usuário
+  - Ambiguidade identificada no cálculo (Eixo A: conceito com valor fixo para todas as matérias vs Eixo B: cada matéria com valor base próprio) — sinalizada para esclarecer no início da próxima conversa
+  - Modelo de dados proposto (`mesada_config`, `mesada_materias`, `mesada_notas`) com RLS, como entidades independentes de `subjects` (Disciplinas de tarefas)
+  - Fórmulas de cálculo (valor mensal, acumulado, progresso de meta, alerta de limite de MB)
+  - Especificação de UI (3 abas: Lançamentos, Acompanhamento, Configurações da Mesada) reaproveitando componentes visuais já existentes (RingProgress, paleta de cores, emoji picker)
+  - Estratégia de deploy: dois projetos Vercel (um público rastreando `main`, outro pessoal rastreando `v3-mesada-pessoal` com a env var ativada)
+  - Ordem de implementação sugerida (10 passos)
+  - Ideias adicionais em aberto (histórico por ano, exportação, notificação de lançamento mensal, cruzamento com Disciplinas)
+  - Checklist de início da próxima conversa
+
+### Arquivos criados
+- `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`
+
+### Nenhum código de produção foi alterado nesta sessão
+Por pedido explícito do usuário, esta sessão foi só de **planejamento e documentação**. A implementação real do módulo de Mesada começa em uma **nova conversa**, na branch `v3-mesada-pessoal`.
+
+### Próximo passo
+Abrir nova conversa. Primeira ação: ler `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` por completo, confirmar a branch ativa, esclarecer as ambiguidades da seção 2.1 e 5.5 com o usuário, e só então iniciar a implementação seguindo a ordem sugerida na seção 8 do documento.
 
 ---
 
