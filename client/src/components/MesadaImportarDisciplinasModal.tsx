@@ -4,6 +4,7 @@ import { useDisciplinas } from "@/contexts/DisciplinasContext";
 import { X, Loader2, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 interface MesadaImportarDisciplinasModalProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface MesadaImportarDisciplinasModalProps {
 export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImportarDisciplinasModalProps) {
   const { disciplinas } = useDisciplinas();
   const { materias, criarMateria } = useMesada();
+  const { t } = useIdioma();
   const [selecionadas, setSelecionadas] = useState<Set<string>>(new Set());
   const [salvando, setSalvando] = useState(false);
 
@@ -49,10 +51,10 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
           ordem: materias.length + i,
         });
       }
-      toast.success(`${alvos.length} matéria${alvos.length !== 1 ? "s" : ""} importada${alvos.length !== 1 ? "s" : ""}!`);
+      toast.success(`${alvos.length} ${t(alvos.length !== 1 ? "mesadaImportar.toastSucessoPlural" : "mesadaImportar.toastSucessoSingular")}`);
       onClose();
     } catch {
-      toast.error("Erro ao importar disciplinas");
+      toast.error(t("mesadaImportar.erroImportar"));
     } finally {
       setSalvando(false);
     }
@@ -63,7 +65,7 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Importar Disciplinas existentes"
+      aria-label={t("mesadaImportar.titulo")}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
       <div
@@ -72,12 +74,12 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            Importar Disciplinas existentes
+            {t("mesadaImportar.titulo")}
           </h2>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            aria-label="Fechar"
+            aria-label={t("mesadaImportar.fechar")}
           >
             <X size={18} />
           </button>
@@ -85,14 +87,14 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
 
         <div className="p-6 space-y-2 overflow-y-auto flex-1">
           <p className="text-xs text-slate-500 mb-2">
-            Selecione quais Disciplinas já cadastradas no app viram matérias do boletim da Mesada. Emoji e cor são herdados automaticamente.
+            {t("mesadaImportar.descricao")}
           </p>
 
           {disponiveis.length === 0 ? (
             <p className="text-sm text-slate-500 text-center py-8">
               {disciplinas.length === 0
-                ? "Você ainda não tem Disciplinas cadastradas no app."
-                : "Todas as suas Disciplinas já foram importadas para a Mesada."}
+                ? t("mesadaImportar.semDisciplinas")
+                : t("mesadaImportar.todasImportadas")}
             </p>
           ) : (
             <div className="space-y-1.5">
@@ -139,7 +141,7 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
             disabled={salvando}
             className="flex-1 border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent"
           >
-            Cancelar
+            {t("mesadaImportar.cancelar")}
           </Button>
           <Button
             type="button"
@@ -148,7 +150,7 @@ export default function MesadaImportarDisciplinasModal({ onClose }: MesadaImport
             className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
           >
             {salvando ? <Loader2 size={14} className="animate-spin" /> : null}
-            Importar {selecionadas.size > 0 ? `(${selecionadas.size})` : ""}
+            {t("mesadaImportar.importar")} {selecionadas.size > 0 ? `(${selecionadas.size})` : ""}
           </Button>
         </div>
       </div>

@@ -8,23 +8,25 @@ import type { CategoriaMesada, MesadaMateria } from "@/types";
 import { X, Loader2, Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 interface MesadaMateriaModalProps {
   materia?: MesadaMateria;
   onClose: () => void;
 }
 
-const CATEGORIAS: { valor: CategoriaMesada; label: string }[] = [
-  { valor: "principal", label: "Principal" },
-  { valor: "complementar", label: "Complementar" },
-  { valor: "menor", label: "Valor menor" },
-  { valor: "outra", label: "Outra" },
-];
-
 export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaModalProps) {
   const { criarMateria, atualizarMateria, materias } = useMesada();
   const { disciplinas } = useDisciplinas();
+  const { t } = useIdioma();
   const isEdicao = !!materia;
+
+  const CATEGORIAS: { valor: CategoriaMesada; label: string }[] = [
+    { valor: "principal", label: t("mesadaMateriaModal.categoriaPrincipal") },
+    { valor: "complementar", label: t("mesadaMateriaModal.categoriaComplementar") },
+    { valor: "menor", label: t("mesadaMateriaModal.categoriaMenor") },
+    { valor: "outra", label: t("mesadaMateriaModal.categoriaOutra") },
+  ];
 
   const [nome, setNome] = useState(materia?.nome ?? "");
   const [categoria, setCategoria] = useState<CategoriaMesada>(materia?.categoria ?? "complementar");
@@ -48,7 +50,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
   const handleSalvar = async () => {
     if (!valido) return;
     if (!isEdicao && materias.some((m) => m.nome.toLowerCase() === nomeLimpo.toLowerCase())) {
-      toast.error("Já existe uma matéria com esse nome");
+      toast.error(t("mesadaMateriaModal.erroNomeExiste"));
       return;
     }
     setSalvando(true);
@@ -61,7 +63,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
           emoji,
           subject_id: subjectId,
         });
-        toast.success(`${nomeLimpo} atualizada!`);
+        toast.success(`${nomeLimpo} ${t("mesadaMateriaModal.toastAtualizada")}`);
       } else {
         await criarMateria({
           nome: nomeLimpo,
@@ -71,11 +73,11 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
           subject_id: subjectId,
           ordem: materias.length,
         });
-        toast.success(`${nomeLimpo} adicionada!`);
+        toast.success(`${nomeLimpo} ${t("mesadaMateriaModal.toastAdicionada")}`);
       }
       onClose();
     } catch {
-      toast.error("Erro ao salvar matéria");
+      toast.error(t("mesadaMateriaModal.erroSalvar"));
     } finally {
       setSalvando(false);
     }
@@ -86,7 +88,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={isEdicao ? "Editar Matéria" : "Nova Matéria"}
+      aria-label={isEdicao ? t("mesadaMateriaModal.editar") : t("mesadaMateriaModal.nova")}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
       <div
@@ -95,12 +97,12 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            {isEdicao ? "Editar Matéria" : "Nova Matéria do Boletim"}
+            {isEdicao ? t("mesadaMateriaModal.editar") : t("mesadaMateriaModal.nova")}
           </h2>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            aria-label="Fechar"
+            aria-label={t("mesadaMateriaModal.fechar")}
           >
             <X size={18} />
           </button>
@@ -120,9 +122,9 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
                 {emoji}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">Pré-visualização</p>
+                <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">{t("mesadaMateriaModal.pratica")}</p>
                 <p className="text-lg font-semibold truncate" style={{ color: cor }}>
-                  {nomeLimpo || "Nome da matéria"}
+                  {nomeLimpo || t("mesadaMateriaModal.nomeMateriaPlaceholder")}
                 </p>
               </div>
             </div>
@@ -131,13 +133,13 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
           {/* Nome */}
           <div className="space-y-1.5">
             <Label htmlFor="mesada-materia-nome" className="text-slate-700 dark:text-slate-300 text-sm">
-              Nome da matéria *
+              {t("mesadaMateriaModal.nomeLabel")}
             </Label>
             <Input
               id="mesada-materia-nome"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="Ex: Matemática"
+              placeholder={t("mesadaMateriaModal.nomePlaceholder")}
               className="bg-white/5 border-white/10 text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-amber-500"
               maxLength={40}
               autoFocus
@@ -151,7 +153,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
           {disciplinas.length > 0 && (
             <div className="space-y-2">
               <Label className="text-slate-700 dark:text-slate-300 text-sm">
-                Vincular a uma Disciplina existente (opcional)
+                {t("mesadaMateriaModal.vincularDisciplina")}
               </Label>
               <div className="flex flex-wrap gap-1.5">
                 <button
@@ -163,7 +165,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
                       : "border-white/10 text-slate-400 hover:border-white/20"
                   }`}
                 >
-                  Nenhuma
+                  {t("mesadaMateriaModal.nenhuma")}
                 </button>
                 {disciplinas.map((d) => (
                   <button
@@ -186,7 +188,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
 
           {/* Categoria */}
           <div className="space-y-2">
-            <Label className="text-slate-700 dark:text-slate-300 text-sm">Categoria</Label>
+            <Label className="text-slate-700 dark:text-slate-300 text-sm">{t("mesadaMateriaModal.categoria")}</Label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {CATEGORIAS.map((c) => (
                 <button
@@ -208,7 +210,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
 
           {/* Emoji */}
           <div className="space-y-2">
-            <Label className="text-slate-700 dark:text-slate-300 text-sm">Emoji</Label>
+            <Label className="text-slate-700 dark:text-slate-300 text-sm">{t("mesadaMateriaModal.emoji")}</Label>
             <div className="grid grid-cols-8 sm:grid-cols-10 gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg bg-white/5 border border-white/10">
               {EMOJI_SUGERIDOS.map((e) => (
                 <button
@@ -229,7 +231,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
 
           {/* Cor */}
           <div className="space-y-2">
-            <Label className="text-slate-700 dark:text-slate-300 text-sm">Cor</Label>
+            <Label className="text-slate-700 dark:text-slate-300 text-sm">{t("mesadaMateriaModal.cor")}</Label>
             <div className="grid grid-cols-8 sm:grid-cols-[repeat(15,minmax(0,1fr))] gap-2">
               {PALETA_DISCIPLINAS.map((c) => (
                 <button
@@ -259,7 +261,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
             disabled={salvando}
             className="flex-1 border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent"
           >
-            Cancelar
+            {t("mesadaMateriaModal.cancelar")}
           </Button>
           <Button
             type="button"
@@ -268,7 +270,7 @@ export default function MesadaMateriaModal({ materia, onClose }: MesadaMateriaMo
             className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
           >
             {salvando ? <Loader2 size={14} className="animate-spin" /> : null}
-            {isEdicao ? "Salvar" : "Criar matéria"}
+            {isEdicao ? t("mesadaMateriaModal.salvar") : t("mesadaMateriaModal.criarMateria")}
           </Button>
         </div>
       </div>
