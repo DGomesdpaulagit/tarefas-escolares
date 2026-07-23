@@ -56,6 +56,20 @@ export const mesadaService = {
     return data as MesadaConfig | null;
   },
 
+  // Config do ano letivo mais recente já configurado pelo usuário (para herdar valores na virada de ano)
+  async getConfigMaisRecente(userId: string): Promise<MesadaConfig | null> {
+    const { data, error } = await supabase
+      .from("mesada_config")
+      .select("*")
+      .eq("user_id", userId)
+      .order("ano_letivo", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data as MesadaConfig | null;
+  },
+
   async upsertConfig(userId: string, input: MesadaConfigInput): Promise<MesadaConfig> {
     const { data, error } = await supabase
       .from("mesada_config")

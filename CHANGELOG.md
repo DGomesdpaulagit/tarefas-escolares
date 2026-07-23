@@ -8,6 +8,13 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 028d — 2026-07-22) — Mesada: termômetro, lembrete mensal, virada de ano + data no topo
+- **Termômetro por matéria** (🟢/🟡/🔴) na aba Lançamentos, calculado pela média histórica dos conceitos daquela matéria no ano (peso MB=3/B=2/R=1/I=0) — não afeta o valor em R$, é só indicador visual
+- **`notificationService.checkMesadaReminder()`** — lembrete local (1x/dia) nos últimos 5 dias do mês se houver matéria sem lançamento; **`MesadaNotificationChecker.tsx`** monta essa checagem dentro do `MesadaProvider`
+- **Virada de ano automática e correta:** `mesadaService.getConfigMaisRecente()` + lógica em `MesadaContext.recarregar` — ao entrar em um ano letivo novo sem config, os valores (MB/B/R/I, limite, meta) são **herdados do ano anterior** em vez de resetar para os defaults do banco. Matérias do boletim já eram compartilhadas entre anos (sem coluna `ano`); lançamentos (`mesada_notas`) começam vazios naturalmente por serem escopados por ano/mês — nenhuma ação manual necessária na virada do ano
+- **Data de hoje ao vivo** no topo do app (`Home.tsx`) — centralizada no topbar desktop, abaixo do título no topbar mobile; atualiza sozinha (checagem a cada hora), sem precisar recarregar a página
+- Build: 0 erros TypeScript
+
 ### Adicionado (Etapa 17 / Sessão 028c — 2026-07-22) — Mesada: Grade do boletim + Distribuição por matéria
 - **Grade do boletim** na aba Acompanhamento — tabela matérias × meses (mesmo layout da planilha original do usuário), célula colorida por conceito, linha de total por mês e coluna de total por matéria
 - **Gráfico "Desempenho por matéria"** — barras empilhadas horizontais mostrando quantos MB/B/R/I cada matéria teve no período, pra identificar onde está a dificuldade

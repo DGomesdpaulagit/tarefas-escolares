@@ -65,7 +65,25 @@ export function MesadaProvider({ children }: { children: React.ReactNode }) {
     try {
       let cfg = await mesadaService.getConfig(user.id, anoLetivo);
       if (!cfg) {
-        cfg = await mesadaService.upsertConfig(user.id, { ano_letivo: anoLetivo });
+        // Virada de ano (ou primeiro acesso): herda os valores do ano letivo mais recente já configurado,
+        // em vez de resetar para os defaults do banco. Lançamentos (mesada_notas) começam vazios naturalmente,
+        // pois são escopados por ano — só a configuração precisa ser propagada manualmente.
+        const anterior = await mesadaService.getConfigMaisRecente(user.id);
+        cfg = await mesadaService.upsertConfig(user.id, {
+          ano_letivo: anoLetivo,
+          ...(anterior
+            ? {
+                mes_inicio: anterior.mes_inicio,
+                mes_fim: anterior.mes_fim,
+                valor_mb: anterior.valor_mb,
+                valor_b: anterior.valor_b,
+                valor_r: anterior.valor_r,
+                valor_i: anterior.valor_i,
+                limite_mb_por_periodo: anterior.limite_mb_por_periodo,
+                meta_total: anterior.meta_total,
+              }
+            : {}),
+        });
       }
       const [mats, nts] = await Promise.all([
         mesadaService.listMaterias(user.id),

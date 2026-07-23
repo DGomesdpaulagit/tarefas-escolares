@@ -124,8 +124,20 @@ function AbaBotao({ label, ativa, onClick }: { label: string; ativa: boolean; on
 // Aba: Lançamentos
 // ============================================================
 
+// Peso de "qualidade" de cada conceito, usado só para o termômetro (não afeta o valor em R$)
+const PESO_CONCEITO: Record<Conceito, number> = { MB: 3, B: 2, R: 1, I: 0 };
+
+function termometroDaMateria(notasDaMateria: { conceito: Conceito }[]): { emoji: string; label: string } | null {
+  if (notasDaMateria.length === 0) return null;
+  const media =
+    notasDaMateria.reduce((soma, n) => soma + PESO_CONCEITO[n.conceito], 0) / notasDaMateria.length;
+  if (media >= 2.3) return { emoji: "🟢", label: "Indo bem" };
+  if (media >= 1.3) return { emoji: "🟡", label: "Atenção" };
+  return { emoji: "🔴", label: "Precisa melhorar" };
+}
+
 function AbaLancamentos() {
-  const { config, materias, notaDoMes, valorDoMes, lancarNota, mbUsadosNoPeriodo } = useMesada();
+  const { config, materias, notas, notaDoMes, valorDoMes, lancarNota, mbUsadosNoPeriodo } = useMesada();
   const hoje = new Date();
   const [mes, setMes] = useState(hoje.getMonth() + 1);
   const [salvandoId, setSalvandoId] = useState<string | null>(null);
@@ -199,6 +211,7 @@ function AbaLancamentos() {
       <div className="space-y-2">
         {materiasAtivas.map((m) => {
           const nota = notaDoMes(m.id, mes);
+          const termometro = termometroDaMateria(notas.filter((n) => n.materia_id === m.id));
           return (
             <div
               key={m.id}
@@ -212,7 +225,14 @@ function AbaLancamentos() {
                   {m.emoji ?? "📘"}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{m.nome}</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate flex items-center gap-1.5">
+                    {m.nome}
+                    {termometro && (
+                      <span title={termometro.label} aria-label={termometro.label}>
+                        {termometro.emoji}
+                      </span>
+                    )}
+                  </p>
                   <p className="text-[11px] text-slate-500 capitalize">{m.categoria}</p>
                 </div>
               </div>

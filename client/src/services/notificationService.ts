@@ -193,4 +193,35 @@ export const notificationService = {
 
     if (notified.length > 0) localStorage.setItem("notify_last_check", todayStr);
   },
+
+  // Lembrete de lançamento da Mesada — avisa 1x/dia nos últimos dias do mês se houver matéria sem lançamento
+  async checkMesadaReminder(materiasFaltando: number): Promise<void> {
+    if (!this.isSupported() || Notification.permission !== "granted") return;
+    if (materiasFaltando <= 0) return;
+
+    const hoje = new Date();
+    const ultimoDiaDoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+    const diasRestantes = ultimoDiaDoMes - hoje.getDate();
+    if (diasRestantes > 5) return; // só nos últimos 5 dias do mês
+
+    const todayStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+    if (localStorage.getItem("mesada_notify_last_check") === todayStr) return;
+
+    const titulo = "💰 Lançamentos da Mesada pendentes";
+    const corpo = `Faltam ${materiasFaltando} matéria${materiasFaltando !== 1 ? "s" : ""} sem conceito lançado este mês`;
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      reg.active?.postMessage({
+        type: "SHOW_NOTIFICATION",
+        payload: { title: titulo, body: corpo, tag: "mesada-reminder", url: "/" },
+      });
+    } catch {
+      try {
+        new Notification(titulo, { body: corpo, icon: "/android-chrome-192x192.png", tag: "mesada-reminder" });
+      } catch {}
+    }
+
+    localStorage.setItem("mesada_notify_last_check", todayStr);
+  },
 };

@@ -9,6 +9,7 @@ import { DisciplinasProvider, useDisciplinas } from "./contexts/DisciplinasConte
 import { ArquivosProvider } from "./contexts/ArquivosContext";
 import { MesadaProvider } from "./contexts/MesadaContext";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
+import MesadaNotificationChecker from "@/components/MesadaNotificationChecker";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -52,7 +53,14 @@ function Router() {
       <ArquivosProvider>
         <DisciplinasProvider>
           <TarefasProvider>
-            {MESADA_MODULE_ENABLED ? <MesadaProvider>{conteudo}</MesadaProvider> : conteudo}
+            {MESADA_MODULE_ENABLED ? (
+              <MesadaProvider>
+                <MesadaNotificationChecker />
+                {conteudo}
+              </MesadaProvider>
+            ) : (
+              conteudo
+            )}
           </TarefasProvider>
         </DisciplinasProvider>
       </ArquivosProvider>
