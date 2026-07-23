@@ -17,26 +17,27 @@ Todos os links relevantes do projeto organizados por categoria.
 
 ## Supabase
 
-| Recurso | URL |
-|---------|-----|
-| **Dashboard do projeto** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn |
-| **Editor SQL** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/editor |
+| Recurso                    | URL                                                                       |
+| -------------------------- | ------------------------------------------------------------------------- |
+| **Dashboard do projeto**   | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn               |
+| **Editor SQL**             | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/editor        |
 | **Tabelas (Table Editor)** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/editor/tables |
-| **Autenticação (Auth)** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/auth/users |
-| **RLS (Policies)** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/auth/policies |
-| **Logs** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/logs/explorer |
-| **API Settings** | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/settings/api |
+| **Autenticação (Auth)**    | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/auth/users    |
+| **RLS (Policies)**         | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/auth/policies |
+| **Logs**                   | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/logs/explorer |
+| **API Settings**           | https://supabase.com/dashboard/project/qnrrgkicsjdbrwhjelqn/settings/api  |
 
 ---
 
 ## Vercel
 
-| Recurso | URL |
-|---------|-----|
-| **Projeto** | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares |
-| **Deployments** | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/deployments |
-| **Variáveis de Ambiente** | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/settings/environment-variables |
-| **Logs de Build** | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/deployments (selecionar deploy) |
+| Recurso                   | URL                                                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Projeto**               | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares                                 |
+| **Deployments**           | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/deployments                     |
+| **Variáveis de Ambiente** | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/settings/environment-variables  |
+| **Logs de Build**         | https://vercel.com/davi-gomes-de-paula-s-projects/tarefas-escolares/deployments (selecionar deploy) |
+|                           |                                                                                                     |
 
 ---
 
@@ -45,10 +46,13 @@ Todos os links relevantes do projeto organizados por categoria.
 | Recurso | URL |
 |---------|-----|
 | **Repositório** | https://github.com/DGomesdpaulagit/tarefas-escolares |
-| **Branch main** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/main |
+| **Branch main (pública)** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/main |
+| **Branch v3-mesada-pessoal (uso pessoal)** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/v3-mesada-pessoal |
 | **Commits** | https://github.com/DGomesdpaulagit/tarefas-escolares/commits/main |
 | **Issues** | https://github.com/DGomesdpaulagit/tarefas-escolares/issues |
 | **Releases** | https://github.com/DGomesdpaulagit/tarefas-escolares/releases |
+
+> ⚠️ A branch `v3-mesada-pessoal` tem commits locais ainda não enviados ao GitHub (push falhou por exigir autenticação interativa neste ambiente). Rodar `git push origin v3-mesada-pessoal` manualmente.
 
 ---
 
@@ -126,4 +130,4 @@ Todos os links relevantes do projeto organizados por categoria.
 
 ---
 
-*Atualizado em: 2026-05-20*
+*Atualizado em: 2026-07-22*

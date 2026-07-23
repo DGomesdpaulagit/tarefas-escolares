@@ -322,8 +322,41 @@ REGRAS:
 
 ---
 
-🎉 **PROJETO FINALIZADO** — todas as fases entregues conforme escopo.
+🎉 **v2.1.0 FINALIZADA** — todas as fases entregues conforme escopo (versão pública, branch `main`).
 
 ---
 
-*Atualizado em: 2026-05-28*
+### P-019 — v3.0: Módulo de Mesada por Desempenho + Tutorial guiado do app
+**Validado em:** 2026-07-22
+**Sessão:** 028 (branch `v3-mesada-pessoal`, uso pessoal)
+**Escopo aprovado (em 6 blocos ao longo da conversa):**
+1. Módulo de Mesada base: lançar conceito (MB/B/R/I) por matéria/mês, cálculo automático de valor acumulado, limite de MB, meta
+2. Importar Disciplinas já cadastradas no app em lote, em vez de digitar cada matéria do boletim manualmente
+3. Painel/dashboard mostrando a grade real do boletim (matéria × mês, igual à planilha original) e gráfico de quantas notas de cada conceito por matéria, para identificar dificuldade
+4. Termômetro visual por matéria, lembrete de lançamento no fim do mês, confirmação de que a virada de ano funciona sozinha (matérias e config persistem, notas resetam)
+5. Data de hoje ao vivo no topo do app
+6. Tutorial guiado explicando todas as funções/abas do app, com efeito spotlight (escurece o resto da tela, destaca só o item explicado)
+7. Ajustes finos do tutorial: velocidade da animação, oferecer automaticamente a usuários novos, corrigir card de navegação saindo da tela
+
+**Decisões de negócio esclarecidas antes de codar (ambiguidades do documento original):**
+- Tabela de conceito única para todas as matérias (não valor por matéria)
+- Limite de MB por período **trava** o cálculo (não é só alerta visual)
+
+**Estratégia adotada:**
+- Três tabelas novas (`mesada_config`, `mesada_materias`, `mesada_notas`) independentes de `subjects`, com RLS padrão do projeto
+- `valor_calculado` salvo como snapshot em cada nota (auditável mesmo se a config mudar depois)
+- Config de um ano novo herda os valores do ano letivo mais recente em vez de resetar para os defaults do banco
+- Tutorial implementado com `TourContext` (steps declarativos, navegação de página via callback registrado) + `TourOverlay` (técnica de `box-shadow: 0 0 0 9999px` para o recorte/spotlight, com posição sempre clampada aos limites da janela)
+- Feature flag `VITE_ENABLE_MESADA_MODULE` mantém a Mesada exclusiva do ambiente pessoal; o Tutorial, por ser recurso geral, não tem flag — é candidato a ir para `main` separadamente no futuro
+
+**Prompt de fechamento validado (registrar e limpar documentação):**
+```
+Agora quero que vc atualize todos os arquivos que fazemos registros,
+documentação do projeto, entre outros e atualize tudo, não tenho mais
+inovações ou ideia de nova versão ou passo. Faça a limpa.
+```
+**Resultado:** varredura e atualização de `MEMORY.md`, `MEMORY_CORE.md`, `cloud.md`, `CHANGELOG.md`, `BUGS.md`, `PROMPTS.md`, `LINKS.md`, `DOCUMENTACAO_PROJETO.md`, `docs/ROADMAP.md`, `README.md`, `CLAUDE.md` (caminho do projeto corrigido) e remoção de `README_PT.md` (duplicata obsoleta descrevendo a arquitetura localStorage/Manus AI descontinuada desde a Sessão 1).
+
+---
+
+*Atualizado em: 2026-07-22*

@@ -14,6 +14,7 @@ Sistema profissional de gerenciamento de tarefas escolares com autenticação re
 - **Exportação** (JSON e Excel)
 - **Histórico de importações**
 - **Página de Configurações** (perfil, notificações, matérias)
+- **Tutorial guiado** — explica todas as áreas do app com efeito spotlight, acessível em Configurações
 - **Design responsivo** — funciona em mobile e desktop
 - **Tema Academic Dark** — design profissional
 
@@ -94,6 +95,14 @@ src/
 - [Deploy](docs/DEPLOY.md)
 - [Auditoria](docs/AUDITORIA.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Documentação completa do projeto](DOCUMENTACAO_PROJETO.md)
+
+## 🌿 Branches
+
+| Branch | Conteúdo |
+|---|---|
+| `main` | Versão pública/estável (v2.1.0) |
+| `v3-mesada-pessoal` | Versão de uso pessoal (v3.0) — inclui um módulo extra de mesada por desempenho escolar, disponível apenas com a variável de ambiente `VITE_ENABLE_MESADA_MODULE=true`. Não é publicada. |
 
 ## 📄 Licença
 

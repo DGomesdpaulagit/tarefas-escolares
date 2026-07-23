@@ -1,10 +1,10 @@
 # Tarefas Escolares — Documentação Oficial do Projeto
 
-**Versão atual:** 2.1.0
-**Status:** Em produção
-**Última atualização da documentação:** 2026-05-29
+**Versão atual (pública):** 2.1.0 — **ENCERRADA**
+**Versão em uso pessoal:** 3.0 (branch `v3-mesada-pessoal`, não publicada — ver seção 25)
+**Última atualização da documentação:** 2026-07-22
 **Repositório:** https://github.com/DGomesdpaulagit/tarefas-escolares
-**Produção:** https://tarefas-escolares-five.vercel.app
+**Produção (pública, v2.1.0):** https://tarefas-escolares-five.vercel.app
 
 ---
 
@@ -34,6 +34,7 @@
 22. [Diferenciais do sistema](#22-diferenciais-do-sistema)
 23. [Ideias futuras para expansão](#23-ideias-futuras-para-expansão)
 24. [Conclusão final](#24-conclusão-final)
+25. [Anexo — v3.0: Módulo de Mesada + Tutorial guiado (branch pessoal)](#25-anexo--v30-módulo-de-mesada--tutorial-guiado-branch-pessoal)
 
 ---
 
@@ -52,7 +53,7 @@
 
 **Linha do tempo:**
 - Versão `1.0.0` (descontinuada): protótipo gerado por Manus AI com auth mockada via localStorage, dados hardcoded, dependências quebradas
-- Versão `2.0.0` (refatoração completa): migração para Supabase, autenticação real, RLS, deploy contínuo
+- Versão `2.0.0` (refatoração completa): migração para Supabase, autenticação real, RLS, deploy contínuo 
 - Versão `2.1.0` (atual): inclusão de todas as Fases 1 a 6 (correções estruturais, catálogo de disciplinas, calendário, dashboard, configurações acadêmicas, notificações reorganizadas, welcome pré-login e fechamento)
 
 ---
@@ -494,7 +495,7 @@ Clicar no card filtra automaticamente as tarefas dessa disciplina e navega para 
 - **Picker de emoji** com 50+ presets em grade scrollable, mais input para emoji personalizado
 - **Paleta de 15 cores** em círculos com check visual
 - **Sugestão automática** "Usar visual sugerido para X" quando o nome digitado bate com um preset conhecido (Matemática → laranja + livro, Educação Física → vermelho + bola etc.)
-- **Validação**: nome único, mínimo 1 caractere
+- **Validação**: nome único, mínimo 1 caracteres
 
 ### 12.5 Sugestões rápidas
 
@@ -1056,7 +1057,7 @@ Sem precisar refatorar componente por componente, troca de tema funciona em todo
 
 ## 24. Conclusão final
 
-O **Tarefas Escolares** começou como um projeto de organização pessoal e cresceu, ao longo de **25 sessões de desenvolvimento estruturado** em pareamento com IA, para se tornar uma plataforma SaaS completa, em produção, com infraestrutura real, autenticação, sincronização entre dispositivos e arquitetura escalável.
+O **Tarefas Escolares** começou como um projeto de organização pessoal e cresceu, ao longo de **25 sessões de desenvolvimento estruturado** em pareamento com IA, para se tornar uma plataforma SaaS completa, em produção, com infraestrutura real, autenticação, sincronização entre dispositivos e arquitetura escalável. 
 
 Mais do que um app de tarefa, o sistema entrega:
 
@@ -1086,8 +1087,49 @@ O projeto está oficialmente **finalizado na versão 2.1.0**. Pode evoluir confo
 
 ---
 
-**Documento gerado em:** 2026-05-29
-**Versão do sistema documentada:** 2.1.0
+## 25. Anexo — v3.0: Módulo de Mesada + Tutorial guiado (branch pessoal)
+
+> Esta seção documenta trabalho posterior ao encerramento da v2.1.0 (seção 24). **Não faz parte da versão pública** — vive exclusivamente na branch `v3-mesada-pessoal` e não deve ser mesclada em `main`.
+
+### 25.1 Módulo de Mesada por Desempenho (uso exclusivamente pessoal)
+
+Sistema de recompensa financeira por desempenho escolar, digitalizando uma planilha manual que o usuário já usava. Lançamento mensal de conceito (MB/B/R/I) por matéria do boletim, com cálculo automático de valor acumulado, meta e alertas.
+
+**Regras de negócio confirmadas com o usuário:**
+- Tabela de conceito **única** para todas as matérias: MB = R$22, B = R$5, R = R$2, I = -R$5
+- Limite de MB por período (padrão 5) **trava** o cálculo — a partir do 6º lançamento MB, o valor extra é contabilizado como B
+
+**Modelo de dados:** três tabelas novas no Supabase (`mesada_config`, `mesada_materias`, `mesada_notas`), independentes de `subjects` (Disciplinas de tarefas), todas com RLS. Um campo opcional `subject_id` permite vincular visualmente a uma Disciplina existente sem forçar acoplamento.
+
+**UI:** página `/mesada` (rota condicional) com 3 abas:
+- **Lançamentos** — picker de conceito por matéria/mês, termômetro visual (🟢🟡🔴) baseado no histórico, resumo do mês
+- **Acompanhamento** — ring de progresso da meta, gráfico de evolução mensal, **Grade do boletim** (tabela matéria × mês, réplica da planilha original do usuário), gráfico de distribuição de conceitos por matéria, cards de insight automáticos (matéria destaque / matéria de atenção)
+- **Configurações da Mesada** — período, valores por conceito, limite, meta, CRUD de matérias do boletim (criação manual ou importação em lote das Disciplinas já cadastradas no app)
+
+**Proteção contra vazamento para a versão pública (dupla camada):**
+1. Tag `v2.1.0-publico` (commit `80adcd8`) — ponto de retorno seguro
+2. Branch dedicada `v3-mesada-pessoal`
+3. Feature flag `VITE_ENABLE_MESADA_MODULE` (default ausente/`false`) — mesmo que a branch seja mesclada por engano, o módulo continua invisível sem a env var setada explicitamente
+
+**Extras:** lembrete de notificação local nos últimos dias do mês se faltar lançamento; virada de ano automática (matérias e configurações persistem entre anos, lançamentos resetam sozinhos por serem escopados por ano/mês, e a configuração de um ano novo herda os valores do ano anterior em vez de resetar para os defaults).
+
+### 25.2 Tutorial guiado do app (recurso geral, não exclusivo da Mesada)
+
+Diferente do módulo de Mesada, esse recurso **não é pessoal por natureza** — é um tutorial interativo explicando as funções do app inteiro, candidato a ser levado também para `main` no futuro, se o usuário decidir.
+
+- **Efeito spotlight:** escurece toda a tela e recorta (destaca) só o elemento sendo explicado, via a técnica `box-shadow: 0 0 0 9999px rgba(0,0,0,.78)` aplicada a um elemento posicionado exatamente sobre o alvo
+- **19 passos** cobrindo Visão Geral, Tarefas, Disciplinas, Agenda, Métricas, Mesada (se habilitada), Arquivos, Configurações e o menu do usuário, com navegação automática entre páginas conforme o passo
+- Card de navegação (Anterior/Próximo/Pular, contador de passos) sempre posicionado dentro dos limites da janela — corrigido um bug em que o card podia renderizar fora da área visível em passos com o alvo perto do rodapé da tela
+- Disparado manualmente pelo botão "Ver tutorial do app" em Configurações, ou oferecido automaticamente a usuários novos ao concluir/pular o onboarding pós-cadastro
+
+### 25.3 Estado no encerramento desta etapa
+
+Ambos os recursos foram implementados, com build validado (0 erros TypeScript) e commits salvos na branch `v3-mesada-pessoal`. Testes manuais na UI real (login, lançamentos, tutorial) ficam a cargo do usuário. Não há próximo passo definido — o usuário não tinha novas ideias no momento do encerramento desta etapa (2026-07-22). Um segundo projeto Vercel apontando para essa branch (com a env var ativada) é o caminho natural caso o usuário queira um link de acesso remoto pessoal no futuro.
+
+---
+
+**Documento gerado em:** 2026-05-29 · **Anexo v3.0 adicionado em:** 2026-07-22
+**Versão do sistema documentada:** 2.1.0 (pública) + 3.0 (pessoal, anexo)
 **Autoria do projeto:** Davi Gomes de Paula
 **Pareamento técnico ao longo do desenvolvimento:** Claude (Anthropic) via Claude Code
 

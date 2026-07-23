@@ -33,8 +33,11 @@ Se o usuário disser "sim", "pode", "continua", "vai", "oi", ou qualquer coisa �
 ## Localização do projeto
 
 ```
-C:\Users\HP\Downloads\tarefas-escolares-app (1)
+C:\Users\HP\Documents\Tarefas-Escolares-app (1)
 ```
+
+Branch pessoal ativa (v3.0, módulo de Mesada + tutorial guiado): `v3-mesada-pessoal`.
+Branch pública/estável (v2.1.0): `main`.
 
 ## URLs oficiais
 

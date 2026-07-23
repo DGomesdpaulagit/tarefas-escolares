@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-07-22 (Sessão 028 — implementação inicial v3.0 Mesada, branch `v3-mesada-pessoal`)
+> **Última atualização:** 2026-07-22 (Sessão 028 — v3.0 Mesada completa + Tutorial guiado, branch `v3-mesada-pessoal`) — sem próximos passos pendentes
 
 ---
 
@@ -461,17 +461,27 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - ✅ Fechamento — Ações completas no TarefaForm — Sessão 025
 - ✅ Hotfix BUG-021 — Sessão 026
 
-### 🚧 v3.0 EM IMPLEMENTAÇÃO — Módulo de Mesada por Desempenho (USO PESSOAL, NÃO PUBLICAR)
+### ✅ v3.0 IMPLEMENTADA — Módulo de Mesada por Desempenho + Tutorial guiado (branch `v3-mesada-pessoal`)
 
 **Sessão 027 (2026-05-30):** especificação técnica completa criada em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`.
 
-**Sessão 028 (2026-07-22):** implementação inicial na branch `v3-mesada-pessoal`. Ambiguidades resolvidas com o usuário: **Eixo A** (tabela única de conceitos MB=R$22/B=R$5/R=R$2/I=-R$5 para todas as matérias) e **limite de MB trava o cálculo** (6º MB em diante vira B). Migration `007_mesada_module` aplicada (tabelas `mesada_config`, `mesada_materias`, `mesada_notas` com RLS). Criados `mesadaService.ts`, `MesadaContext.tsx`, `lib/featureFlags.ts`, página `Mesada.tsx` (3 abas), `MesadaMateriaModal.tsx`. Build 0 erros. Pendente: testes manuais reais na UI e configuração do segundo projeto Vercel pessoal.
+**Sessão 028 (2026-07-22) — completa em 6 blocos, sem próximos passos pendentes:**
+1. Módulo base: migration `007_mesada_module` (`mesada_config`, `mesada_materias`, `mesada_notas`, RLS), `mesadaService.ts`, `MesadaContext.tsx`, `lib/featureFlags.ts` (`VITE_ENABLE_MESADA_MODULE`), página `Mesada.tsx` (3 abas), `MesadaMateriaModal.tsx`. Ambiguidades da especificação resolvidas: **Eixo A** (tabela única MB=R$22/B=R$5/R=R$2/I=-R$5) e **limite de MB trava o cálculo** (6º MB vira B).
+2. Importação em lote de Disciplinas existentes para a Mesada (`MesadaImportarDisciplinasModal.tsx`)
+3. Grade do boletim (réplica da planilha original) + gráfico "Desempenho por matéria" + insights automáticos, na aba Acompanhamento
+4. Termômetro 🟢🟡🔴 por matéria, lembrete de lançamento no fim do mês (`checkMesadaReminder`), virada de ano herdando config do ano anterior, data de hoje ao vivo no topo do app
+5. Tutorial guiado do app com efeito spotlight — `TourContext.tsx` (19 passos) + `TourOverlay.tsx`, botão em Configurações. **Este recurso é geral, não exclusivo da Mesada** — candidato a ser levado também para `main` no futuro, se o usuário quiser
+6. Ajustes finos do tutorial: animação mais lenta, correção do card de navegação saindo da tela, oferta automática do tour a usuários novos
+
+Build validado (0 erros TS) em todos os blocos. Cálculo conferido contra o exemplo do documento original (R$137,00).
 
 **Regra fundamental:** o módulo de Mesada é **só para o usuário**, nunca para a versão pública do app. Separação garantida por:
 - Tag `v2.1.0-publico` (commit `80adcd8`) = ponto de retorno seguro da versão pública
 - Branch `v3-mesada-pessoal` = onde a v3.0 é desenvolvida
 - Feature flag `VITE_ENABLE_MESADA_MODULE` (default ausente/false; `true` apenas no `.env.local` deste ambiente pessoal) = proteção técnica adicional
-- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`) — ainda não configurado
+- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`) — ainda não configurado, é o próximo passo natural quando o usuário quiser um link de acesso remoto
+
+**Pendências não bloqueantes:** `git push` da branch não foi possível neste ambiente (exige auth interativa) — commits estão salvos localmente, usuário deve rodar `git push origin v3-mesada-pessoal`. Também foi identificado um token do GitHub exposto em texto plano na URL do remote `origin` — recomendado revogar e reconfigurar.
 
 **Pós-projeto v2.1 (opcional, fora do escopo original, não relacionado à Mesada):**
 - [ ] Implementação real de i18n em runtime (pt-BR/en/es)
@@ -556,7 +566,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
 | 2026-05-29 | [Etapa 16 / Sessão 026] HOTFIX BUG-021: erro 400 ao salvar tarefa sem data — TarefaForm.handleSubmit normaliza strings vazias para null em due_date/notes/link/sector/origin/description antes de enviar ao Supabase |
 | 2026-05-30 | [Etapa 17 / Sessão 027] Planejamento v3.0 (Módulo de Mesada, uso pessoal): tag `v2.1.0-publico`, branch `v3-mesada-pessoal`, especificação técnica completa em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` — nenhum código implementado, implementação fica para a próxima conversa |
-| 2026-07-22 | [Etapa 17 / Sessão 028] Implementação inicial do Módulo de Mesada (branch `v3-mesada-pessoal`): migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), feature flag `VITE_ENABLE_MESADA_MODULE`, página `Mesada.tsx` (3 abas), `MesadaMateriaModal.tsx` — build 0 erros |
+| 2026-07-22 | [Etapa 17 / Sessão 028] Módulo de Mesada completo (branch `v3-mesada-pessoal`) em 6 blocos: (1) base — migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), `Mesada.tsx`, `MesadaMateriaModal.tsx`; (2) importar Disciplinas em lote; (3) Grade do boletim + gráfico de desempenho por matéria; (4) termômetro, lembrete mensal, virada de ano herdando config, data ao vivo; (5) Tutorial guiado do app com spotlight (`TourContext`, `TourOverlay`, 19 passos); (6) ajustes finos do tutorial (velocidade, posição do card, oferta a usuários novos) — build 0 erros em todos os blocos, sem próximos passos pendentes |
 
 ---
 

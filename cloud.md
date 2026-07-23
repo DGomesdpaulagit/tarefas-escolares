@@ -12,61 +12,63 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 17 - v3.0 / Módulo de Mesada (uso pessoal)
-## SESSÃO ATUAL: [Sessão 028] - Implementação inicial do Módulo de Mesada ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 17 - v3.0 / Módulo de Mesada + Tutorial guiado (uso pessoal)
+## SESSÃO ATUAL: [Sessão 028] - Mesada completa + Tutorial guiado do app ✅ CONCLUÍDA — sem próximos passos pendentes
 
-## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 em implementação (branch `v3-mesada-pessoal`, uso pessoal)
+## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 implementada e testada (branch `v3-mesada-pessoal`, uso pessoal) — aguardando novas instruções do usuário
 
 ---
 
-## [Etapa 17 / Sessão 028] - Implementação inicial do Módulo de Mesada por Desempenho
+## [Etapa 17 / Sessão 028] - Módulo de Mesada por Desempenho (completo) + Tutorial guiado do app
 **Data:** 2026-07-22
 **Branch:** `v3-mesada-pessoal`
-**Status:** ✅ Concluída
+**Status:** ✅ Concluída — usuário sem novas ideias/passos no momento
 
 ### Contexto
-Continuação da Sessão 027 (planejamento). Nesta sessão, as duas ambiguidades levantadas na especificação (`docs/V3_ESPECIFICACAO_MODULO_MESADA.md`, seções 2.1 e 5.5) foram esclarecidas com o usuário antes de codar:
-1. **Eixo de cálculo:** confirmado o **Eixo A** — tabela única de conceitos (MB=R$22/B=R$5/R=R$2/I=-R$5) igual para todas as matérias. O Eixo B (valor base por matéria) NÃO foi implementado.
-2. **Limite de MB:** confirmado que **trava o cálculo** — a partir do 6º lançamento MB no período (limite padrão 5), o valor extra é recalculado como B.
+Continuação da Sessão 027 (planejamento). Conversa única que evoluiu em 6 blocos de trabalho (028a–028f), todos na mesma Etapa/branch. As duas ambiguidades da especificação (`docs/V3_ESPECIFICACAO_MODULO_MESADA.md`, seções 2.1 e 5.5) foram esclarecidas com o usuário logo no início:
+1. **Eixo de cálculo:** **Eixo A** — tabela única de conceitos (MB=R$22/B=R$5/R=R$2/I=-R$5) igual para todas as matérias. Eixo B (valor base por matéria) não foi implementado.
+2. **Limite de MB:** **trava o cálculo** — a partir do 6º lançamento MB no período (limite padrão 5), o valor extra é recalculado como B.
 
-### O que foi feito
-- Trocado para a branch `v3-mesada-pessoal` (estava em `main`)
-- **Migration `007_mesada_module`** aplicada via Supabase MCP no projeto `qnrrgkicsjdbrwhjelqn`: tabelas `mesada_config`, `mesada_materias`, `mesada_notas` com RLS (`auth.uid() = user_id`), também salva em `supabase/migrations/007_mesada_module.sql`
-- **Tipos de domínio** em `client/src/types/index.ts`: `Conceito`, `CategoriaMesada`, `MesadaConfig`, `MesadaMateria`, `MesadaNota`
-- **`client/src/services/mesadaService.ts`** — CRUD seguindo o padrão de `subjectService.ts`
-- **`client/src/contexts/MesadaContext.tsx`** — estado global + lógica de cálculo (incluindo o travamento do limite de MB com ordem determinística por mês/matéria, já que `valor_calculado` é snapshot no momento do lançamento)
-- **Feature flag `VITE_ENABLE_MESADA_MODULE`** — `client/src/lib/featureFlags.ts` + adicionada a `.env.local` (`=true`, só neste ambiente pessoal); checada em `App.tsx` (monta `MesadaProvider` só se habilitada), `Sidebar.tsx` (item "Mesada" só aparece se habilitada) e `Home.tsx` (rota só renderiza se habilitada)
-- **`client/src/pages/Mesada.tsx`** — página com 3 abas (Lançamentos, Acompanhamento, Configurações da Mesada), reaproveitando `RingProgress`, paleta de cores e padrão de cards já estabelecidos no app
-- **`client/src/components/MesadaMateriaModal.tsx`** — modal de criar/editar matéria do boletim, reaproveitando visual do `DisciplinaModal.tsx`, com opção de vincular a uma Disciplina existente (herda emoji/cor)
+### O que foi feito (resumo consolidado dos 6 blocos)
+
+**1 — Módulo base (migration, service, context, UI):**
+- Migration `007_mesada_module` (tabelas `mesada_config`, `mesada_materias`, `mesada_notas`, todas com RLS `auth.uid() = user_id`) aplicada via Supabase MCP e salva em `supabase/migrations/`
+- `mesadaService.ts`, `MesadaContext.tsx` (cálculo + travamento do limite de MB), `lib/featureFlags.ts` (`VITE_ENABLE_MESADA_MODULE`), página `Mesada.tsx` com 3 abas, `MesadaMateriaModal.tsx`
+
+**2 — Importar Disciplinas existentes em lote:** `MesadaImportarDisciplinasModal.tsx` — seleção múltipla de Disciplinas já cadastradas no app, herdando emoji/cor, sem digitar uma por uma.
+
+**3 — Grade do boletim + Distribuição por matéria:** tabela "Grade do boletim" (réplica da planilha original, matéria × mês) e gráfico de barras empilhadas "Desempenho por matéria" com cards de insight (matéria destaque / matéria de atenção), ambos na aba Acompanhamento.
+
+**4 — Termômetro, lembrete mensal, virada de ano, data ao vivo:**
+- Termômetro 🟢🟡🔴 por matéria em Lançamentos (média histórica dos conceitos)
+- `notificationService.checkMesadaReminder()` + `MesadaNotificationChecker.tsx` — lembrete nos últimos 5 dias do mês se faltar lançamento
+- Virada de ano: config herda valores do ano anterior via `mesadaService.getConfigMaisRecente()` (matérias já eram compartilhadas entre anos; notas resetam sozinhas por serem escopadas por ano/mês)
+- Data de hoje ao vivo no topo do app (`Home.tsx`), atualiza sozinha
+
+**5 — Tutorial guiado do app (spotlight):** `TourContext.tsx` (19 passos cobrindo todas as páginas/abas) + `TourOverlay.tsx` (escurece a tela, recorta o elemento explicado, navega entre páginas automaticamente) + atributos `data-tour` em Sidebar, VisaoGeral, Tarefas, Disciplinas, Agenda, Metricas, Mesada, Configuracoes, UserMenu. Botão "Ver tutorial do app" em Configurações.
+
+**6 — Ajustes finos do tutorial:** animação mais lenta (0.6s no destaque, entrada `fadeSlideIn` a cada passo); bug corrigido onde o card de navegação podia renderizar fora da janela em passos com alvo perto do rodapé (posição agora sempre clampada aos limites da tela); oferta automática do tour a usuários novos ao concluir/pular o onboarding (`OfertaTourModal.tsx`).
 
 ### Arquivos criados
-- `supabase/migrations/007_mesada_module.sql`
-- `client/src/services/mesadaService.ts`
-- `client/src/contexts/MesadaContext.tsx`
-- `client/src/lib/featureFlags.ts`
-- `client/src/pages/Mesada.tsx`
-- `client/src/components/MesadaMateriaModal.tsx`
+`supabase/migrations/007_mesada_module.sql`, `client/src/services/mesadaService.ts`, `client/src/contexts/MesadaContext.tsx`, `client/src/lib/featureFlags.ts`, `client/src/pages/Mesada.tsx`, `client/src/components/MesadaMateriaModal.tsx`, `client/src/components/MesadaImportarDisciplinasModal.tsx`, `client/src/components/MesadaNotificationChecker.tsx`, `client/src/contexts/TourContext.tsx`, `client/src/components/TourOverlay.tsx`, `client/src/components/OfertaTourModal.tsx`
 
 ### Arquivos modificados
-- `client/src/types/index.ts` — tipos da Mesada
-- `client/src/App.tsx` — `MesadaProvider` condicional
-- `client/src/components/Sidebar.tsx` — item "Mesada" condicional
-- `client/src/pages/Home.tsx` — rota "mesada" condicional
-- `.env.local` — `VITE_ENABLE_MESADA_MODULE=true`
+`types/index.ts`, `App.tsx`, `Sidebar.tsx`, `Home.tsx`, `Configuracoes.tsx`, `UserMenu.tsx`, `VisaoGeral.tsx`, `Tarefas.tsx`, `Disciplinas.tsx`, `Agenda.tsx`, `Metricas.tsx`, `notificationService.ts`, `.env.local`
 
 ### Build
-- ✅ `npm run build` — 0 erros TS, ~27s
+✅ `npm run build` — 0 erros TS em todos os 6 blocos (última verificação: build limpo, ~20s)
 
 ### Validação do cálculo
 Conferido manualmente contra o exemplo do documento original: 5 matérias MB (5×22=110) + 6 matérias B (6×5=30) + 1 matéria R (1×2=2) − 1 matéria I (1×5=−5) = **R$137,00**, batendo com o "total potencial" citado na planilha manual do usuário.
 
-### Não feito nesta sessão (pendente)
-- Testes manuais reais na UI (login + lançamento de notas) — recomendado antes de considerar o módulo pronto
-- Segundo projeto Vercel apontando para `v3-mesada-pessoal` com a env var setada (seção 7.1 da especificação) — requer ação do usuário no dashboard Vercel
-- Ideias adicionais da seção 10 da especificação (histórico por ano, exportação, notificação mensal, cruzamento com Disciplinas) — fora do escopo mínimo
+### Pendências conhecidas (não bloqueiam, ação do próprio usuário)
+- Segundo projeto Vercel apontando para `v3-mesada-pessoal` com `VITE_ENABLE_MESADA_MODULE=true` (seção 7.1 da especificação) — só necessário quando o usuário quiser um link público pessoal; até lá, uso é via servidor local
+- Ideias adicionais da seção 10 da especificação (histórico por ano, exportação, cruzamento com Disciplinas) e da seção 23 do `DOCUMENTACAO_PROJETO.md` — não solicitadas, ficam em aberto para quando o usuário quiser
+- Achado de segurança fora do escopo do código: token do GitHub exposto em texto plano na URL do remote `origin` — reportado ao usuário, ação pendente dele (revogar/reconfigurar)
+- `git push` para o GitHub não foi possível neste ambiente (exige autenticação interativa) — commits estão salvos localmente na branch `v3-mesada-pessoal`; usuário deve rodar `git push origin v3-mesada-pessoal` manualmente
 
 ### Próximo passo
-Testar manualmente a UI (criar matérias, lançar conceitos, conferir Acompanhamento) e, se aprovado, configurar o segundo projeto Vercel para uso pessoal.
+**Nenhum definido.** Usuário confirmou não ter mais ideias/próximos passos por enquanto. Aguardar novas instruções em conversa futura — o `CLAUDE.md` já está atualizado para retomar o contexto correto quando isso acontecer.
 
 ---
 

@@ -1,5 +1,20 @@
 # Roadmap — Tarefas Escolares
 
+## v3.0 — Módulo de Mesada + Tutorial guiado (branch pessoal `v3-mesada-pessoal`, Sessão 028 — 2026-07-22) ✅ CONCLUÍDA
+
+**Uso exclusivamente pessoal — não publicar em `main`.**
+
+- [x] Migration `mesada_config` / `mesada_materias` / `mesada_notas` com RLS
+- [x] Cálculo por tabela única de conceito (MB=R$22/B=R$5/R=R$2/I=-R$5) + limite de MB travando (6º vira B)
+- [x] Página `/mesada` com 3 abas (Lançamentos, Acompanhamento, Configurações), atrás da flag `VITE_ENABLE_MESADA_MODULE`
+- [x] Importação em lote de Disciplinas existentes como matérias do boletim
+- [x] Grade do boletim (tabela matéria × mês) + gráfico de distribuição de conceitos por matéria
+- [x] Termômetro por matéria, lembrete de fim de mês, virada de ano automática (config herda valores do ano anterior)
+- [x] Tutorial guiado do app com efeito spotlight (19 passos, todas as páginas) — recurso geral, candidato a ir para `main` separadamente
+- [x] Oferta automática do tutorial a usuários novos pós-onboarding
+
+**Próximo passo:** nenhum definido — usuário sem novas ideias no momento. Deploy remoto pessoal (2º projeto Vercel) fica para quando o usuário quiser um link de acesso fora do servidor local.
+
 ## v2.0 — Atual ✅
 
 - [x] Migração completa de localStorage para Supabase

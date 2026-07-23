@@ -8,6 +8,20 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Documentação (Etapa 17 / Sessão 028g — 2026-07-22) — Limpeza e consolidação de toda a documentação do projeto
+- Usuário confirmou não ter mais ideias/próximos passos por enquanto — sessão de fechamento e atualização de todos os arquivos de registro
+- `MEMORY.md` — seção 22 e histórico consolidados com os 6 blocos da Sessão 028 (Mesada completa + Tutorial)
+- `MEMORY_CORE.md` — reescrito por completo (estava parado na Sessão 016/2026-05-22)
+- `cloud.md` — Etapa 17 consolidada num único registro cobrindo Sessões 027–028, com "Próximo passo: nenhum definido"
+- `BUGS.md` — adicionado BUG-022 (card do tutorial podia renderizar fora da tela, corrigido nesta sessão)
+- `PROMPTS.md` — adicionado P-019 (mega-prompt validado da v3.0: Mesada + Tutorial)
+- `LINKS.md` — adicionada branch `v3-mesada-pessoal`, nota sobre push pendente
+- `DOCUMENTACAO_PROJETO.md` — nova seção 25 (anexo) documentando a v3.0 sem misturar com o núcleo público (v2.1.0)
+- `docs/ROADMAP.md` — nova seção v3.0 marcada como concluída
+- `README.md` — menção ao Tutorial guiado e às branches do projeto
+- `CLAUDE.md` — corrigido caminho do projeto (estava apontando para pasta inexistente em `Downloads`, projeto está em `Documents`)
+- **Removido `README_PT.md`** — duplicata obsoleta que descrevia a arquitetura localStorage/Manus AI descontinuada desde a Sessão 1 (contradizia o `README.md` atual, que já é em português e reflete a arquitetura real com Supabase)
+
 ### Corrigido/Adicionado (Etapa 17 / Sessão 028f — 2026-07-22) — Tutorial: velocidade, oferta a novos usuários, card nunca cortado
 - **Animação mais lenta:** destaque (spotlight) agora se move em 0.6s (era 0.2s) e o card de explicação entra com `fadeSlideIn` 0.45s a cada passo, em vez de trocar instantaneamente
 - **Bug corrigido:** em passos com o alvo perto do rodapé da tela (ex: itens de baixo da Sidebar em Configurações), o card de Anterior/Próximo/Pular podia renderizar parcialmente fora da janela (atrás da barra de tarefas do sistema, por exemplo), ficando impossível de clicar. Agora a posição vertical do card é sempre limitada aos limites da janela — nunca fica cortado embaixo nem em cima

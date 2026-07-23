@@ -188,4 +188,14 @@ Registro de bugs resolvidos e bugs conhecidos/pendentes.
 
 ---
 
-*Atualizado em: 2026-05-28*
+### BUG-022 — Card de navegação do Tutorial guiado renderizava fora da tela
+- **Arquivo:** `client/src/components/TourOverlay.tsx`
+- **Severidade:** Média — impedia clicar em Anterior/Próximo/Pular em alguns passos
+- **Descrição:** O card com os controles do tutorial calculava a posição vertical com base no elemento destacado (embaixo dele, ou em cima se não coubesse), mas o cálculo do caso "embaixo" nunca era limitado aos limites reais da janela. Em passos com o alvo perto do rodapé da tela (ex: itens de baixo da Sidebar em Configurações), o card podia renderizar parcialmente ou totalmente fora da área visível — inclusive atrás da barra de tarefas do sistema operacional — ficando impossível de clicar.
+- **Reproduzido em:** Sessão 028 (branch `v3-mesada-pessoal`), usuário reportou com print
+- **Solução:** posição vertical do card agora sempre limitada (`Math.min`/`Math.max`) entre `MARGEM` e `window.innerHeight - ALTURA_ESTIMADA - MARGEM`, garantindo que nunca fica cortado embaixo nem em cima, independente de onde o alvo está na tela.
+- **Status:** ✅ Resolvido (Sessão 028f — commit `b63b2b4`)
+
+---
+
+*Atualizado em: 2026-07-22*
