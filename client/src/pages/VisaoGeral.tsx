@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useTarefas } from "@/contexts/TarefasContext";
 import { useDisciplinas } from "@/contexts/DisciplinasContext";
+import { useIdioma } from "@/contexts/LanguageContext";
 import { profileService } from "@/services/profileService";
 import {
   getMateriaColor,
@@ -36,6 +37,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
   const { user } = useAuth();
   const { tarefas, carregando } = useTarefas();
   const { disciplinas } = useDisciplinas();
+  const { t } = useIdioma();
 
   const [nome, setNome] = useState<string>("");
   const [criando, setCriando] = useState(false);
@@ -139,10 +141,10 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
 
   const saudacao = useMemo(() => {
     const h = new Date().getHours();
-    if (h < 12) return "Bom dia";
-    if (h < 18) return "Boa tarde";
-    return "Boa noite";
-  }, []);
+    if (h < 12) return t("visaoGeral.bomDia");
+    if (h < 18) return t("visaoGeral.boaTarde");
+    return t("visaoGeral.boaNoite");
+  }, [t]);
 
   const primeiroNome = nome.split(" ")[0] || "estudante";
 
@@ -155,7 +157,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
             {saudacao}, {primeiroNome}! 👋
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Aqui está um resumo do que está acontecendo hoje.
+            {t("visaoGeral.resumoHoje")}
           </p>
         </div>
         <Button
@@ -164,7 +166,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
           className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
         >
           <Plus size={16} />
-          Nova tarefa
+          {t("visaoGeral.novaTarefa")}
         </Button>
       </div>
 
@@ -187,7 +189,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
 
           {/* Próximos prazos */}
           <SecaoCard
-            titulo="Próximos prazos"
+            titulo={t("visaoGeral.proximosPrazos")}
             icon={<Clock size={14} />}
             iconColor="#f59e0b"
             acao={
@@ -195,7 +197,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
                 onClick={() => onNavegar?.("agenda")}
                 className="text-xs text-amber-500 hover:text-amber-400 flex items-center gap-1"
               >
-                Agenda <ChevronRight size={12} />
+                {t("visaoGeral.agenda")} <ChevronRight size={12} />
               </button>
             }
             className="lg:col-span-2"
@@ -219,7 +221,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
 
           {/* Tarefas expiradas */}
           <SecaoCard
-            titulo="Tarefas expiradas"
+            titulo={t("visaoGeral.tarefasExpiradas")}
             icon={<XCircle size={14} />}
             iconColor="#ef4444"
             acao={
@@ -247,7 +249,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
 
           {/* Disciplinas */}
           <SecaoCard
-            titulo="Suas disciplinas"
+            titulo={t("visaoGeral.suasDisciplinas")}
             icon={<Sparkles size={14} />}
             iconColor="#a78bfa"
             className="lg:col-span-3"
@@ -256,7 +258,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
                 onClick={() => onNavegar?.("disciplinas")}
                 className="text-xs text-amber-500 hover:text-amber-400 flex items-center gap-1"
               >
-                Ver todas <ChevronRight size={12} />
+                {t("visaoGeral.verTodas")} <ChevronRight size={12} />
               </button>
             }
           >
@@ -314,6 +316,7 @@ function CardProgressoSemana({
   pendentes: number;
   percentual: number;
 }) {
+  const { t } = useIdioma();
   return (
     <div
       className="lg:col-span-2 rounded-2xl border border-white/8 bg-[var(--bg-card)] p-5 transition-all hover:border-white/15"
@@ -322,7 +325,7 @@ function CardProgressoSemana({
       <div className="flex items-center gap-2 mb-1">
         <TrendingUp size={14} className="text-amber-400" />
         <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-          Progresso da semana
+          {t("visaoGeral.progressoSemana")}
         </h3>
       </div>
       <p className="text-xs text-slate-500 mb-4">
@@ -436,6 +439,7 @@ function CardDesempenho({
   desempenho: { total: number; concluidas: number; expiradasTotal: number; ativas: number; taxa: number };
 }) {
   const { total, concluidas, expiradasTotal, ativas, taxa } = desempenho;
+  const { t } = useIdioma();
 
   return (
     <div
@@ -445,7 +449,7 @@ function CardDesempenho({
       <div className="flex items-center gap-2 mb-1">
         <Flame size={14} className="text-amber-400" />
         <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-          Desempenho geral
+          {t("visaoGeral.desempenhoGeral")}
         </h3>
       </div>
       <p className="text-xs text-slate-500 mb-4">Sua produtividade desde o início</p>

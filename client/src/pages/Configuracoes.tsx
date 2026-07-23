@@ -15,6 +15,8 @@ import { soundService } from "@/services/soundService";
 import { notificationService } from "@/services/notificationService";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTour } from "@/contexts/TourContext";
+import { useIdioma } from "@/contexts/LanguageContext";
+import { ehIdiomaValido } from "@/lib/i18n";
 
 type Aba = "perfil" | "academico" | "tema" | "notificacoes";
 
@@ -65,23 +67,24 @@ function compressImage(file: File, maxSize = 256): Promise<string> {
 export default function Configuracoes() {
   const { user, deslogar, atualizarSenha } = useAuth();
   const { iniciar: iniciarTour } = useTour();
+  const { t } = useIdioma();
   const [abaAtiva, setAbaAtiva] = useState<Aba>("perfil");
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">Configurações</h1>
-        <p className="text-slate-400 text-sm mt-1">Personalize sua experiência</p>
+        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">{t("config.titulo")}</h1>
+        <p className="text-slate-400 text-sm mt-1">{t("config.subtitulo")}</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Abas */}
         <nav data-tour="config-abas" className="lg:w-48 flex lg:flex-col gap-1 flex-wrap" aria-label="Seções de configurações">
           {([
-            { id: "perfil", label: "Perfil", icon: User },
-            { id: "academico", label: "Acadêmico", icon: GraduationCap },
-            { id: "tema", label: "Aparência", icon: Palette },
-            { id: "notificacoes", label: "Notificações", icon: Bell },
+            { id: "perfil", label: t("config.abaPerfil"), icon: User },
+            { id: "academico", label: t("config.abaAcademico"), icon: GraduationCap },
+            { id: "tema", label: t("config.abaTema"), icon: Palette },
+            { id: "notificacoes", label: t("config.abaNotificacoes"), icon: Bell },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -105,13 +108,13 @@ export default function Configuracoes() {
               className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-amber-400 hover:bg-amber-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               <HelpCircle size={15} aria-hidden="true" />
-              Ver tutorial do app
+              {t("config.verTutorial")}
             </button>
             <button
               onClick={() => deslogar()}
               className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
             >
-              Sair da conta
+              {t("config.sairDaConta")}
             </button>
           </div>
         </nav>
@@ -626,6 +629,7 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
 // ============================================================
 
 function AbaAcademico({ userId }: { userId?: string }) {
+  const { setIdioma: setIdiomaGlobal, t } = useIdioma();
   const [anoEscolar, setAnoEscolar] = useState<string>("");
   const [idioma, setIdioma] = useState<string>("pt-BR");
   const [salvando, setSalvando] = useState(false);
@@ -641,6 +645,11 @@ function AbaAcademico({ userId }: { userId?: string }) {
       setCarregando(false);
     }).catch(() => setCarregando(false));
   }, [userId]);
+
+  const escolherIdioma = (code: string) => {
+    setIdioma(code);
+    if (ehIdiomaValido(code)) setIdiomaGlobal(code); // aplica na hora, sem esperar salvar
+  };
 
   const salvar = async () => {
     if (!userId) return;
@@ -711,11 +720,11 @@ function AbaAcademico({ userId }: { userId?: string }) {
         <div className="flex items-center gap-2">
           <Languages size={14} className="text-amber-400" />
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
-            Idioma
+            {t("config.idiomaTitulo")}
           </h2>
         </div>
         <p className="text-xs text-slate-500">
-          Escolha o idioma da interface. (Tradução completa em breve.)
+          {t("config.idiomaDescricao")}
         </p>
         <div className="space-y-2">
           {IDIOMAS.map((i) => {
@@ -723,7 +732,7 @@ function AbaAcademico({ userId }: { userId?: string }) {
             return (
               <button
                 key={i.code}
-                onClick={() => setIdioma(i.code)}
+                onClick={() => escolherIdioma(i.code)}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                   ativo
                     ? "border-amber-500 bg-amber-500/10"

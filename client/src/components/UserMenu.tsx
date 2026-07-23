@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useIdioma } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { LogOut, Settings, User, Mail } from "lucide-react";
 import { useState } from "react";
@@ -10,6 +11,7 @@ interface UserMenuProps {
 
 export default function UserMenu({ onNavegar }: UserMenuProps) {
   const { user, deslogar } = useAuth();
+  const { t } = useIdioma();
   const [aberto, setAberto] = useState(false);
 
   if (!user) return null;
@@ -21,9 +23,9 @@ export default function UserMenu({ onNavegar }: UserMenuProps) {
     try {
       await deslogar();
       setAberto(false);
-      toast.success("Até logo!");
+      toast.success(t("userMenu.aoLogo"));
     } catch {
-      toast.error("Erro ao sair");
+      toast.error(t("userMenu.erroSair"));
     }
   };
 
@@ -62,7 +64,7 @@ export default function UserMenu({ onNavegar }: UserMenuProps) {
                   className="w-full justify-start text-slate-300 hover:bg-white/10 hover:text-white text-sm"
                 >
                   <Settings size={14} className="mr-2" aria-hidden="true" />
-                  Configurações
+                  {t("userMenu.configuracoes")}
                 </Button>
               )}
               <Button
@@ -71,7 +73,7 @@ export default function UserMenu({ onNavegar }: UserMenuProps) {
                 className="w-full justify-start text-slate-300 hover:bg-red-500/10 hover:text-red-400 text-sm"
               >
                 <LogOut size={14} className="mr-2" aria-hidden="true" />
-                Sair
+                {t("userMenu.sair")}
               </Button>
             </div>
           </div>

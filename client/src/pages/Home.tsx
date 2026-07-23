@@ -14,17 +14,30 @@ import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTarefas } from "@/contexts/TarefasContext";
 import { useTour } from "@/contexts/TourContext";
+import { useIdioma } from "@/contexts/LanguageContext";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
+import type { DicionarioChave } from "@/lib/i18n";
 
-const PAGINA_LABELS: Record<string, string> = {
-  "visao-geral": "🏠 Visão Geral",
-  tarefas: "📚 Tarefas",
-  disciplinas: "🎯 Disciplinas",
-  metricas: "📊 Métricas",
-  arquivos: "📁 Arquivos",
-  configuracoes: "⚙️ Configurações",
-  agenda: "📅 Agenda",
-  mesada: "💰 Mesada",
+const PAGINA_CHAVES: Record<string, DicionarioChave> = {
+  "visao-geral": "nav.visaoGeral",
+  tarefas: "nav.tarefas",
+  disciplinas: "nav.disciplinas",
+  metricas: "nav.metricas",
+  arquivos: "nav.arquivos",
+  configuracoes: "nav.configuracoes",
+  agenda: "nav.agenda",
+  mesada: "nav.mesada",
+};
+
+const PAGINA_EMOJIS: Record<string, string> = {
+  "visao-geral": "🏠",
+  tarefas: "📚",
+  disciplinas: "🎯",
+  metricas: "📊",
+  arquivos: "📁",
+  configuracoes: "⚙️",
+  agenda: "📅",
+  mesada: "💰",
 };
 
 // Atualiza sozinha à meia-noite (e a cada hora, como rede de segurança) — sem precisar recarregar a página
@@ -41,7 +54,8 @@ function useDataDeHoje(): Date {
 
 function DataDeHoje({ className = "" }: { className?: string }) {
   const hoje = useDataDeHoje();
-  const label = hoje.toLocaleDateString("pt-BR", {
+  const { idioma } = useIdioma();
+  const label = hoje.toLocaleDateString(idioma, {
     weekday: "long",
     day: "2-digit",
     month: "long",
@@ -61,6 +75,7 @@ export default function Home() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const { setFiltros } = useTarefas();
   const { registrarNavegacao, registrarSidebar } = useTour();
+  const { t } = useIdioma();
   const [mostrarOfertaTour, setMostrarOfertaTour] = useState(
     () => localStorage.getItem(OFERTA_TOUR_FLAG_KEY) === "1",
   );
@@ -94,13 +109,13 @@ export default function Home() {
             <button
               onClick={() => setSidebarAberta(true)}
               className="text-slate-400 hover:text-white transition-colors p-1 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded flex-shrink-0"
-              aria-label="Abrir menu"
+              aria-label={t("sidebar.abrirMenu")}
             >
               <Menu size={20} />
             </button>
             <div className="min-w-0">
               <h1 className="text-sm font-semibold text-white font-['Space_Grotesk'] truncate">
-                {PAGINA_LABELS[pagina] ?? pagina}
+                {PAGINA_EMOJIS[pagina] ?? ""} {PAGINA_CHAVES[pagina] ? t(PAGINA_CHAVES[pagina]) : pagina}
               </h1>
               <DataDeHoje className="text-[11px] block truncate" />
             </div>

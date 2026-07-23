@@ -4,6 +4,8 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
+import { LanguageProvider, useIdioma } from "./contexts/LanguageContext";
+import { ehIdiomaValido } from "@/lib/i18n";
 import { TarefasProvider } from "./contexts/TarefasContext";
 import { DisciplinasProvider, useDisciplinas } from "./contexts/DisciplinasContext";
 import { ArquivosProvider } from "./contexts/ArquivosContext";
@@ -138,6 +140,18 @@ function ThemeLoader() {
   return null;
 }
 
+function LanguageLoader() {
+  const { user } = useAuth();
+  const { setIdioma } = useIdioma();
+  useEffect(() => {
+    if (!user) return;
+    profileService.get(user.id).then((p) => {
+      if (ehIdiomaValido(p?.language)) setIdioma(p.language);
+    });
+  }, [user?.id]);
+  return null;
+}
+
 function NotificationChecker() {
   const { user } = useAuth();
   useEffect(() => {
@@ -160,6 +174,7 @@ function ThemedApp() {
     <AuthProvider>
       <TooltipProvider>
         <ThemeLoader />
+        <LanguageLoader />
         <NotificationChecker />
         <Toaster
           theme={theme}
@@ -180,7 +195,9 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark" switchable>
-        <ThemedApp />
+        <LanguageProvider>
+          <ThemedApp />
+        </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

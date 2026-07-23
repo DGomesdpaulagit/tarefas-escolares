@@ -1,5 +1,6 @@
 import { useTarefas } from "@/contexts/TarefasContext";
 import { useDisciplinas } from "@/contexts/DisciplinasContext";
+import { useIdioma } from "@/contexts/LanguageContext";
 import { getMateriaColor, getMateriaEmoji } from "@/lib/tarefasData";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 import type { StatusTarefa } from "@/types";
@@ -25,27 +26,28 @@ interface SidebarProps {
   onFechar: () => void;
 }
 
-const STATUS_FILTROS: { label: string; valor: StatusTarefa | "Todas"; cor: string }[] = [
-  { label: "Todas", valor: "Todas", cor: "#94a3b8" },
-  { label: "Não iniciada", valor: "Não iniciada", cor: "#94a3b8" },
-  { label: "Em Andamento", valor: "Em Andamento", cor: "#f59e0b" },
-  { label: "Concluída", valor: "Concluída", cor: "#10b981" },
-  { label: "Passou do Prazo", valor: "Passou do Prazo", cor: "#ef4444" },
-];
-
 export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: SidebarProps) {
   const { metricas, filtros, setFiltros } = useTarefas();
   const { disciplinas } = useDisciplinas();
+  const { t } = useIdioma();
+
+  const STATUS_FILTROS: { label: string; valor: StatusTarefa | "Todas"; cor: string }[] = [
+    { label: t("status.todas"), valor: "Todas", cor: "#94a3b8" },
+    { label: t("status.naoIniciada"), valor: "Não iniciada", cor: "#94a3b8" },
+    { label: t("status.emAndamento"), valor: "Em Andamento", cor: "#f59e0b" },
+    { label: t("status.concluida"), valor: "Concluída", cor: "#10b981" },
+    { label: t("status.passouPrazo"), valor: "Passou do Prazo", cor: "#ef4444" },
+  ];
 
   const navItems = [
-    { id: "visao-geral", label: "Visão Geral", icon: HomeIcon },
-    { id: "tarefas", label: "Tarefas", icon: ListTodo },
-    { id: "disciplinas", label: "Disciplinas", icon: GraduationCap },
-    { id: "agenda", label: "Agenda", icon: Calendar },
-    { id: "metricas", label: "Métricas", icon: LayoutDashboard },
-    ...(MESADA_MODULE_ENABLED ? [{ id: "mesada", label: "Mesada", icon: Wallet }] : []),
-    { id: "arquivos", label: "Arquivos", icon: BookOpen },
-    { id: "configuracoes", label: "Configurações", icon: Settings },
+    { id: "visao-geral", label: t("nav.visaoGeral"), icon: HomeIcon },
+    { id: "tarefas", label: t("nav.tarefas"), icon: ListTodo },
+    { id: "disciplinas", label: t("nav.disciplinas"), icon: GraduationCap },
+    { id: "agenda", label: t("nav.agenda"), icon: Calendar },
+    { id: "metricas", label: t("nav.metricas"), icon: LayoutDashboard },
+    ...(MESADA_MODULE_ENABLED ? [{ id: "mesada", label: t("nav.mesada"), icon: Wallet }] : []),
+    { id: "arquivos", label: t("nav.arquivos"), icon: BookOpen },
+    { id: "configuracoes", label: t("nav.configuracoes"), icon: Settings },
   ];
 
   const materias = Object.entries(metricas.porMateria).sort((a, b) => b[1] - a[1]);
@@ -80,24 +82,24 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
               <BookOpen size={16} className="text-black" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white font-['Space_Grotesk'] leading-none">Tarefas</p>
-              <p className="text-xs text-slate-500 leading-none mt-0.5">Escolares</p>
+              <p className="text-sm font-bold text-white font-['Space_Grotesk'] leading-none">{t("sidebar.brandLinha1")}</p>
+              <p className="text-xs text-slate-500 leading-none mt-0.5">{t("sidebar.brandLinha2")}</p>
             </div>
           </div>
         </div>
 
         <div className="px-4 py-4 border-b border-white/8">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-3 font-['Space_Grotesk']">Resumo</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-3 font-['Space_Grotesk']">{t("sidebar.resumo")}</p>
           <div className="grid grid-cols-2 gap-2">
-            <MetricaMini label="Total" valor={metricas.total} cor="#94a3b8" icon={<ListTodo size={12} />} />
-            <MetricaMini label="Concluídas" valor={metricas.concluidas} cor="#10b981" icon={<CheckCircle2 size={12} />} />
-            <MetricaMini label="Pendentes" valor={metricas.pendentes} cor="#94a3b8" icon={<Clock size={12} />} />
-            <MetricaMini label="Atrasadas" valor={metricas.passouPrazo} cor="#ef4444" icon={<XCircle size={12} />} />
+            <MetricaMini label={t("sidebar.total")} valor={metricas.total} cor="#94a3b8" icon={<ListTodo size={12} />} />
+            <MetricaMini label={t("sidebar.concluidas")} valor={metricas.concluidas} cor="#10b981" icon={<CheckCircle2 size={12} />} />
+            <MetricaMini label={t("sidebar.pendentes")} valor={metricas.pendentes} cor="#94a3b8" icon={<Clock size={12} />} />
+            <MetricaMini label={t("sidebar.atrasadas")} valor={metricas.passouPrazo} cor="#ef4444" icon={<XCircle size={12} />} />
           </div>
 
           <div className="mt-3">
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-500">Progresso geral</span>
+              <span className="text-slate-500">{t("sidebar.progressoGeral")}</span>
               <span className="text-amber-400 font-semibold font-['Space_Grotesk']">{metricas.percentualConcluido}%</span>
             </div>
             <div className="h-2 bg-white/5 rounded-full overflow-hidden" role="progressbar" aria-valuenow={metricas.percentualConcluido} aria-valuemin={0} aria-valuemax={100}>
@@ -110,7 +112,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
         </div>
 
         <nav className="px-3 py-3 border-b border-white/8">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Navegação</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">{t("sidebar.navegacao")}</p>
           {navItems.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -133,7 +135,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
         <div className="flex-1 overflow-y-auto flex flex-col">
           <div className="px-3 py-3 border-b border-white/8">
             <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">
-              Filtrar por Status
+              {t("sidebar.filtrarPorStatus")}
             </p>
             {STATUS_FILTROS.map(({ label, valor, cor }) => {
               const qtd = valor === "Todas" ? metricas.total : (metricas.porStatus[valor] ?? 0);
@@ -157,7 +159,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
 
           {materias.length > 0 && (
             <div className="px-3 py-3">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">Por Disciplina</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2 px-2 font-['Space_Grotesk']">{t("sidebar.porDisciplina")}</p>
               {materias.map(([materia, qtd]) => {
                 const cor = corDe(materia);
                 const emoji = emojiDe(materia);

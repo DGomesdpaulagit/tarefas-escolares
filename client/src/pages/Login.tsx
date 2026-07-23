@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useIdioma } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -9,6 +10,7 @@ type Modo = "login" | "cadastro" | "reset";
 
 export default function Login() {
   const { logar, cadastrar, resetarSenha } = useAuth();
+  const { t } = useIdioma();
   const [modo, setModo] = useState<Modo>("login");
   const [email, setEmail] = useState("");
   const [nome, setNome] = useState("");
@@ -24,32 +26,32 @@ export default function Login() {
 
     try {
       if (modo === "reset") {
-        if (!email) { toast.error("Informe seu email"); return; }
+        if (!email) { toast.error(t("login.erroInformeEmail")); return; }
         await resetarSenha(email);
         setResetEnviado(true);
-        toast.success("Email de recuperação enviado! Verifique sua caixa de entrada.");
+        toast.success(t("login.sucessoResetEnviado"));
         return;
       }
 
       if (modo === "login") {
-        if (!email || !senha) { toast.error("Preencha todos os campos"); return; }
+        if (!email || !senha) { toast.error(t("login.erroPreencherCampos")); return; }
         await logar(email, senha);
-        toast.success("Login realizado com sucesso!");
+        toast.success(t("login.sucessoLogin"));
       } else {
-        if (!email || !nome || !senha || !confirmarSenha) { toast.error("Preencha todos os campos"); return; }
-        if (senha !== confirmarSenha) { toast.error("As senhas não conferem"); return; }
-        if (senha.length < 6) { toast.error("A senha deve ter pelo menos 6 caracteres"); return; }
+        if (!email || !nome || !senha || !confirmarSenha) { toast.error(t("login.erroPreencherCampos")); return; }
+        if (senha !== confirmarSenha) { toast.error(t("login.erroSenhasNaoConferem")); return; }
+        if (senha.length < 6) { toast.error(t("login.erroSenhaCurta")); return; }
         await cadastrar(email, nome, senha);
-        toast.success("Cadastro realizado! Verifique seu email para confirmar a conta.");
+        toast.success(t("login.sucessoCadastro"));
       }
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "Erro ao processar solicitação";
+      const msg = error instanceof Error ? error.message : t("login.erroGenerico");
       if (msg.includes("Invalid login credentials")) {
-        toast.error("Email ou senha incorretos");
+        toast.error(t("login.erroCredenciais"));
       } else if (msg.includes("User already registered")) {
-        toast.error("Este email já está cadastrado");
+        toast.error(t("login.erroJaCadastrado"));
       } else if (msg.includes("Email not confirmed")) {
-        toast.error("Confirme seu email antes de entrar");
+        toast.error(t("login.erroEmailNaoConfirmado"));
       } else {
         toast.error(msg);
       }
@@ -73,33 +75,33 @@ export default function Login() {
             <BookOpen size={20} className="text-black" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-lg font-bold text-white font-['Space_Grotesk']">Tarefas</p>
-            <p className="text-xs text-slate-500">Escolares</p>
+            <p className="text-lg font-bold text-white font-['Space_Grotesk']">{t("sidebar.brandLinha1")}</p>
+            <p className="text-xs text-slate-500">{t("sidebar.brandLinha2")}</p>
           </div>
         </div>
 
         <div className="bg-[var(--bg-surface)] border border-white/10 rounded-2xl p-6 shadow-2xl">
           <h1 className="text-2xl font-bold text-white font-['Space_Grotesk'] mb-1">
-            {modo === "login" ? "Bem-vindo de volta" : modo === "cadastro" ? "Criar conta" : "Recuperar senha"}
+            {modo === "login" ? t("login.bemVindo") : modo === "cadastro" ? t("login.criarConta") : t("login.recuperarSenha")}
           </h1>
           <p className="text-sm text-slate-400 mb-6">
-            {modo === "login" ? "Faça login para acessar suas tarefas"
-              : modo === "cadastro" ? "Cadastre-se para começar"
-              : "Insira seu email para receber o link de recuperação"}
+            {modo === "login" ? t("login.faLoginParaAcessar")
+              : modo === "cadastro" ? t("login.cadastreSeParaComecar")
+              : t("login.insiraEmailRecuperacao")}
           </p>
 
           {resetEnviado ? (
             <div className="text-center py-4">
-              <p className="text-green-400 font-medium mb-2">Email enviado!</p>
-              <p className="text-slate-400 text-sm">Verifique sua caixa de entrada e siga as instruções.</p>
+              <p className="text-green-400 font-medium mb-2">{t("login.emailEnviado")}</p>
+              <p className="text-slate-400 text-sm">{t("login.verifiqueCaixaEntrada")}</p>
               <Button variant="ghost" onClick={() => trocarModo("login")} className="mt-4 text-amber-400 hover:text-amber-300">
-                Voltar ao login
+                {t("login.voltarAoLogin")}
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label htmlFor="email" className="text-xs font-semibold text-slate-300 mb-1.5 block">Email</label>
+                <label htmlFor="email" className="text-xs font-semibold text-slate-300 mb-1.5 block">{t("login.email")}</label>
                 <Input
                   id="email"
                   type="email"
@@ -114,7 +116,7 @@ export default function Login() {
 
               {modo === "cadastro" && (
                 <div>
-                  <label htmlFor="nome" className="text-xs font-semibold text-slate-300 mb-1.5 block">Nome completo</label>
+                  <label htmlFor="nome" className="text-xs font-semibold text-slate-300 mb-1.5 block">{t("login.nomeCompleto")}</label>
                   <Input
                     id="nome"
                     type="text"
@@ -130,7 +132,7 @@ export default function Login() {
 
               {modo !== "reset" && (
                 <div>
-                  <label htmlFor="senha" className="text-xs font-semibold text-slate-300 mb-1.5 block">Senha</label>
+                  <label htmlFor="senha" className="text-xs font-semibold text-slate-300 mb-1.5 block">{t("login.senha")}</label>
                   <div className="relative">
                     <Input
                       id="senha"
@@ -146,7 +148,7 @@ export default function Login() {
                       type="button"
                       onClick={() => setMostrarSenha(!mostrarSenha)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none"
-                      aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                      aria-label={mostrarSenha ? t("login.ocultarSenha") : t("login.mostrarSenha")}
                     >
                       {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -156,7 +158,7 @@ export default function Login() {
 
               {modo === "cadastro" && (
                 <div>
-                  <label htmlFor="confirmar" className="text-xs font-semibold text-slate-300 mb-1.5 block">Confirmar senha</label>
+                  <label htmlFor="confirmar" className="text-xs font-semibold text-slate-300 mb-1.5 block">{t("login.confirmarSenha")}</label>
                   <Input
                     id="confirmar"
                     type={mostrarSenha ? "text" : "password"}
@@ -173,7 +175,7 @@ export default function Login() {
               {modo === "login" && (
                 <div className="text-right">
                   <button type="button" onClick={() => trocarModo("reset")} className="text-xs text-amber-400 hover:text-amber-300 focus:outline-none">
-                    Esqueceu sua senha?
+                    {t("login.esqueceuSenha")}
                   </button>
                 </div>
               )}
@@ -184,8 +186,8 @@ export default function Login() {
                 className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold h-10 mt-2"
               >
                 {carregando ? (
-                  <><Loader2 size={16} className="animate-spin mr-2" />Processando...</>
-                ) : modo === "login" ? "Entrar" : modo === "cadastro" ? "Criar conta" : "Enviar link de recuperação"}
+                  <><Loader2 size={16} className="animate-spin mr-2" />{t("common.processando")}</>
+                ) : modo === "login" ? t("login.entrar") : modo === "cadastro" ? t("login.criarConta") : t("login.enviarLinkRecuperacao")}
               </Button>
             </form>
           )}
@@ -194,16 +196,16 @@ export default function Login() {
             <div className="mt-6 pt-6 border-t border-white/10 text-center">
               {modo === "login" ? (
                 <>
-                  <p className="text-sm text-slate-400 mb-2">Não tem conta?</p>
+                  <p className="text-sm text-slate-400 mb-2">{t("login.naoTemConta")}</p>
                   <Button type="button" variant="ghost" onClick={() => trocarModo("cadastro")} className="text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 font-semibold">
-                    Cadastre-se
+                    {t("login.cadastreSe")}
                   </Button>
                 </>
               ) : (
                 <>
-                  <p className="text-sm text-slate-400 mb-2">Já tem conta?</p>
+                  <p className="text-sm text-slate-400 mb-2">{t("login.jaTemConta")}</p>
                   <Button type="button" variant="ghost" onClick={() => trocarModo("login")} className="text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 font-semibold">
-                    Faça login
+                    {t("login.facaLogin")}
                   </Button>
                 </>
               )}
@@ -212,7 +214,7 @@ export default function Login() {
         </div>
 
         <p className="text-xs text-slate-600 text-center mt-6">
-          Seus dados são armazenados com segurança via Supabase
+          {t("login.dadosSeguranca")}
         </p>
       </div>
     </div>
