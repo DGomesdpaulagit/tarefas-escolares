@@ -13,6 +13,8 @@ import {
 import { ArrowLeft, ArrowRight, BookOpen, Check, Loader2, Plus, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
+import type { DicionarioChave } from "@/lib/i18n";
 
 interface OnboardingProps {
   onConcluir: () => void;
@@ -23,6 +25,7 @@ type Passo = 1 | 2 | 3;
 export default function Onboarding({ onConcluir }: OnboardingProps) {
   const { user } = useAuth();
   const { criar } = useDisciplinas();
+  const { t } = useIdioma();
 
   const [passo, setPasso] = useState<Passo>(1);
   const [nome, setNome] = useState("");
@@ -76,10 +79,10 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
       );
       await Promise.all(criarPromessas);
 
-      toast.success(`Boas-vindas, ${nome.trim() || "estudante"}! 🎉`);
+      toast.success(`${t("onboarding.toastBoasVindas")} ${nome.trim() || t("onboarding.estudante")}! 🎉`);
       onConcluir();
     } catch {
-      toast.error("Erro ao concluir cadastro. Tente novamente.");
+      toast.error(t("onboarding.erroConcluir"));
     } finally {
       setSalvando(false);
     }
@@ -92,7 +95,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
       await profileService.upsert({ id: user.id, onboarding_completed: true });
       onConcluir();
     } catch {
-      toast.error("Erro ao pular. Tente novamente.");
+      toast.error(t("onboarding.erroPular"));
     } finally {
       setSalvando(false);
     }
@@ -111,9 +114,9 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               <BookOpen size={20} className="text-black" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">Tarefas Escolares</p>
+              <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">{t("onboarding.marca")}</p>
               <p className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-                Vamos configurar sua conta
+                {t("onboarding.vamosConfigurar")}
               </p>
             </div>
             <button
@@ -121,7 +124,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               disabled={salvando}
               className="ml-auto text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
             >
-              Pular
+              {t("onboarding.pular")}
             </button>
           </div>
 
@@ -138,11 +141,11 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
             ))}
           </div>
           <div className="flex justify-between mt-2">
-            <span className="text-xs text-slate-500">Passo {passo} de 3</span>
+            <span className="text-xs text-slate-500">{t("onboarding.passoDe3")} {passo} {t("onboarding.de3")}</span>
             <span className="text-xs text-slate-500">
-              {passo === 1 && "Sobre você"}
-              {passo === 2 && "Suas disciplinas"}
-              {passo === 3 && "Pronto!"}
+              {passo === 1 && t("onboarding.sobreVoce")}
+              {passo === 2 && t("onboarding.suasDisciplinas")}
+              {passo === 3 && t("onboarding.pronto")}
             </span>
           </div>
         </div>
@@ -155,6 +158,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               setNome={setNome}
               ano={ano}
               setAno={setAno}
+              t={t}
             />
           )}
           {passo === 2 && (
@@ -162,6 +166,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               catalogo={catalogo}
               selecionadas={selecionadas}
               toggle={toggleDisciplina}
+              t={t}
             />
           )}
           {passo === 3 && (
@@ -169,6 +174,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               nome={nome}
               ano={ano}
               selecionadas={selecionadas}
+              t={t}
             />
           )}
         </div>
@@ -183,7 +189,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
               className="border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent gap-2"
             >
               <ArrowLeft size={14} />
-              Voltar
+              {t("onboarding.voltar")}
             </Button>
           )}
           <div className="ml-auto flex items-center gap-3">
@@ -192,7 +198,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
                 onClick={() => setPasso((p) => (p + 1) as Passo)}
                 className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
               >
-                Próximo
+                {t("onboarding.proximo")}
                 <ArrowRight size={14} />
               </Button>
             ) : (
@@ -202,7 +208,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
                 className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
               >
                 {salvando ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-                Começar a usar
+                {t("onboarding.comecarAUsar")}
               </Button>
             )}
           </div>
@@ -221,35 +227,36 @@ function PassoBoasVindas({
   setNome,
   ano,
   setAno,
+  t,
 }: {
   nome: string;
   setNome: (s: string) => void;
   ano: string;
   setAno: (s: string) => void;
+  t: (chave: DicionarioChave) => string;
 }) {
   return (
     <div className="space-y-6">
       <div className="text-center">
         <div className="text-6xl mb-3">👋</div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-          Boas-vindas!
+          {t("onboarding.boasVindas")}
         </h2>
         <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-          Em alguns passos, vamos personalizar sua experiência. Você pode pular
-          essa parte e fazer depois nas configurações.
+          {t("onboarding.personalizarExperiencia")}
         </p>
       </div>
 
       <div className="max-w-md mx-auto space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="ob-nome" className="text-slate-700 dark:text-slate-300 text-sm">
-            Como você quer ser chamado?
+            {t("onboarding.comoQuerSerChamado")}
           </Label>
           <Input
             id="ob-nome"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Ex: Davi"
+            placeholder={t("onboarding.nomePlaceholder")}
             className="bg-white/5 border-white/10 text-slate-900 dark:text-white focus:border-amber-500"
             maxLength={40}
             autoFocus
@@ -258,18 +265,18 @@ function PassoBoasVindas({
 
         <div className="space-y-1.5">
           <Label htmlFor="ob-ano" className="text-slate-700 dark:text-slate-300 text-sm">
-            Ano / série (opcional)
+            {t("onboarding.anoSerie")}
           </Label>
           <Input
             id="ob-ano"
             value={ano}
             onChange={(e) => setAno(e.target.value)}
-            placeholder="Ex: 3º Ano Técnico"
+            placeholder={t("onboarding.anoPlaceholder")}
             className="bg-white/5 border-white/10 text-slate-900 dark:text-white focus:border-amber-500"
             maxLength={40}
           />
           <p className="text-xs text-slate-500">
-            Vai aparecer na sua bio do perfil. Pode editar depois.
+            {t("onboarding.apareceNaBio")}
           </p>
         </div>
       </div>
@@ -285,26 +292,27 @@ function PassoDisciplinas({
   catalogo,
   selecionadas,
   toggle,
+  t,
 }: {
   catalogo: string[];
   selecionadas: Set<string>;
   toggle: (nome: string) => void;
+  t: (chave: DicionarioChave) => string;
 }) {
   return (
     <div className="space-y-4">
       <div className="text-center">
         <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-          Quais disciplinas você cursa?
+          {t("onboarding.quaisDisciplinas")}
         </h2>
         <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-          Toque nos cards para selecionar. Você pode personalizar emoji e cor
-          depois, e adicionar disciplinas próprias.
+          {t("onboarding.toqueParaSelecionar")}
         </p>
       </div>
 
       <div className="flex items-center justify-center gap-2 text-xs text-amber-500">
         <Sparkles size={12} />
-        <span>{selecionadas.size} selecionada{selecionadas.size !== 1 ? "s" : ""}</span>
+        <span>{selecionadas.size} {t(selecionadas.size !== 1 ? "onboarding.selecionadaPlural" : "onboarding.selecionadaSingular")}</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -347,7 +355,7 @@ function PassoDisciplinas({
       </div>
 
       <p className="text-center text-xs text-slate-500 pt-2">
-        Não tem na lista? Você poderá adicionar disciplinas personalizadas depois.
+        {t("onboarding.naoTemNaLista")}
       </p>
     </div>
   );
@@ -361,12 +369,14 @@ function PassoRevisao({
   nome,
   ano,
   selecionadas,
+  t,
 }: {
   nome: string;
   ano: string;
   selecionadas: Set<string>;
+  t: (chave: DicionarioChave) => string;
 }) {
-  const nomeExibido = nome.trim() || "Estudante";
+  const nomeExibido = nome.trim() || t("onboarding.estudante");
   const lista = Array.from(selecionadas);
 
   return (
@@ -374,23 +384,23 @@ function PassoRevisao({
       <div className="text-center">
         <div className="text-6xl mb-3">🎉</div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-          Tudo pronto, {nomeExibido}!
+          {t("onboarding.tudoPronto")} {nomeExibido}!
         </h2>
         <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-          Revise abaixo e clique em "Começar a usar" para entrar no app.
+          {t("onboarding.reviseAbaixo")}
         </p>
       </div>
 
       <div className="max-w-md mx-auto space-y-4">
-        <ResumoLinha label="Nome" valor={nomeExibido} />
-        {ano.trim() && <ResumoLinha label="Ano" valor={ano.trim()} />}
+        <ResumoLinha label={t("onboarding.nome")} valor={nomeExibido} />
+        {ano.trim() && <ResumoLinha label={t("onboarding.ano")} valor={ano.trim()} />}
         <div>
           <p className="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2">
-            Disciplinas ({lista.length})
+            {t("onboarding.disciplinas")} ({lista.length})
           </p>
           {lista.length === 0 ? (
             <p className="text-sm text-slate-500 italic">
-              Nenhuma disciplina selecionada — você pode adicionar depois.
+              {t("onboarding.nenhumaSelecionada")}
             </p>
           ) : (
             <div className="flex flex-wrap gap-2">
@@ -420,7 +430,7 @@ function PassoRevisao({
       <div className="text-center pt-2">
         <div className="inline-flex items-center gap-2 text-xs text-slate-500 bg-white/5 rounded-full px-3 py-1.5 border border-white/8">
           <Plus size={11} />
-          Mais ajustes em Configurações &gt; Perfil
+          {t("onboarding.maisAjustes")}
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useIdioma } from "@/contexts/LanguageContext";
+import type { DicionarioChave } from "@/lib/i18n";
 import {
   ArrowRight,
   BookOpen,
@@ -18,8 +20,8 @@ interface WelcomeProps {
 interface Slide {
   emoji: string;
   icon: React.ReactNode;
-  titulo: string;
-  texto: string;
+  tituloChave: DicionarioChave;
+  textoChave: DicionarioChave;
   cor: string;
 }
 
@@ -27,41 +29,36 @@ const SLIDES: Slide[] = [
   {
     emoji: "📚",
     icon: <ListTodo size={20} />,
-    titulo: "Suas tarefas, organizadas",
-    texto:
-      "Centralize tudo o que precisa entregar — com prazo, prioridade e disciplina. Concluídas ficam no histórico, expiradas saem do caminho.",
+    tituloChave: "welcome.slide1Titulo",
+    textoChave: "welcome.slide1Texto",
     cor: "#f59e0b",
   },
   {
     emoji: "🎯",
     icon: <GraduationCap size={20} />,
-    titulo: "Disciplinas com identidade",
-    texto:
-      "Cada matéria com emoji e cor próprios. Fica fácil reconhecer suas tarefas e saber onde está atrasado em segundos.",
+    tituloChave: "welcome.slide2Titulo",
+    textoChave: "welcome.slide2Texto",
     cor: "#a78bfa",
   },
   {
     emoji: "📅",
     icon: <CalendarDays size={20} />,
-    titulo: "Agenda semanal e mensal",
-    texto:
-      "Veja a semana inteira de uma vez ou navegue pelo mês. Pressione e segure um dia para criar uma tarefa direto na data.",
+    tituloChave: "welcome.slide3Titulo",
+    textoChave: "welcome.slide3Texto",
     cor: "#10b981",
   },
   {
     emoji: "🔔",
     icon: <Bell size={20} />,
-    titulo: "Lembretes automáticos",
-    texto:
-      "Push notifications mesmo com o app fechado, no celular ou computador. Avisos 3/2/1 dias antes e no dia da entrega.",
+    tituloChave: "welcome.slide4Titulo",
+    textoChave: "welcome.slide4Texto",
     cor: "#ef4444",
   },
   {
     emoji: "🏠",
     icon: <HomeIcon size={20} />,
-    titulo: "Visão geral inteligente",
-    texto:
-      "Sua produtividade num só lugar: progresso da semana, próximos prazos e desempenho. Tudo num dashboard moderno.",
+    tituloChave: "welcome.slide5Titulo",
+    textoChave: "welcome.slide5Texto",
     cor: "#3b82f6",
   },
 ];
@@ -77,6 +74,7 @@ export function welcomeJaVisto(): boolean {
 }
 
 export default function Welcome({ onConcluir }: WelcomeProps) {
+  const { t } = useIdioma();
   const [indice, setIndice] = useState(0);
   const slide = SLIDES[indice];
   const ultimo = indice === SLIDES.length - 1;
@@ -107,16 +105,16 @@ export default function Welcome({ onConcluir }: WelcomeProps) {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] leading-none">
-                Tarefas
+                {t("sidebar.brandLinha1")}
               </p>
-              <p className="text-[10px] text-slate-500 leading-none mt-0.5">Escolares</p>
+              <p className="text-[10px] text-slate-500 leading-none mt-0.5">{t("sidebar.brandLinha2")}</p>
             </div>
           </div>
           <button
             onClick={concluir}
             className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
           >
-            Pular
+            {t("welcome.pular")}
           </button>
         </div>
 
@@ -135,10 +133,10 @@ export default function Welcome({ onConcluir }: WelcomeProps) {
             </div>
 
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] mb-2">
-              {slide.titulo}
+              {t(slide.tituloChave)}
             </h2>
             <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
-              {slide.texto}
+              {t(slide.textoChave)}
             </p>
           </div>
         </div>
@@ -167,7 +165,7 @@ export default function Welcome({ onConcluir }: WelcomeProps) {
               className="border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent gap-1"
             >
               <ChevronLeft size={14} />
-              Voltar
+              {t("welcome.voltar")}
             </Button>
           ) : (
             <div className="w-[88px]" />
@@ -179,11 +177,11 @@ export default function Welcome({ onConcluir }: WelcomeProps) {
           >
             {ultimo ? (
               <>
-                Começar agora <ArrowRight size={14} />
+                {t("welcome.comecarAgora")} <ArrowRight size={14} />
               </>
             ) : (
               <>
-                Próximo <ArrowRight size={14} />
+                {t("welcome.proximo")} <ArrowRight size={14} />
               </>
             )}
           </Button>
@@ -192,7 +190,7 @@ export default function Welcome({ onConcluir }: WelcomeProps) {
 
       <p className="text-[11px] text-slate-500 mt-5 text-center max-w-md flex items-center justify-center gap-1.5">
         <span className="text-amber-400">{slide.icon}</span>
-        {indice + 1} de {SLIDES.length} — etapa rápida, você só vê uma vez
+        {indice + 1} {t("metricas.de")} {SLIDES.length} — {t("welcome.etapaRapida")}
       </p>
     </div>
   );
