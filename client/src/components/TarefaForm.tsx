@@ -17,6 +17,7 @@ import type { Tarefa, PrioridadeTarefa, StatusTarefa } from "@/types";
 import { Loader2, Trash2, X, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 interface TarefaFormProps {
   tarefa?: Tarefa;
@@ -36,6 +37,7 @@ const PRIORIDADE_OPTIONS: PrioridadeTarefa[] = ["Alta", "Média", "Baixa"];
 export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFormProps) {
   const { adicionarTarefa, atualizarTarefa, removerTarefa, toggleConcluida } = useTarefas();
   const { disciplinas } = useDisciplinas();
+  const { t } = useIdioma();
   const isEdicao = !!tarefa;
   const statusEfetivo = tarefa ? getStatusEfetivo(tarefa) : null;
   const podeConcluir = isEdicao && statusEfetivo !== "Passou do Prazo";
@@ -81,10 +83,10 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
     try {
       await removerTarefa(tarefa.id);
       soundService.playRemovida();
-      toast.success("Tarefa removida");
+      toast.success(t("tarefaForm.toastRemovida"));
       onClose();
     } catch {
-      toast.error("Erro ao remover tarefa");
+      toast.error(t("tarefaForm.erroRemover"));
       setRemovendo(false);
       setConfirmandoRemocao(false);
     }
@@ -93,7 +95,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
   const handleAlternarConclusao = async () => {
     if (!tarefa) return;
     if (statusEfetivo === "Passou do Prazo") {
-      toast.error("Tarefa expirada não pode ser concluída");
+      toast.error(t("tarefaForm.erroExpiradaConcluir"));
       return;
     }
     setAlternandoConclusao(true);
@@ -101,14 +103,14 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
       await toggleConcluida(tarefa.id);
       if (estaConcluida) {
         soundService.playDesmarcada();
-        toast.success("Tarefa marcada como pendente");
+        toast.success(t("tarefaForm.toastMarcadaPendente"));
       } else {
         soundService.playConcluida();
-        toast.success("Tarefa concluída! 🎉");
+        toast.success(t("tarefaForm.toastConcluida"));
       }
       onClose();
     } catch {
-      toast.error("Erro ao atualizar tarefa");
+      toast.error(t("tarefaForm.erroAtualizar"));
     } finally {
       setAlternandoConclusao(false);
     }
@@ -136,15 +138,15 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
     try {
       if (isEdicao && tarefa) {
         await atualizarTarefa(tarefa.id, payload);
-        toast.success("Tarefa atualizada!");
+        toast.success(t("tarefaForm.toastAtualizada"));
       } else {
         await adicionarTarefa(payload);
         soundService.playAdicionada();
-        toast.success("Tarefa adicionada!");
+        toast.success(t("tarefaForm.toastAdicionada"));
       }
       onClose();
     } catch {
-      toast.error("Erro ao salvar tarefa");
+      toast.error(t("tarefaForm.erroSalvar"));
     } finally {
       setSalvando(false);
     }
@@ -158,7 +160,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={isEdicao ? "Editar Tarefa" : "Nova Tarefa"}
+      aria-label={isEdicao ? t("tarefaForm.editarTarefa") : t("tarefaForm.novaTarefa")}
     >
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -168,12 +170,12 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
       <div className="relative w-full max-w-lg bg-[var(--bg-card)] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-white font-['Space_Grotesk']">
-            {isEdicao ? "Editar Tarefa" : "Nova Tarefa"}
+            {isEdicao ? t("tarefaForm.editarTarefa") : t("tarefaForm.novaTarefa")}
           </h2>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            aria-label="Fechar"
+            aria-label={t("tarefaForm.fechar")}
           >
             <X size={18} />
           </button>
@@ -181,12 +183,12 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-slate-300 text-sm">Título da Tarefa *</Label>
+            <Label htmlFor="title" className="text-slate-300 text-sm">{t("tarefaForm.tituloTarefa")}</Label>
             <Input
               id="title"
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
-              placeholder="Ex: Trabalho sobre Modernismo"
+              placeholder={t("tarefaForm.tituloPlaceholder")}
               required
               className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 focus:ring-amber-500/20"
             />
@@ -194,7 +196,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="subject" className="text-slate-300 text-sm">Disciplina</Label>
+              <Label htmlFor="subject" className="text-slate-300 text-sm">{t("tarefaForm.disciplina")}</Label>
               <Select value={form.subject_name} onValueChange={(v) => set("subject_name", v)}>
                 <SelectTrigger id="subject" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
@@ -212,7 +214,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="status" className="text-slate-300 text-sm">Status</Label>
+              <Label htmlFor="status" className="text-slate-300 text-sm">{t("tarefaForm.status")}</Label>
               <Select value={form.status} onValueChange={(v) => set("status", v as StatusTarefa)}>
                 <SelectTrigger id="status" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
@@ -230,7 +232,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="priority" className="text-slate-300 text-sm">Prioridade</Label>
+              <Label htmlFor="priority" className="text-slate-300 text-sm">{t("tarefaForm.prioridade")}</Label>
               <Select value={form.priority} onValueChange={(v) => set("priority", v as PrioridadeTarefa)}>
                 <SelectTrigger id="priority" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
@@ -245,7 +247,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="sector" className="text-slate-300 text-sm">Setor</Label>
+              <Label htmlFor="sector" className="text-slate-300 text-sm">{t("tarefaForm.setor")}</Label>
               <Select value={form.sector} onValueChange={(v) => set("sector", v)}>
                 <SelectTrigger id="sector" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
@@ -263,7 +265,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="origin" className="text-slate-300 text-sm">Origem</Label>
+              <Label htmlFor="origin" className="text-slate-300 text-sm">{t("tarefaForm.origem")}</Label>
               <Select value={form.origin} onValueChange={(v) => set("origin", v)}>
                 <SelectTrigger id="origin" className="bg-white/5 border-white/10 text-white focus:border-amber-500">
                   <SelectValue />
@@ -278,7 +280,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="due_date" className="text-slate-300 text-sm">Data de Entrega</Label>
+              <Label htmlFor="due_date" className="text-slate-300 text-sm">{t("tarefaForm.dataDeEntrega")}</Label>
               <Input
                 id="due_date"
                 type="date"
@@ -291,7 +293,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
 
           <div className="space-y-1.5">
             <Label htmlFor="progress" className="text-slate-300 text-sm">
-              % Conclusão: <span className="text-amber-400 font-semibold">{form.progress}%</span>
+              {t("tarefaForm.percentConclusao")} <span className="text-amber-400 font-semibold">{form.progress}%</span>
             </Label>
             <input
               id="progress"
@@ -307,19 +309,19 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="notes" className="text-slate-300 text-sm">Observação</Label>
+            <Label htmlFor="notes" className="text-slate-300 text-sm">{t("tarefaForm.observacao")}</Label>
             <Textarea
               id="notes"
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
-              placeholder="Notas adicionais..."
+              placeholder={t("tarefaForm.notasPlaceholder")}
               rows={2}
               className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 resize-none"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="link" className="text-slate-300 text-sm">Link de Referência</Label>
+            <Label htmlFor="link" className="text-slate-300 text-sm">{t("tarefaForm.linkReferencia")}</Label>
             <Input
               id="link"
               value={form.link}
@@ -348,7 +350,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
               ) : (
                 <CheckCircle2 size={14} />
               )}
-              {estaConcluida ? "Marcar como pendente" : "Marcar como concluída"}
+              {estaConcluida ? t("tarefaForm.marcarPendente") : t("tarefaForm.marcarConcluida")}
             </Button>
           )}
 
@@ -374,7 +376,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
                   <Trash2 size={14} />
                 )}
                 <span className="hidden sm:inline">
-                  {confirmandoRemocao ? "Confirmar?" : "Excluir"}
+                  {confirmandoRemocao ? t("tarefaForm.confirmar") : t("tarefaForm.excluir")}
                 </span>
               </Button>
             )}
@@ -386,14 +388,14 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
               className="flex-1 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white bg-transparent"
               disabled={salvando || removendo || alternandoConclusao}
             >
-              Cancelar
+              {t("tarefaForm.cancelar")}
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold"
               disabled={salvando || removendo || alternandoConclusao}
             >
-              {salvando ? "Salvando..." : isEdicao ? "Salvar" : "Adicionar"}
+              {salvando ? t("tarefaForm.salvando") : isEdicao ? t("tarefaForm.salvar") : t("tarefaForm.adicionar")}
             </Button>
           </div>
         </form>
