@@ -137,7 +137,7 @@ function termometroDaMateria(notasDaMateria: { conceito: Conceito }[]): { emoji:
 }
 
 function AbaLancamentos() {
-  const { config, materias, notas, notaDoMes, valorDoMes, lancarNota, mbUsadosNoPeriodo } = useMesada();
+  const { config, materias, notas, notaDoMes, valorDoMes, lancarNota, removerNota, mbUsadosNoPeriodo } = useMesada();
   const hoje = new Date();
   const [mes, setMes] = useState(hoje.getMonth() + 1);
   const [salvandoId, setSalvandoId] = useState<string | null>(null);
@@ -148,8 +148,15 @@ function AbaLancamentos() {
   const materiasAtivas = materias.filter((m) => m.ativa);
 
   const handleLancar = async (materiaId: string, conceito: Conceito) => {
+    const notaAtual = notaDoMes(materiaId, mes);
     setSalvandoId(materiaId);
     try {
+      if (notaAtual?.conceito === conceito) {
+        // Clicar de novo no conceito já selecionado remove o lançamento (corrige erro de digitação)
+        await removerNota(notaAtual.id);
+        toast.success("Lançamento removido");
+        return;
+      }
       const { limiteMbAtingido } = await lancarNota(materiaId, mes, conceito);
       if (limiteMbAtingido) {
         toast.warning("Limite de MB no período atingido — este lançamento foi contabilizado como B");
