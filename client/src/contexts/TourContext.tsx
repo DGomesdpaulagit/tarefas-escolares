@@ -183,10 +183,13 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!ativo) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setAtivo(false);
+      // Usa encerrar() (não setAtivo direto) para garantir que a sidebar mobile,
+      // se tiver sido aberta por um passo do tour, feche junto — senão fica presa aberta.
+      if (e.key === "Escape") encerrar();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- encerrar é estável (useCallback com deps vazias)
   }, [ativo]);
 
   const iniciar = useCallback(() => {
