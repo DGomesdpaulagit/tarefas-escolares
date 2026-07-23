@@ -129,6 +129,7 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
 
               {/* Card para adicionar */}
               <button
+                data-tour="disciplinas-nova"
                 onClick={() => setCriando(true)}
                 className="group relative aspect-auto min-h-[180px] rounded-2xl border-2 border-dashed border-white/15 hover:border-amber-500/60 bg-white/2 hover:bg-amber-500/5 transition-all flex flex-col items-center justify-center gap-2 p-5 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 aria-label="Adicionar nova disciplina"

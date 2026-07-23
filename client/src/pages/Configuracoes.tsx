@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import React from "react";
-import { Camera, Loader2, Save, User, Bell, Palette, GraduationCap, Languages, Check } from "lucide-react";
+import { Camera, Loader2, Save, User, Bell, Palette, GraduationCap, Languages, Check, HelpCircle } from "lucide-react";
 import type { Perfil } from "@/types";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
 import { notificationService } from "@/services/notificationService";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTour } from "@/contexts/TourContext";
 
 type Aba = "perfil" | "academico" | "tema" | "notificacoes";
 
@@ -63,6 +64,7 @@ function compressImage(file: File, maxSize = 256): Promise<string> {
 
 export default function Configuracoes() {
   const { user, deslogar, atualizarSenha } = useAuth();
+  const { iniciar: iniciarTour } = useTour();
   const [abaAtiva, setAbaAtiva] = useState<Aba>("perfil");
 
   return (
@@ -74,7 +76,7 @@ export default function Configuracoes() {
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Abas */}
-        <nav className="lg:w-48 flex lg:flex-col gap-1 flex-wrap" aria-label="Seções de configurações">
+        <nav data-tour="config-abas" className="lg:w-48 flex lg:flex-col gap-1 flex-wrap" aria-label="Seções de configurações">
           {([
             { id: "perfil", label: "Perfil", icon: User },
             { id: "academico", label: "Acadêmico", icon: GraduationCap },
@@ -96,7 +98,15 @@ export default function Configuracoes() {
             </button>
           ))}
 
-          <div className="lg:mt-auto mt-2">
+          <div className="lg:mt-auto mt-2 space-y-1">
+            <button
+              data-tour="config-tutorial-button"
+              onClick={() => iniciarTour()}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-amber-400 hover:bg-amber-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <HelpCircle size={15} aria-hidden="true" />
+              Ver tutorial do app
+            </button>
             <button
               onClick={() => deslogar()}
               className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-red-500"

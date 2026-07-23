@@ -8,9 +8,11 @@ import Disciplinas from "@/pages/Disciplinas";
 import VisaoGeral from "@/pages/VisaoGeral";
 import Mesada from "@/pages/Mesada";
 import UserMenu from "@/components/UserMenu";
+import TourOverlay from "@/components/TourOverlay";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTarefas } from "@/contexts/TarefasContext";
+import { useTour } from "@/contexts/TourContext";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 
 const PAGINA_LABELS: Record<string, string> = {
@@ -57,6 +59,15 @@ export default function Home() {
   const [pagina, setPagina] = useState("visao-geral");
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const { setFiltros } = useTarefas();
+  const { registrarNavegacao, registrarSidebar } = useTour();
+
+  useEffect(() => {
+    registrarNavegacao(setPagina);
+    registrarSidebar(
+      () => setSidebarAberta(true),
+      () => setSidebarAberta(false),
+    );
+  }, [registrarNavegacao, registrarSidebar]);
 
   const navegarComFiltro = (nomeDisciplina: string) => {
     setFiltros({ materia: nomeDisciplina });
@@ -115,6 +126,8 @@ export default function Home() {
           {pagina === "mesada" && MESADA_MODULE_ENABLED && <Mesada />}
         </main>
       </div>
+
+      <TourOverlay />
     </div>
   );
 }

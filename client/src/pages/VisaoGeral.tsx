@@ -159,6 +159,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
           </p>
         </div>
         <Button
+          data-tour="vg-nova-tarefa"
           onClick={() => setCriando(true)}
           className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
         >

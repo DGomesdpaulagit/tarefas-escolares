@@ -111,7 +111,7 @@ export default function Metricas() {
 
       {/* Perfil Inteligente */}
       {metricas.total > 0 && (
-        <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
+        <div data-tour="metricas-insights" className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap size={15} className="text-amber-400" />
             <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Perfil Inteligente</h3>

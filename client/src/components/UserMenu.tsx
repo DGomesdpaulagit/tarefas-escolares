@@ -30,6 +30,7 @@ export default function UserMenu({ onNavegar }: UserMenuProps) {
   return (
     <div className="relative">
       <button
+        data-tour="user-menu"
         onClick={() => setAberto(!aberto)}
         className="w-9 h-9 rounded-lg bg-amber-500 text-black font-semibold flex items-center justify-center hover:bg-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
         title={nome}

@@ -8,6 +8,13 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 028e — 2026-07-22) — Tutorial guiado do app com spotlight
+- **`TourContext.tsx`** — 19 passos cobrindo todas as páginas e abas do app (Visão Geral, Tarefas, Disciplinas, Agenda, Métricas, Mesada quando habilitada, Arquivos, Configurações, menu do usuário), com navegação automática entre páginas e abertura/fechamento da sidebar mobile conforme o passo
+- **`TourOverlay.tsx`** — escurece o restante da tela e recorta (spotlight) o elemento sendo explicado via `box-shadow` no elemento alvo; bloqueia cliques fora do tutorial; card com título, descrição, contador de passos e botões Anterior/Próximo/Pular; tecla Esc encerra
+- **Atributos `data-tour`** adicionados (sem alterar comportamento) em: itens da Sidebar, botão "Nova tarefa" (Visão Geral), botão de filtros (Tarefas), botão "Adicionar disciplina" (Disciplinas), toggle Semana/Mês (Agenda), card "Perfil Inteligente" (Métricas), abas da Mesada, abas e botão de tutorial (Configurações), avatar (UserMenu)
+- **Botão "Ver tutorial do app"** na barra lateral de Configurações — inicia o tour a qualquer momento
+- Build: 0 erros TypeScript
+
 ### Adicionado (Etapa 17 / Sessão 028d — 2026-07-22) — Mesada: termômetro, lembrete mensal, virada de ano + data no topo
 - **Termômetro por matéria** (🟢/🟡/🔴) na aba Lançamentos, calculado pela média histórica dos conceitos daquela matéria no ano (peso MB=3/B=2/R=1/I=0) — não afeta o valor em R$, é só indicador visual
 - **`notificationService.checkMesadaReminder()`** — lembrete local (1x/dia) nos últimos 5 dias do mês se houver matéria sem lançamento; **`MesadaNotificationChecker.tsx`** monta essa checagem dentro do `MesadaProvider`

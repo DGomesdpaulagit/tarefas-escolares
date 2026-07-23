@@ -193,7 +193,7 @@ export default function Agenda() {
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Toggle Semana/Mês */}
-          <div className="inline-flex p-0.5 rounded-lg border border-white/10 bg-white/5">
+          <div data-tour="agenda-toggle" className="inline-flex p-0.5 rounded-lg border border-white/10 bg-white/5">
             <button
               onClick={() => setVisao("semana")}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500 ${

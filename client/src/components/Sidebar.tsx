@@ -114,6 +114,7 @@ export default function Sidebar({ paginaAtual, onNavegar, aberta, onFechar }: Si
           {navItems.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
+              data-tour={`nav-${id}`}
               onClick={() => { onNavegar(id); onFechar(); }}
               className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 mb-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                 paginaAtual === id

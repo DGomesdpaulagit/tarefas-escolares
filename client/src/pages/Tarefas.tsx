@@ -95,6 +95,7 @@ export default function Tarefas() {
           </div>
 
           <Button
+            data-tour="tarefas-filtros"
             variant="outline"
             size="sm"
             onClick={() => setMostrarFiltros((v) => !v)}

@@ -10,6 +10,7 @@ import { ArquivosProvider } from "./contexts/ArquivosContext";
 import { MesadaProvider } from "./contexts/MesadaContext";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 import MesadaNotificationChecker from "@/components/MesadaNotificationChecker";
+import { TourProvider } from "./contexts/TourContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -50,20 +51,22 @@ function Router() {
     );
 
     return (
-      <ArquivosProvider>
-        <DisciplinasProvider>
-          <TarefasProvider>
-            {MESADA_MODULE_ENABLED ? (
-              <MesadaProvider>
-                <MesadaNotificationChecker />
-                {conteudo}
-              </MesadaProvider>
-            ) : (
-              conteudo
-            )}
-          </TarefasProvider>
-        </DisciplinasProvider>
-      </ArquivosProvider>
+      <TourProvider>
+        <ArquivosProvider>
+          <DisciplinasProvider>
+            <TarefasProvider>
+              {MESADA_MODULE_ENABLED ? (
+                <MesadaProvider>
+                  <MesadaNotificationChecker />
+                  {conteudo}
+                </MesadaProvider>
+              ) : (
+                conteudo
+              )}
+            </TarefasProvider>
+          </DisciplinasProvider>
+        </ArquivosProvider>
+      </TourProvider>
     );
   }
 

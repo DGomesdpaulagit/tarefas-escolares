@@ -75,7 +75,7 @@ export default function Mesada() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-white/8 overflow-x-auto">
+      <div data-tour="mesada-abas" className="flex gap-1 mb-6 border-b border-white/8 overflow-x-auto">
         <AbaBotao label="Lançamentos" ativa={aba === "lancamentos"} onClick={() => setAba("lancamentos")} />
         <AbaBotao label="Acompanhamento" ativa={aba === "acompanhamento"} onClick={() => setAba("acompanhamento")} />
         <AbaBotao label="Configurações da Mesada" ativa={aba === "configuracoes"} onClick={() => setAba("configuracoes")} />
