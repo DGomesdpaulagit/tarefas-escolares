@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Tarefa } from "@/types";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 interface ImportarPlanilhaModalProps {
   onClose: () => void;
@@ -18,6 +19,7 @@ type TarefaRaw = Omit<Tarefa, "id" | "user_id" | "created_at" | "updated_at" | "
 export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModalProps) {
   const { adicionarTarefa } = useTarefas();
   const { adicionarArquivo } = useArquivos();
+  const { t } = useIdioma();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [tarefasParaImportar, setTarefasParaImportar] = useState<TarefaRaw[]>([]);
@@ -35,14 +37,14 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
     try {
       const raw = await parseExcelFile(file);
       if (raw.length === 0) {
-        setErro("Nenhuma tarefa encontrada no arquivo");
+        setErro(t("importarPlanilha.erroNenhumaTarefa"));
         setStatus("error");
         return;
       }
       setTarefasParaImportar(raw as TarefaRaw[]);
       setStatus("preview");
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "Erro ao processar arquivo");
+      setErro(err instanceof Error ? err.message : t("importarPlanilha.erroProcessarArquivo"));
       setStatus("error");
     }
   };
@@ -60,10 +62,10 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
         nomeArquivo.endsWith(".csv") ? "csv" : "xlsx"
       );
       setStatus("success");
-      toast.success(`${tarefasParaImportar.length} tarefa(s) importada(s)!`);
+      toast.success(`${tarefasParaImportar.length} ${t(tarefasParaImportar.length !== 1 ? "importarPlanilha.toastImportadaPlural" : "importarPlanilha.toastImportadaSingular")}`);
       setTimeout(onClose, 2000);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao importar tarefas";
+      const msg = err instanceof Error ? err.message : t("importarPlanilha.erroImportarTarefas");
       setErro(msg);
       setStatus("error");
     }
@@ -77,12 +79,12 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Importar Planilha">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={t("importarPlanilha.titulo")}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
       <div className="relative w-full max-w-lg bg-[var(--bg-card)] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <h2 className="text-lg font-semibold text-white font-['Space_Grotesk']">Importar Planilha</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500" aria-label="Fechar">
+          <h2 className="text-lg font-semibold text-white font-['Space_Grotesk']">{t("importarPlanilha.titulo")}</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500" aria-label={t("importarPlanilha.fechar")}>
             <X size={18} />
           </button>
         </div>
@@ -103,11 +105,11 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
               onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
             >
               <FileUp size={32} className="mx-auto mb-3 text-amber-400" aria-hidden="true" />
-              <p className="text-slate-200 font-medium mb-1">Arraste sua planilha aqui</p>
-              <p className="text-slate-500 text-sm mb-4">ou clique para selecionar (.xlsx, .csv)</p>
-              <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }} className="hidden" aria-label="Selecionar arquivo" />
+              <p className="text-slate-200 font-medium mb-1">{t("importarPlanilha.arrasteAqui")}</p>
+              <p className="text-slate-500 text-sm mb-4">{t("importarPlanilha.ouCliqueSelecionar")}</p>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls,.csv" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }} className="hidden" aria-label={t("importarPlanilha.selecionarArquivo")} />
               <Button className="bg-amber-500 hover:bg-amber-400 text-black font-semibold">
-                Selecionar Arquivo
+                {t("importarPlanilha.selecionarArquivo")}
               </Button>
             </div>
           )}
@@ -115,7 +117,7 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
           {status === "loading" && (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 size={32} className="text-amber-400 animate-spin mb-3" aria-hidden="true" />
-              <p className="text-slate-300 font-medium">Processando...</p>
+              <p className="text-slate-300 font-medium">{t("importarPlanilha.processando")}</p>
             </div>
           )}
 
@@ -124,8 +126,10 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
               <div className="bg-amber-500/10 border border-amber-500/40 rounded-lg p-3 flex items-start gap-2">
                 <AlertCircle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
-                  <p className="text-sm text-amber-300 font-medium">{tarefasParaImportar.length} tarefa(s) encontrada(s)</p>
-                  <p className="text-xs text-amber-200 mt-0.5">Clique em "Importar" para adicionar ao app</p>
+                  <p className="text-sm text-amber-300 font-medium">
+                    {tarefasParaImportar.length} {t(tarefasParaImportar.length !== 1 ? "importarPlanilha.tarefaEncontradaPlural" : "importarPlanilha.tarefaEncontradaSingular")}
+                  </p>
+                  <p className="text-xs text-amber-200 mt-0.5">{t("importarPlanilha.cliqueImportar")}</p>
                 </div>
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -139,7 +143,7 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
                   </div>
                 ))}
                 {tarefasParaImportar.length > 10 && (
-                  <p className="text-xs text-slate-500 text-center py-2">+{tarefasParaImportar.length - 10} mais...</p>
+                  <p className="text-xs text-slate-500 text-center py-2">+{tarefasParaImportar.length - 10} {t("importarPlanilha.maisReticencias")}</p>
                 )}
               </div>
             </div>
@@ -148,7 +152,9 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
           {status === "success" && (
             <div className="flex flex-col items-center justify-center py-12">
               <CheckCircle2 size={32} className="text-green-400 mb-3" aria-hidden="true" />
-              <p className="text-slate-300 font-medium">{tarefasParaImportar.length} tarefa(s) importada(s) com sucesso!</p>
+              <p className="text-slate-300 font-medium">
+                {tarefasParaImportar.length} {t(tarefasParaImportar.length !== 1 ? "importarPlanilha.tarefaImportadaSucessoPlural" : "importarPlanilha.tarefaImportadaSucessoSingular")}
+              </p>
             </div>
           )}
 
@@ -157,7 +163,7 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
               <div className="flex items-start gap-2">
                 <AlertCircle size={16} className="text-red-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
-                  <p className="text-sm text-red-300 font-medium">Erro ao processar</p>
+                  <p className="text-sm text-red-300 font-medium">{t("importarPlanilha.erroProcessar")}</p>
                   <p className="text-xs text-red-200 mt-1">{erro}</p>
                 </div>
               </div>
@@ -168,16 +174,16 @@ export default function ImportarPlanilhaModal({ onClose }: ImportarPlanilhaModal
         {(status === "preview" || status === "error") && (
           <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-[var(--bg-base)]/50">
             <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white bg-transparent">
-              Cancelar
+              {t("importarPlanilha.cancelar")}
             </Button>
             {status === "preview" && (
               <Button onClick={handleImportar} className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold">
-                Importar {tarefasParaImportar.length} Tarefa(s)
+                {t(tarefasParaImportar.length !== 1 ? "importarPlanilha.importarTarefaPlural" : "importarPlanilha.importarTarefaSingular")} {tarefasParaImportar.length}
               </Button>
             )}
             {status === "error" && (
               <Button onClick={() => { setStatus("idle"); setTarefasParaImportar([]); setErro(""); }} className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold">
-                Tentar Novamente
+                {t("importarPlanilha.tentarNovamente")}
               </Button>
             )}
           </div>
