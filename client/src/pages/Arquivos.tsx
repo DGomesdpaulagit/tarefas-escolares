@@ -4,6 +4,7 @@ import { FileText, FileSpreadsheet, Loader2, Trash2, Download } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 function formatarTamanho(bytes: number | null): string {
   if (!bytes) return "—";
@@ -12,8 +13,10 @@ function formatarTamanho(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function formatarDataHora(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
+const LOCALE_POR_IDIOMA: Record<string, string> = { "pt-BR": "pt-BR", en: "en-US", es: "es-ES" };
+
+function formatarDataHora(iso: string, idioma: string): string {
+  return new Date(iso).toLocaleDateString(LOCALE_POR_IDIOMA[idioma] ?? "pt-BR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -25,6 +28,7 @@ function formatarDataHora(iso: string): string {
 export default function Arquivos() {
   const { arquivos, carregando, removerArquivo, limparHistorico } = useArquivos();
   const { tarefas } = useTarefas();
+  const { t, idioma } = useIdioma();
 
   const exportarJSON = () => {
     const blob = new Blob([JSON.stringify(tarefas, null, 2)], { type: "application/json" });
@@ -34,7 +38,7 @@ export default function Arquivos() {
     a.download = `tarefas-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Exportação JSON concluída!");
+    toast.success(t("arquivos.toastJSON"));
   };
 
   const exportarExcel = () => {
@@ -50,37 +54,37 @@ export default function Arquivos() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Tarefas");
     XLSX.writeFile(wb, `tarefas-${new Date().toISOString().slice(0, 10)}.xlsx`);
-    toast.success("Exportação Excel concluída!");
+    toast.success(t("arquivos.toastExcel"));
   };
 
   const handleRemover = async (id: string) => {
     try {
       await removerArquivo(id);
-      toast.success("Removido do histórico");
+      toast.success(t("arquivos.toastRemovido"));
     } catch {
-      toast.error("Erro ao remover");
+      toast.error(t("arquivos.erroRemover"));
     }
   };
 
   const handleLimparHistorico = async () => {
     try {
       await limparHistorico();
-      toast.success("Histórico limpo");
+      toast.success(t("arquivos.toastHistoricoLimpo"));
     } catch {
-      toast.error("Erro ao limpar histórico");
+      toast.error(t("arquivos.erroLimparHistorico"));
     }
   };
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">Arquivos</h1>
-        <p className="text-slate-400 text-sm mt-1">Histórico de importações e exportações de dados</p>
+        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">{t("arquivos.titulo")}</h1>
+        <p className="text-slate-400 text-sm mt-1">{t("arquivos.subtitulo")}</p>
       </div>
 
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
-        <h2 className="text-sm font-semibold text-slate-200 mb-3 font-['Space_Grotesk']">Exportar Dados</h2>
-        <p className="text-xs text-slate-500 mb-4">Faça backup ou exporte suas tarefas em diferentes formatos</p>
+        <h2 className="text-sm font-semibold text-slate-200 mb-3 font-['Space_Grotesk']">{t("arquivos.exportarDados")}</h2>
+        <p className="text-xs text-slate-500 mb-4">{t("arquivos.exportarDescricao")}</p>
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={exportarJSON}
@@ -89,7 +93,7 @@ export default function Arquivos() {
             disabled={tarefas.length === 0}
           >
             <Download size={14} aria-hidden="true" />
-            Exportar JSON
+            {t("arquivos.exportarJSON")}
           </Button>
           <Button
             onClick={exportarExcel}
@@ -98,18 +102,18 @@ export default function Arquivos() {
             disabled={tarefas.length === 0}
           >
             <Download size={14} aria-hidden="true" />
-            Exportar Excel
+            {t("arquivos.exportarExcel")}
           </Button>
         </div>
         {tarefas.length === 0 && (
-          <p className="text-xs text-slate-500 mt-3 italic">Adicione tarefas para habilitar a exportação</p>
+          <p className="text-xs text-slate-500 mt-3 italic">{t("arquivos.adicioneParaExportar")}</p>
         )}
       </div>
 
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">
-            Histórico de Importações
+            {t("arquivos.historicoImportacoes")}
           </h2>
           {arquivos.length > 0 && (
             <button
@@ -117,7 +121,7 @@ export default function Arquivos() {
               className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
             >
               <Trash2 size={12} aria-hidden="true" />
-              Limpar histórico
+              {t("arquivos.limparHistorico")}
             </button>
           )}
         </div>
@@ -129,8 +133,8 @@ export default function Arquivos() {
         ) : arquivos.length === 0 ? (
           <div className="text-center py-8 text-slate-500 text-sm">
             <FileText size={24} className="mx-auto mb-2 opacity-40" aria-hidden="true" />
-            <p>Nenhuma importação realizada ainda</p>
-            <p className="text-xs mt-1 text-slate-600">Use "Importar" na tela de Tarefas para importar planilhas</p>
+            <p>{t("arquivos.nenhumaImportacao")}</p>
+            <p className="text-xs mt-1 text-slate-600">{t("arquivos.useImportar")}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -146,8 +150,8 @@ export default function Arquivos() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-slate-200 font-medium truncate">{arquivo.file_name}</p>
                   <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                    <span className="text-xs text-slate-500">{formatarDataHora(arquivo.created_at)}</span>
-                    <span className="text-xs text-slate-500">{arquivo.imported_count} tarefas importadas</span>
+                    <span className="text-xs text-slate-500">{formatarDataHora(arquivo.created_at, idioma)}</span>
+                    <span className="text-xs text-slate-500">{arquivo.imported_count} {t("arquivos.tarefasImportadas")}</span>
                     <span className="text-xs text-slate-500">{formatarTamanho(arquivo.file_size)}</span>
                   </div>
                 </div>

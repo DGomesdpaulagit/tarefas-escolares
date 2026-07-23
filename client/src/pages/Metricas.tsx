@@ -7,12 +7,21 @@ import {
   Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from "recharts";
+import { useIdioma } from "@/contexts/LanguageContext";
+import type { DicionarioChave } from "@/lib/i18n";
 
 const STATUS_CORES: Record<StatusTarefa, string> = {
   Concluída: "#10b981",
   "Em Andamento": "#f59e0b",
   "Não iniciada": "#64748b",
   "Passou do Prazo": "#ef4444",
+};
+
+const STATUS_LABEL_KEY: Record<string, DicionarioChave> = {
+  "Concluída": "status.concluida",
+  "Em Andamento": "status.emAndamento",
+  "Não iniciada": "status.naoIniciada",
+  "Passou do Prazo": "status.passouPrazo",
 };
 
 const TOOLTIP_STYLE = {
@@ -69,10 +78,11 @@ function calcularInsights(tarefas: ReturnType<typeof useTarefas>["tarefas"], met
 
 export default function Metricas() {
   const { tarefas, metricas } = useTarefas();
+  const { t } = useIdioma();
   const insights = calcularInsights(tarefas, metricas);
 
   const dadosStatus = Object.entries(metricas.porStatus).map(([status, qtd]) => ({
-    name: status,
+    name: STATUS_LABEL_KEY[status] ? t(STATUS_LABEL_KEY[status]) : status,
     value: qtd,
     color: STATUS_CORES[status as StatusTarefa] ?? "#94a3b8",
   }));
@@ -97,16 +107,16 @@ export default function Metricas() {
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">Métricas</h1>
-        <p className="text-slate-400 text-sm mt-1">Visão geral do seu desempenho escolar</p>
+        <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">{t("metricas.titulo")}</h1>
+        <p className="text-slate-400 text-sm mt-1">{t("metricas.subtitulo")}</p>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <KpiCard label="Total" valor={metricas.total} cor="#94a3b8" sufixo="tarefas" />
-        <KpiCard label="Concluídas" valor={metricas.concluidas} cor="#10b981" sufixo={taxaConclusao} />
-        <KpiCard label="Em Andamento" valor={metricas.emAndamento} cor="#f59e0b" sufixo="tarefas" />
-        <KpiCard label="Atrasadas" valor={metricas.passouPrazo} cor="#ef4444" sufixo="tarefas" />
+        <KpiCard label={t("metricas.total")} valor={metricas.total} cor="#94a3b8" sufixo={t("metricas.tarefas")} />
+        <KpiCard label={t("metricas.concluidas")} valor={metricas.concluidas} cor="#10b981" sufixo={taxaConclusao} />
+        <KpiCard label={t("metricas.emAndamento")} valor={metricas.emAndamento} cor="#f59e0b" sufixo={t("metricas.tarefas")} />
+        <KpiCard label={t("metricas.atrasadas")} valor={metricas.passouPrazo} cor="#ef4444" sufixo={t("metricas.tarefas")} />
       </div>
 
       {/* Perfil Inteligente */}
@@ -114,27 +124,31 @@ export default function Metricas() {
         <div data-tour="metricas-insights" className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Zap size={15} className="text-amber-400" />
-            <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Perfil Inteligente</h3>
+            <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">{t("metricas.perfilInteligente")}</h3>
           </div>
 
           {/* KPIs base */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Taxa de Conclusão</p>
+              <p className="text-xs text-slate-500 mb-1">{t("metricas.taxaConclusao")}</p>
               <p className="text-2xl font-bold text-green-400 font-['Space_Grotesk']">{taxaConclusao}</p>
-              <p className="text-xs text-slate-500 mt-1">{metricas.concluidas} de {metricas.total} tarefas</p>
+              <p className="text-xs text-slate-500 mt-1">
+                {metricas.concluidas} {t("metricas.de")} {metricas.total} {t("metricas.tarefas")}
+              </p>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Taxa de Atraso</p>
+              <p className="text-xs text-slate-500 mb-1">{t("metricas.taxaAtraso")}</p>
               <p className="text-2xl font-bold text-red-400 font-['Space_Grotesk']">
                 {`${Math.round((metricas.passouPrazo / metricas.total) * 100)}%`}
               </p>
-              <p className="text-xs text-slate-500 mt-1">{metricas.passouPrazo} tarefas atrasadas</p>
+              <p className="text-xs text-slate-500 mt-1">{metricas.passouPrazo} {t("metricas.tarefasAtrasadas")}</p>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Ritmo (7 dias)</p>
+              <p className="text-xs text-slate-500 mb-1">{t("metricas.ritmo7dias")}</p>
               <p className="text-2xl font-bold text-amber-400 font-['Space_Grotesk']">{insights.concluidasRecentes}</p>
-              <p className="text-xs text-slate-500 mt-1">tarefa{insights.concluidasRecentes !== 1 ? "s" : ""} concluída{insights.concluidasRecentes !== 1 ? "s" : ""}</p>
+              <p className="text-xs text-slate-500 mt-1">
+                {t(insights.concluidasRecentes !== 1 ? "metricas.concluidaPlural" : "metricas.concluidaSingular")}
+              </p>
             </div>
           </div>
 
@@ -143,45 +157,45 @@ export default function Metricas() {
             {insights.materiaFoco && (
               <InsightCard
                 icon={<AlertCircle size={13} className="text-red-400" />}
-                label="Foco urgente"
+                label={t("metricas.focoUrgente")}
                 valor={insights.materiaFoco[0]}
-                detalhe={`${insights.materiaFoco[1]} tarefa${insights.materiaFoco[1] > 1 ? "s" : ""} urgente${insights.materiaFoco[1] > 1 ? "s" : ""}`}
+                detalhe={`${insights.materiaFoco[1]} ${t(insights.materiaFoco[1] > 1 ? "metricas.tarefaUrgentePlural" : "metricas.tarefaUrgenteSingular")}`}
                 cor="red"
               />
             )}
             {insights.materiaProdutiva && (
               <InsightCard
                 icon={<TrendingUp size={13} className="text-green-400" />}
-                label="Mais produtiva"
+                label={t("metricas.maisProdutiva")}
                 valor={insights.materiaProdutiva.materia}
-                detalhe={`${insights.materiaProdutiva.taxa}% de conclusão`}
+                detalhe={`${insights.materiaProdutiva.taxa}% ${t("metricas.taxaDeConclusao")}`}
                 cor="green"
               />
             )}
             {insights.materiaComAtrasos && (
               <InsightCard
                 icon={<TrendingDown size={13} className="text-red-400" />}
-                label="Mais atrasada"
+                label={t("metricas.maisAtrasada")}
                 valor={insights.materiaComAtrasos[0]}
-                detalhe={`${insights.materiaComAtrasos[1]} tarefa${insights.materiaComAtrasos[1] > 1 ? "s" : ""} atrasada${insights.materiaComAtrasos[1] > 1 ? "s" : ""}`}
+                detalhe={`${insights.materiaComAtrasos[1]} ${t(insights.materiaComAtrasos[1] > 1 ? "metricas.tarefaAtrasadaPlural" : "metricas.tarefaAtrasadaSingular")}`}
                 cor="red"
               />
             )}
             {insights.progressoMedio !== null && (
               <InsightCard
                 icon={<Target size={13} className="text-amber-400" />}
-                label="Progresso médio"
+                label={t("metricas.progressoMedio")}
                 valor={`${insights.progressoMedio}%`}
-                detalhe={`nas ${metricas.emAndamento} tarefas em andamento`}
+                detalhe={`${metricas.emAndamento} ${t(metricas.emAndamento !== 1 ? "tarefas.tarefaPlural" : "tarefas.tarefaSingular")} ${t("metricas.emAndamentoSufixo")}`}
                 cor="amber"
               />
             )}
             {!insights.materiaFoco && metricas.passouPrazo === 0 && (
               <InsightCard
                 icon={<BookOpen size={13} className="text-green-400" />}
-                label="Status"
-                valor="Tudo em dia!"
-                detalhe="Nenhuma tarefa urgente ou atrasada"
+                label={t("metricas.statusTudoEmDia")}
+                valor={t("metricas.tudoEmDia")}
+                detalhe={t("metricas.nenhumaUrgenteAtrasada")}
                 cor="green"
               />
             )}
@@ -191,7 +205,7 @@ export default function Metricas() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Distribuição por Status</h3>
+          <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">{t("metricas.distribuicaoStatus")}</h3>
           {dadosStatus.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
@@ -204,19 +218,19 @@ export default function Metricas() {
                 <Legend formatter={(value) => <span style={{ color: "#94a3b8", fontSize: "12px" }}>{value}</span>} />
               </PieChart>
             </ResponsiveContainer>
-          ) : <EmptyChart />}
+          ) : <EmptyChart t={t} />}
         </div>
 
         {dadosSetor.length > 0 && (
           <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Tarefas por Setor</h3>
+            <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">{t("metricas.tarefasPorSetor")}</h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={dadosSetor} layout="vertical" margin={{ left: 8, right: 16 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis type="number" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} width={100} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} />
-                <Bar dataKey="value" fill="#f59e0b" radius={[0, 4, 4, 0]} name="Tarefas" />
+                <Bar dataKey="value" fill="#f59e0b" radius={[0, 4, 4, 0]} name={t("metricas.tarefas")} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -225,14 +239,14 @@ export default function Metricas() {
 
       {dadosMateria.length > 0 && (
         <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">Tarefas por Matéria</h3>
+          <h3 className="text-sm font-semibold text-slate-200 mb-4 font-['Space_Grotesk']">{t("metricas.tarefasPorMateria")}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={dadosMateria} margin={{ left: 0, right: 16, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
               <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" />
               <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(value, _name, props) => [value, props.payload.fullName]} />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]} name="Tarefas">
+              <Bar dataKey="value" radius={[4, 4, 0, 0]} name={t("metricas.tarefas")}>
                 {dadosMateria.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
                 ))}
@@ -244,7 +258,7 @@ export default function Metricas() {
 
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Progresso Geral</h3>
+          <h3 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">{t("metricas.progressoGeral")}</h3>
           <span className="text-2xl font-bold text-amber-400 font-['Space_Grotesk']">{metricas.percentualConcluido}%</span>
         </div>
         <div className="h-4 bg-white/5 rounded-full overflow-hidden" role="progressbar" aria-valuenow={metricas.percentualConcluido} aria-valuemin={0} aria-valuemax={100}>
@@ -254,8 +268,8 @@ export default function Metricas() {
           />
         </div>
         <div className="flex justify-between text-xs text-slate-500 mt-2">
-          <span>{metricas.concluidas} concluídas</span>
-          <span>{metricas.total - metricas.concluidas} restantes</span>
+          <span>{metricas.concluidas} {t("metricas.concluidasMinusculo")}</span>
+          <span>{metricas.total - metricas.concluidas} {t("metricas.restantes")}</span>
         </div>
       </div>
     </div>
@@ -272,10 +286,10 @@ function KpiCard({ label, valor, cor, sufixo }: { label: string; valor: number; 
   );
 }
 
-function EmptyChart() {
+function EmptyChart({ t }: { t: (chave: DicionarioChave) => string }) {
   return (
     <div className="h-[220px] flex items-center justify-center text-slate-500 text-sm">
-      Sem dados para exibir
+      {t("metricas.semDados")}
     </div>
   );
 }
