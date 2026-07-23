@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-07-22 (Sessão 028 — v3.0 Mesada completa + Tutorial guiado, branch `v3-mesada-pessoal`) — sem próximos passos pendentes
+> **Última atualização:** 2026-07-23 (Sessão 029a — Mesada + Tutorial mesclados em `main`, i18n real fase 1 em andamento)
 
 ---
 
@@ -461,7 +461,23 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 - ✅ Fechamento — Ações completas no TarefaForm — Sessão 025
 - ✅ Hotfix BUG-021 — Sessão 026
 
-### ✅ v3.0 IMPLEMENTADA — Módulo de Mesada por Desempenho + Tutorial guiado (branch `v3-mesada-pessoal`)
+### ⚠️ ATUALIZAÇÃO IMPORTANTE (2026-07-23): Mesada + Tutorial agora estão em `main`
+
+**Decisão do usuário (Sessão 029a):** em vez de manter dois projetos Vercel separados, o usuário pediu para **mesclar `v3-mesada-pessoal` em `main`** e publicar tudo no mesmo link (`tarefas-escolares-five.vercel.app`), evitando um segundo projeto que consumiria cota de outros projetos Vercel da conta.
+
+**Contexto que motivou a mudança de regra:**
+- O usuário não pretende publicar o app publicamente por enquanto ("não vou publicar isso agora"; só cogita publicar de verdade — Play Store etc. — bem mais pra frente, "quando pagar uns dólares")
+- Enquanto isso, o único destinatário do link é o pai do usuário, que banca a mesada — ou seja, ele **tem total ciência e acesso autorizado** aos próprios dados financeiros do filho, então não há problema de privacidade em expor o módulo de Mesada nesse link por ora
+- Se um dia o usuário decidir publicar de verdade para o público, ele mesmo confirmou que sabe reverter isso (existe a tag `v2.1.0-publico` no commit `80adcd8` como ponto de retorno seguro, e o feature flag `VITE_ENABLE_MESADA_MODULE` continua existindo — só não está mais atrás de uma branch separada)
+
+**O que isso muda:**
+- A regra antiga "Mesada nunca pode ir para main" **não vale mais enquanto essa decisão não for revertida**
+- Branch `v3-mesada-pessoal` ainda existe no histórico do git, mas o trabalho de agora em diante acontece direto em `main`
+- O deploy em `tarefas-escolares-five.vercel.app` agora inclui o módulo de Mesada (atrás da flag, que segue setada via variável de ambiente no projeto Vercel)
+
+---
+
+### ✅ v3.0 IMPLEMENTADA — Módulo de Mesada por Desempenho + Tutorial guiado (histórico da branch `v3-mesada-pessoal`, hoje mesclada em `main`)
 
 **Sessão 027 (2026-05-30):** especificação técnica completa criada em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md`.
 
@@ -479,9 +495,9 @@ Build validado (0 erros TS) em todos os blocos. Cálculo conferido contra o exem
 - Tag `v2.1.0-publico` (commit `80adcd8`) = ponto de retorno seguro da versão pública
 - Branch `v3-mesada-pessoal` = onde a v3.0 é desenvolvida
 - Feature flag `VITE_ENABLE_MESADA_MODULE` (default ausente/false; `true` apenas no `.env.local` deste ambiente pessoal) = proteção técnica adicional
-- Estratégia de deploy recomendada: 2 projetos Vercel separados (público rastreando `main`, pessoal rastreando `v3-mesada-pessoal`) — ainda não configurado, é o próximo passo natural quando o usuário quiser um link de acesso remoto
+- ~~Estratégia de deploy recomendada: 2 projetos Vercel separados~~ — **superado em 2026-07-23**, ver aviso no topo desta seção. Agora é um projeto único (`tarefas-escolares`) publicando `main` com a flag ativada.
 
-**Pendências não bloqueantes:** `git push` da branch não foi possível neste ambiente (exige auth interativa) — commits estão salvos localmente, usuário deve rodar `git push origin v3-mesada-pessoal`. Também foi identificado um token do GitHub exposto em texto plano na URL do remote `origin` — recomendado revogar e reconfigurar.
+**Pendências resolvidas nesta sessão:** `git push` foi concluído com sucesso (usuário configurou `git config --global credential.helper manager` e gerou um novo token, revogando o antigo que havia sido exposto). Merge de `v3-mesada-pessoal` em `main` e push confirmados no GitHub.
 
 **Pós-projeto v2.1 (opcional, fora do escopo original, não relacionado à Mesada):**
 - [ ] Implementação real de i18n em runtime (pt-BR/en/es)
@@ -566,6 +582,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-28 | [Etapa 15 / Sessão 025] FECHAMENTO: TarefaForm com Excluir (dupla confirmação) + Marcar concluída/pendente — qualquer clique em mini-card abre modal com TODAS as ações. **PROJETO FINALIZADO 🎉** |
 | 2026-05-29 | [Etapa 16 / Sessão 026] HOTFIX BUG-021: erro 400 ao salvar tarefa sem data — TarefaForm.handleSubmit normaliza strings vazias para null em due_date/notes/link/sector/origin/description antes de enviar ao Supabase |
 | 2026-05-30 | [Etapa 17 / Sessão 027] Planejamento v3.0 (Módulo de Mesada, uso pessoal): tag `v2.1.0-publico`, branch `v3-mesada-pessoal`, especificação técnica completa em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` — nenhum código implementado, implementação fica para a próxima conversa |
+| 2026-07-23 | [Etapa 17 / Sessão 029a] Decisão do usuário: mesclar `v3-mesada-pessoal` em `main` (um só projeto/link Vercel, sem separação por enquanto — ver aviso na seção 22). Iniciada fase 1 do i18n real: dicionários `pt-BR/en/es`, `LanguageContext`, seletor de idioma funcional em Configurações, traduzidos Sidebar/topbar/UserMenu/Login/Configurações/Visão Geral. Corrigido bug de lançamento na Mesada (clicar de novo no conceito remove) |
 | 2026-07-22 | [Etapa 17 / Sessão 028] Módulo de Mesada completo (branch `v3-mesada-pessoal`) em 6 blocos: (1) base — migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), `Mesada.tsx`, `MesadaMateriaModal.tsx`; (2) importar Disciplinas em lote; (3) Grade do boletim + gráfico de desempenho por matéria; (4) termômetro, lembrete mensal, virada de ano herdando config, data ao vivo; (5) Tutorial guiado do app com spotlight (`TourContext`, `TourOverlay`, 19 passos); (6) ajustes finos do tutorial (velocidade, posição do card, oferta a usuários novos) — build 0 erros em todos os blocos, sem próximos passos pendentes |
 
 ---

@@ -8,6 +8,16 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 029a — 2026-07-23) — Sistema de tradução real (i18n) — fase 1
+- **Merge de `v3-mesada-pessoal` em `main`** — decisão do usuário: manter tudo em um único projeto/link Vercel (`tarefas-escolares-five.vercel.app`), sem separação de branch por enquanto. Tag `v2.1.0-publico` preservada como ponto de retorno seguro para quando o usuário decidir publicar oficialmente
+- **`client/src/lib/i18n/{pt-BR,en,es}.ts`** — dicionários tipados de tradução
+- **`LanguageContext.tsx`** — contexto de idioma (padrão igual `ThemeContext`): localStorage-first, sincroniza com `profiles.language` ao logar via `LanguageLoader`
+- Seletor de idioma em Configurações > Acadêmico agora **aplica a tradução na hora** (antes só salvava a preferência sem efeito nenhum — "Tradução completa em breve")
+- Traduzido nesta fase: Sidebar completa, topbar (título da página + data no locale certo), UserMenu, Login (todas as strings), Configurações (abas + seção de idioma), Visão Geral (headers principais)
+- **Mesada:** clicar de novo no conceito já selecionado agora remove o lançamento (corrige lançamento errado sem precisar mexer no banco)
+- **Tutorial:** corrigido bug do Esc não fechar a sidebar mobile aberta pelo tour (causava um overlay preto grudado na tela)
+- Build: 0 erros TypeScript em cada etapa
+
 ### Documentação (Etapa 17 / Sessão 028g — 2026-07-22) — Limpeza e consolidação de toda a documentação do projeto
 - Usuário confirmou não ter mais ideias/próximos passos por enquanto — sessão de fechamento e atualização de todos os arquivos de registro
 - `MEMORY.md` — seção 22 e histórico consolidados com os 6 blocos da Sessão 028 (Mesada completa + Tutorial)

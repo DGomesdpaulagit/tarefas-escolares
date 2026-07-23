@@ -12,10 +12,45 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 17 - v3.0 / Módulo de Mesada + Tutorial guiado (uso pessoal)
-## SESSÃO ATUAL: [Sessão 028] - Mesada completa + Tutorial guiado do app ✅ CONCLUÍDA — sem próximos passos pendentes
+## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real em andamento
+## SESSÃO ATUAL: [Sessão 029a] - Merge para main + i18n fase 1 🔄 EM ANDAMENTO — continuar traduzindo as próximas páginas
 
-## STATUS DO PROJETO: 🎉 v2.1.0 PÚBLICA/ESTÁVEL (tag `v2.1.0-publico`) + v3.0 implementada e testada (branch `v3-mesada-pessoal`, uso pessoal) — aguardando novas instruções do usuário
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real em implementação (fase 1 concluída, faltam páginas)
+
+---
+
+## [Etapa 17 / Sessão 029a] - Merge de v3-mesada-pessoal em main + i18n real (fase 1)
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** 🔄 Em andamento — i18n fase 1 concluída, próximas páginas pendentes
+
+### Decisão do usuário: mesclar tudo em `main`
+Depois de eu sugerir criar um segundo projeto Vercel (conforme o planejamento original), o usuário explicou que não queria um projeto a mais (consumiria cota de outros projetos da conta) e queria o **mesmo link** `tarefas-escolares-five.vercel.app` mostrando a versão nova. Esclareci que isso reverteria a regra de nunca publicar a Mesada — o usuário confirmou que:
+- Não pretende publicar o app publicamente por enquanto (só considera Play Store/publicação de verdade bem mais pra frente)
+- O único destinatário do link por ora é o pai dele, que banca a mesada e tem total ciência/acesso autorizado aos próprios dados financeiros do filho
+- Sabe que pode reverter isso (tag `v2.1.0-publico` continua existindo) quando for de fato publicar
+
+**Ação:** merge de `v3-mesada-pessoal` em `main`, push, e verificação de que o deploy do Vercel (projeto único `tarefas-escolares`) está servindo a versão com Mesada, com a env var `VITE_ENABLE_MESADA_MODULE=true` configurada no projeto.
+
+### i18n real — fase 1
+O seletor de idioma em Configurações existia desde a Fase 5 (Sessão 023) mas só salvava a preferência sem nenhum efeito real na interface. Nesta sessão:
+- Criados dicionários tipados `client/src/lib/i18n/{pt-BR,en,es}.ts` + `index.ts` (mapa de idiomas, validação)
+- `LanguageContext.tsx` (padrão igual `ThemeContext`): estado `idioma` + função `t(chave)`, persiste em `localStorage`, sincroniza com `profiles.language` ao logar via `LanguageLoader`
+- Traduzidos nesta fase: Sidebar completa, topbar (título + data no locale certo), UserMenu, Login (todas as strings), Configurações (abas + seção de idioma), Visão Geral (headers principais)
+- Seletor de idioma agora **funciona de verdade** — trocar pt-BR/en/es muda a interface na hora
+
+### Outras correções desta sessão
+- Mesada: clicar de novo no conceito já selecionado remove o lançamento (corrige erro de digitação sem precisar mexer no banco)
+- Tutorial: corrigido bug do Esc não fechar a sidebar mobile aberta pelo tour (causava overlay preto grudado na tela — reportado pelo usuário com print)
+
+### Pendente (continuar na sequência)
+Faltam traduzir: `Tarefas.tsx`, `Disciplinas.tsx`, `Agenda.tsx`, `Metricas.tsx`, `Arquivos.tsx`, `Mesada.tsx`, `Onboarding.tsx`, `Welcome.tsx`, e os toasts/mensagens dinâmicas espalhadas pelos contexts/services que ainda estão hardcoded em português.
+
+### Build
+✅ `npm run build` — 0 erros TS a cada etapa
+
+### Próximo passo
+Continuar a tradução real (i18n) pelas páginas que faltam, na ordem: Tarefas → Disciplinas → Agenda → Métricas → Arquivos → Mesada → Onboarding → Welcome.
 
 ---
 
