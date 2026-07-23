@@ -8,6 +8,15 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 029b–e — 2026-07-23) — Sistema de tradução real (i18n) — fase 2 (conclui a tradução das páginas principais)
+- Estendido o dicionário (`pt-BR.ts`/`en.ts`/`es.ts`) com chaves para: `tarefas.*`, `disciplinas.*`, `agenda.*`, `metricas.*`, `arquivos.*`, `mesada.*`, `welcome.*`, `onboarding.*`
+- **`CALENDARIO`** adicionado ao sistema de i18n (`diasCurtos`/`mesesCurtos`/`mesesCompletos` por idioma) — usado pela Agenda e pela Mesada, que antes tinham arrays de nomes de dias/meses fixos em português
+- Páginas traduzidas nesta fase: **Tarefas** (busca, filtros, ordenação, empty states), **Disciplinas** (cabeçalho, cards, sugestões rápidas, toasts), **Agenda** (semanal/mensal, navegação, dicas), **Métricas** (KPIs, Perfil Inteligente, gráficos, status traduzidos via mapa), **Arquivos** (exportação, histórico, formatação de data por locale), **Mesada** (3 abas completas), **Welcome** (5 slides pré-login), **Onboarding** (3 passos pós-cadastro)
+- Formatação de datas em `Arquivos.tsx` agora usa o locale correspondente ao idioma (`pt-BR`/`en-US`/`es-ES`) em vez de `pt-BR` fixo
+- Build: 0 erros TypeScript validado após cada página traduzida (9 commits incrementais)
+
+**Pendências conhecidas (não bloqueiam, ficam para uma próxima fase):** modais (`TarefaForm`, `DisciplinaModal`, `MesadaMateriaModal`, `MesadaImportarDisciplinasModal`, `ImportarPlanilhaModal`, `LimparTarefasModal`) e mensagens de toast dentro de `contexts/`/`services/` ainda estão hardcoded em português. Valores de dados (status/prioridade/setor/origem armazenados no Supabase, nomes de disciplinas no catálogo padrão) permanecem em português intencionalmente — são dados, não strings de interface.
+
 ### Adicionado (Etapa 17 / Sessão 029a — 2026-07-23) — Sistema de tradução real (i18n) — fase 1
 - **Merge de `v3-mesada-pessoal` em `main`** — decisão do usuário: manter tudo em um único projeto/link Vercel (`tarefas-escolares-five.vercel.app`), sem separação de branch por enquanto. Tag `v2.1.0-publico` preservada como ponto de retorno seguro para quando o usuário decidir publicar oficialmente
 - **`client/src/lib/i18n/{pt-BR,en,es}.ts`** — dicionários tipados de tradução

@@ -12,17 +12,46 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real em andamento
-## SESSÃO ATUAL: [Sessão 029a] - Merge para main + i18n fase 1 🔄 EM ANDAMENTO — continuar traduzindo as próximas páginas
+## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
+## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n fase 1 e 2 ✅ CONCLUÍDA — páginas principais traduzidas, modais pendentes
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real em implementação (fase 1 concluída, faltam páginas)
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real cobrindo todas as páginas principais (modais ficam para uma próxima sessão)
+
+---
+
+## [Etapa 17 / Sessão 029b–e] - i18n real: fase 2 (Tarefas, Disciplinas, Agenda, Métricas, Arquivos, Mesada, Welcome, Onboarding)
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Continuação direta da Sessão 029a. Traduzidas as 8 páginas que faltavam, uma a uma, com build validado (0 erros TS) e commit a cada página:
+- **Tarefas** — busca, filtros (Status/Prioridade/Disciplina/Ordenação), empty states, contagem
+- **Disciplinas** — cabeçalho, cards (Pendentes/Feitas/Vencidas), sugestões rápidas, toasts
+- **Agenda** — visão semanal/mensal, navegação, dicas de uso. Nomes de dias/meses passaram a vir de um novo `CALENDARIO[idioma]` no sistema de i18n (antes eram arrays fixos em português usados também pela Mesada)
+- **Métricas** — KPIs, Perfil Inteligente, insights, gráficos (labels de status traduzidos via mapa `STATUS_LABEL_KEY`)
+- **Arquivos** — exportação, histórico; formatação de data agora usa o locale do idioma escolhido (`pt-BR`/`en-US`/`es-ES`) em vez de fixo
+- **Mesada** — as 3 abas completas (Lançamentos, Acompanhamento, Configurações), reaproveitando o `CALENDARIO`
+- **Welcome** — os 5 slides pré-login
+- **Onboarding** — os 3 passos pós-cadastro
+
+### Pendências conhecidas (não bloqueiam, próxima sessão)
+Modais ainda hardcoded em português: `TarefaForm`, `DisciplinaModal`, `MesadaMateriaModal`, `MesadaImportarDisciplinasModal`, `ImportarPlanilhaModal`, `LimparTarefasModal`. Também sobram toasts/mensagens dentro de `contexts/` e `services/` que não passam pelo dicionário ainda.
+
+**Intencionalmente não traduzido** (são dados, não interface): valores de status/prioridade/setor/origem armazenados no Supabase, nomes de matérias do catálogo padrão (`MATERIAS_PADRAO`) usados para criar disciplinas reais no banco.
+
+### Build
+✅ `npm run build` — 0 erros TS após cada página (9 commits incrementais nesta etapa)
+
+### Próximo passo
+Traduzir os modais listados acima e revisar toasts/mensagens em `contexts/`/`services/`, se o usuário quiser continuar o i18n até 100% de cobertura. Nenhum próximo passo obrigatório definido — depende de nova instrução do usuário.
 
 ---
 
 ## [Etapa 17 / Sessão 029a] - Merge de v3-mesada-pessoal em main + i18n real (fase 1)
 **Data:** 2026-07-23
 **Branch:** `main`
-**Status:** 🔄 Em andamento — i18n fase 1 concluída, próximas páginas pendentes
+**Status:** ✅ Concluída
 
 ### Decisão do usuário: mesclar tudo em `main`
 Depois de eu sugerir criar um segundo projeto Vercel (conforme o planejamento original), o usuário explicou que não queria um projeto a mais (consumiria cota de outros projetos da conta) e queria o **mesmo link** `tarefas-escolares-five.vercel.app` mostrando a versão nova. Esclareci que isso reverteria a regra de nunca publicar a Mesada — o usuário confirmou que:
