@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useIdioma } from "@/contexts/LanguageContext";
 import type { PrioridadeTarefa, StatusTarefa, Tarefa } from "@/types";
 
 const STATUS_OPTIONS: (StatusTarefa | "Todas")[] = [
@@ -22,14 +23,6 @@ const STATUS_OPTIONS: (StatusTarefa | "Todas")[] = [
 
 const PRIORIDADE_OPTIONS: (PrioridadeTarefa | "Todas")[] = [
   "Todas", "Alta", "Média", "Baixa",
-];
-
-const ORDENACAO_OPTIONS = [
-  { value: "urgente", label: "Urgentes primeiro" },
-  { value: "recente", label: "Mais recentes" },
-  { value: "prazo", label: "Por prazo" },
-  { value: "prioridade", label: "Por prioridade" },
-  { value: "materia", label: "Por disciplina" },
 ];
 
 type Ordenacao = "urgente" | "recente" | "prazo" | "prioridade" | "materia";
@@ -55,8 +48,17 @@ function ordenarTarefas(tarefas: Tarefa[], ord: Ordenacao): Tarefa[] {
 
 export default function Tarefas() {
   const { tarefas, tarefasFiltradas, filtros, setFiltros, carregando } = useTarefas();
+  const { t } = useIdioma();
 
-  const materiasDisponiveis = ["Todas", ...Array.from(new Set(tarefas.map((t) => t.subject_name))).sort()];
+  const ORDENACAO_OPTIONS = [
+    { value: "urgente", label: t("tarefas.ordUrgentes") },
+    { value: "recente", label: t("tarefas.ordRecentes") },
+    { value: "prazo", label: t("tarefas.ordPrazo") },
+    { value: "prioridade", label: t("tarefas.ordPrioridade") },
+    { value: "materia", label: t("tarefas.ordMateria") },
+  ];
+
+  const materiasDisponiveis = ["Todas", ...Array.from(new Set(tarefas.map((tarefa) => tarefa.subject_name))).sort()];
   const [criando, setCriando] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("urgente");
@@ -83,9 +85,9 @@ export default function Tarefas() {
             <Input
               value={filtros.busca}
               onChange={(e) => setFiltros({ busca: e.target.value })}
-              placeholder="Buscar tarefas..."
+              placeholder={t("tarefas.buscarPlaceholder")}
               className="pl-8 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 h-9 text-sm"
-              aria-label="Buscar tarefas"
+              aria-label={t("tarefas.buscarPlaceholder")}
             />
             {filtros.busca && (
               <button onClick={() => setFiltros({ busca: "" })} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300" aria-label="Limpar busca">
@@ -108,7 +110,7 @@ export default function Tarefas() {
             aria-label={`${mostrarFiltros ? "Ocultar" : "Mostrar"} filtros${temFiltrosAtivos ? " (ativos)" : ""}`}
           >
             <SlidersHorizontal size={13} />
-            <span className="hidden sm:inline">Filtros</span>
+            <span className="hidden sm:inline">{t("tarefas.filtros")}</span>
             {temFiltrosAtivos && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" aria-label="Filtros ativos" />}
           </Button>
 
@@ -120,7 +122,7 @@ export default function Tarefas() {
             aria-label="Importar tarefas de planilha"
           >
             <Upload size={14} />
-            <span className="hidden sm:inline">Importar</span>
+            <span className="hidden sm:inline">{t("tarefas.importar")}</span>
           </Button>
 
           <Button
@@ -131,7 +133,7 @@ export default function Tarefas() {
             aria-label="Limpar todas as tarefas"
           >
             <Trash2 size={14} />
-            <span className="hidden sm:inline">Limpar</span>
+            <span className="hidden sm:inline">{t("tarefas.limpar")}</span>
           </Button>
 
           <Button
@@ -141,17 +143,17 @@ export default function Tarefas() {
             aria-label="Criar nova tarefa"
           >
             <Plus size={14} />
-            <span className="hidden sm:inline">Nova Tarefa</span>
+            <span className="hidden sm:inline">{t("tarefas.novaTarefa")}</span>
           </Button>
         </div>
 
         {mostrarFiltros && (
           <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-white/8">
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-slate-500 px-1">Status</span>
+              <span className="text-xs text-slate-500 px-1">{t("tarefas.status")}</span>
               <Select value={filtros.status} onValueChange={(v) => setFiltros({ status: v as StatusTarefa | "Todas" })}>
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("tarefas.status")} />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {STATUS_OPTIONS.map((s) => (
@@ -162,10 +164,10 @@ export default function Tarefas() {
             </div>
 
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-slate-500 px-1">Prioridade</span>
+              <span className="text-xs text-slate-500 px-1">{t("tarefas.prioridade")}</span>
               <Select value={filtros.prioridade} onValueChange={(v) => setFiltros({ prioridade: v as PrioridadeTarefa | "Todas" })}>
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-32 focus:border-amber-500">
-                  <SelectValue placeholder="Prioridade" />
+                  <SelectValue placeholder={t("tarefas.prioridade")} />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {PRIORIDADE_OPTIONS.map((p) => (
@@ -176,10 +178,10 @@ export default function Tarefas() {
             </div>
 
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-slate-500 px-1">Disciplina</span>
+              <span className="text-xs text-slate-500 px-1">{t("tarefas.disciplina")}</span>
               <Select value={filtros.materia} onValueChange={(v) => setFiltros({ materia: v })}>
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-36 focus:border-amber-500">
-                  <SelectValue placeholder="Disciplina" />
+                  <SelectValue placeholder={t("tarefas.disciplina")} />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {materiasDisponiveis.map((m) => (
@@ -190,10 +192,10 @@ export default function Tarefas() {
             </div>
 
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-slate-500 px-1">Ordenação</span>
+              <span className="text-xs text-slate-500 px-1">{t("tarefas.ordenacao")}</span>
               <Select value={ordenacao} onValueChange={(v) => setOrdenacao(v as Ordenacao)}>
                 <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-slate-300 w-40 focus:border-amber-500">
-                  <SelectValue placeholder="Ordenar" />
+                  <SelectValue placeholder={t("tarefas.ordenacao")} />
                 </SelectTrigger>
                 <SelectContent className="bg-[var(--bg-card)] border-white/10">
                   {ORDENACAO_OPTIONS.map((o) => (
@@ -206,7 +208,7 @@ export default function Tarefas() {
             {temFiltrosAtivos && (
               <button onClick={limparFiltros} className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors mt-4" aria-label="Limpar todos os filtros">
                 <X size={11} />
-                Limpar filtros
+                {t("tarefas.limparFiltros")}
               </button>
             )}
           </div>
@@ -216,9 +218,9 @@ export default function Tarefas() {
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <p className="text-xs text-slate-500">
-            {carregando ? "Carregando..." : tarefasOrdenadas.length === 0
-              ? "Nenhuma tarefa encontrada"
-              : `${tarefasOrdenadas.length} tarefa${tarefasOrdenadas.length !== 1 ? "s" : ""}`}
+            {carregando ? t("tarefas.carregando") : tarefasOrdenadas.length === 0
+              ? t("tarefas.nenhumaEncontrada")
+              : `${tarefasOrdenadas.length} ${tarefasOrdenadas.length !== 1 ? t("tarefas.tarefaPlural") : t("tarefas.tarefaSingular")}`}
           </p>
           {filtros.materia !== "Todas" && (
             <button onClick={() => setFiltros({ materia: "Todas" })} className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1" aria-label={`Remover filtro de disciplina: ${filtros.materia}`}>
@@ -233,7 +235,7 @@ export default function Tarefas() {
             <Loader2 size={24} className="text-amber-400 animate-spin" aria-label="Carregando tarefas" />
           </div>
         ) : tarefasOrdenadas.length === 0 ? (
-          <EmptyState onCriar={() => setCriando(true)} temFiltros={temFiltrosAtivos} />
+          <EmptyState onCriar={() => setCriando(true)} temFiltros={temFiltrosAtivos} t={t} />
         ) : (
           <div className="space-y-2.5">
             {tarefasOrdenadas.map((t, i) => (
@@ -250,24 +252,30 @@ export default function Tarefas() {
   );
 }
 
-function EmptyState({ onCriar, temFiltros }: { onCriar: () => void; temFiltros: boolean }) {
+function EmptyState({
+  onCriar,
+  temFiltros,
+  t,
+}: {
+  onCriar: () => void;
+  temFiltros: boolean;
+  t: (chave: import("@/lib/i18n").DicionarioChave) => string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
         <Search size={24} className="text-slate-500" aria-hidden="true" />
       </div>
       <p className="text-slate-300 font-medium mb-1">
-        {temFiltros ? "Nenhuma tarefa encontrada" : "Nenhuma tarefa ainda"}
+        {temFiltros ? t("tarefas.nenhumaEncontrada") : t("tarefas.nenhumaAinda")}
       </p>
       <p className="text-slate-500 text-sm mb-4">
-        {temFiltros
-          ? "Tente ajustar os filtros para ver mais tarefas"
-          : "Adicione sua primeira tarefa para começar"}
+        {temFiltros ? t("tarefas.ajusteFiltros") : t("tarefas.adicionePrimeira")}
       </p>
       {!temFiltros && (
         <Button onClick={onCriar} size="sm" className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-1.5">
           <Plus size={14} />
-          Nova Tarefa
+          {t("tarefas.novaTarefa")}
         </Button>
       )}
     </div>

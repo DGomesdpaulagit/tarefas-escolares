@@ -20,16 +20,12 @@ import {
   Sparkles,
 } from "lucide-react";
 import TarefaForm from "@/components/TarefaForm";
+import { useIdioma } from "@/contexts/LanguageContext";
+import { CALENDARIO, type DicionarioChave } from "@/lib/i18n";
 
 // ============================================================
 // Helpers de semana
 // ============================================================
-
-const DIAS_CURTOS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const MESES_CURTOS = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
-];
 
 /** Retorna o domingo (00:00 local) da semana de uma data. */
 function inicioDaSemana(d: Date): Date {
@@ -53,13 +49,13 @@ function ymd(d: Date): string {
   return `${d.getFullYear()}-${m}-${dd}`;
 }
 
-/** Title humano: "12 — 18 de Mai 2026" ou cruza meses. */
-function rotuloSemana(inicio: Date): string {
+/** Rótulo humano: "12 — 18 Mai 2026" ou cruza meses. */
+function rotuloSemana(inicio: Date, mesesCurtos: string[]): string {
   const fim = addDays(inicio, 6);
-  const sMes = MESES_CURTOS[inicio.getMonth()];
-  const fMes = MESES_CURTOS[fim.getMonth()];
+  const sMes = mesesCurtos[inicio.getMonth()];
+  const fMes = mesesCurtos[fim.getMonth()];
   if (inicio.getMonth() === fim.getMonth()) {
-    return `${inicio.getDate()} — ${fim.getDate()} de ${sMes} ${inicio.getFullYear()}`;
+    return `${inicio.getDate()} — ${fim.getDate()} ${sMes} ${inicio.getFullYear()}`;
   }
   return `${inicio.getDate()} ${sMes} — ${fim.getDate()} ${fMes} ${fim.getFullYear()}`;
 }
@@ -73,6 +69,8 @@ type Visao = "semana" | "mes";
 export default function Agenda() {
   const { tarefas, carregando } = useTarefas();
   const { disciplinas } = useDisciplinas();
+  const { t, idioma } = useIdioma();
+  const { diasCurtos: DIAS_CURTOS, mesesCurtos: MESES_CURTOS, mesesCompletos: MESES_COMPLETOS } = CALENDARIO[idioma];
 
   const hoje = useMemo(() => {
     const d = new Date();
@@ -171,8 +169,8 @@ export default function Agenda() {
 
   const rotuloCabecalho =
     visao === "semana"
-      ? rotuloSemana(inicioSemana)
-      : `${["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"][mesAtual.getMonth()]} ${mesAtual.getFullYear()}`;
+      ? rotuloSemana(inicioSemana, MESES_CURTOS)
+      : `${MESES_COMPLETOS[mesAtual.getMonth()]} ${mesAtual.getFullYear()}`;
   const totalRotulo = visao === "semana" ? totalDaSemana : totalDoMes;
 
   return (
@@ -181,13 +179,13 @@ export default function Agenda() {
       <div className="mb-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            {visao === "semana" ? "Agenda semanal" : "Agenda mensal"}
+            {visao === "semana" ? t("agenda.semanal") : t("agenda.mensal")}
           </h1>
           <p className="text-slate-500 text-sm mt-1 flex items-center gap-1.5 flex-wrap">
             <CalendarDays size={13} />
             {rotuloCabecalho}
             <span className="text-slate-600">·</span>
-            <span>{totalRotulo} tarefa{totalRotulo !== 1 ? "s" : ""}</span>
+            <span>{totalRotulo} {totalRotulo !== 1 ? t("tarefas.tarefaPlural") : t("tarefas.tarefaSingular")}</span>
           </p>
         </div>
 
@@ -203,7 +201,7 @@ export default function Agenda() {
               }`}
               aria-pressed={visao === "semana"}
             >
-              Semana
+              {t("agenda.semana")}
             </button>
             <button
               onClick={() => setVisao("mes")}
@@ -214,7 +212,7 @@ export default function Agenda() {
               }`}
               aria-pressed={visao === "mes"}
             >
-              Mês
+              {t("agenda.mes")}
             </button>
           </div>
 
@@ -223,7 +221,7 @@ export default function Agenda() {
             <button
               onClick={visao === "semana" ? semanaAnterior : mesAnterior}
               className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-              aria-label={visao === "semana" ? "Semana anterior" : "Mês anterior"}
+              aria-label={visao === "semana" ? t("agenda.semanaAnterior") : t("agenda.mesAnterior")}
             >
               <ChevronLeft size={18} />
             </button>
@@ -231,12 +229,12 @@ export default function Agenda() {
               onClick={irHoje}
               className="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-500 hover:bg-amber-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              Hoje
+              {t("common.hoje")}
             </button>
             <button
               onClick={visao === "semana" ? proximaSemana : proximoMes}
               className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-              aria-label={visao === "semana" ? "Próxima semana" : "Próximo mês"}
+              aria-label={visao === "semana" ? t("agenda.proximaSemana") : t("agenda.proximoMes")}
             >
               <ChevronRight size={18} />
             </button>
@@ -269,8 +267,10 @@ export default function Agenda() {
                   tarefas={tarefasDia}
                   corDaTarefa={corDaTarefa}
                   emojiDaTarefa={emojiDaTarefa}
-                  onClicarTarefa={(t) => setEditando(t)}
+                  onClicarTarefa={(tarefa) => setEditando(tarefa)}
                   onCriarRapido={(data) => setCriandoData(data)}
+                  diasCurtos={DIAS_CURTOS}
+                  t={t}
                 />
               );
             })}
@@ -278,7 +278,7 @@ export default function Agenda() {
 
           <p className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1.5">
             <Sparkles size={11} className="text-amber-400" />
-            Toque rápido para editar. Pressione e segure um dia para criar tarefa.
+            {t("agenda.dicaSemanal")}
           </p>
         </>
       ) : (
@@ -290,8 +290,11 @@ export default function Agenda() {
           emojiDaTarefa={emojiDaTarefa}
           diaSelecionado={diaSelecionadoMes}
           onSelecionarDia={setDiaSelecionadoMes}
-          onClicarTarefa={(t) => setEditando(t)}
+          onClicarTarefa={(tarefa) => setEditando(tarefa)}
           onCriarRapido={(data) => setCriandoData(data)}
+          diasCurtos={DIAS_CURTOS}
+          mesesCurtos={MESES_CURTOS}
+          t={t}
         />
       )}
 
@@ -316,6 +319,8 @@ interface DiaColunaProps {
   emojiDaTarefa: (t: Tarefa) => string;
   onClicarTarefa: (t: Tarefa) => void;
   onCriarRapido: (data: string) => void;
+  diasCurtos: string[];
+  t: (chave: DicionarioChave) => string;
 }
 
 function DiaColuna({
@@ -327,6 +332,8 @@ function DiaColuna({
   emojiDaTarefa,
   onClicarTarefa,
   onCriarRapido,
+  diasCurtos,
+  t,
 }: DiaColunaProps) {
   // Long-press na coluna inteira — funciona mesmo em dias com tarefas
   const longPress = useLongPress(() => onCriarRapido(ymdKey), 450);
@@ -352,7 +359,7 @@ function DiaColuna({
             isHoje ? "text-amber-500" : "text-slate-500"
           }`}
         >
-          {DIAS_CURTOS[dia.getDay()]}
+          {diasCurtos[dia.getDay()]}
         </span>
         <span
           className={`text-base sm:text-lg font-bold leading-none mt-0.5 font-['Space_Grotesk'] ${
@@ -378,17 +385,17 @@ function DiaColuna({
             aria-label={`Adicionar tarefa em ${dia.getDate()}`}
           >
             <Plus size={14} className="opacity-50" />
-            <span className="text-[9px] sm:text-[10px] mt-0.5 opacity-70">Adicionar</span>
+            <span className="text-[9px] sm:text-[10px] mt-0.5 opacity-70">{t("agenda.adicionar")}</span>
           </button>
         ) : (
           <>
-            {tarefas.map((t) => (
+            {tarefas.map((tarefa) => (
               <MiniCard
-                key={t.id}
-                tarefa={t}
-                cor={corDaTarefa(t)}
-                emoji={emojiDaTarefa(t)}
-                onClick={() => onClicarTarefa(t)}
+                key={tarefa.id}
+                tarefa={tarefa}
+                cor={corDaTarefa(tarefa)}
+                emoji={emojiDaTarefa(tarefa)}
+                onClick={() => onClicarTarefa(tarefa)}
               />
             ))}
             {/* Botão "+" sempre disponível mesmo quando o dia tem tarefas */}
@@ -402,7 +409,7 @@ function DiaColuna({
               title="Adicionar tarefa neste dia"
             >
               <Plus size={11} />
-              <span className="text-[9px] sm:text-[10px] font-medium">Nova</span>
+              <span className="text-[9px] sm:text-[10px] font-medium">{t("agenda.nova")}</span>
             </button>
           </>
         )}
@@ -505,6 +512,9 @@ interface VisaoMensalProps {
   onSelecionarDia: (k: string | null) => void;
   onClicarTarefa: (t: Tarefa) => void;
   onCriarRapido: (data: string) => void;
+  diasCurtos: string[];
+  mesesCurtos: string[];
+  t: (chave: DicionarioChave) => string;
 }
 
 function VisaoMensal({
@@ -517,6 +527,9 @@ function VisaoMensal({
   onSelecionarDia,
   onClicarTarefa,
   onCriarRapido,
+  diasCurtos,
+  mesesCurtos,
+  t,
 }: VisaoMensalProps) {
   const ano = mesAtual.getFullYear();
   const mes = mesAtual.getMonth();
@@ -533,7 +546,7 @@ function VisaoMensal({
       <div className="lg:col-span-2 bg-[var(--bg-card)] border border-white/8 rounded-2xl p-4 sm:p-5">
         {/* Dias da semana */}
         <div className="grid grid-cols-7 mb-2">
-          {DIAS_CURTOS.map((d) => (
+          {diasCurtos.map((d) => (
             <div key={d} className="text-center text-xs text-slate-500 font-semibold py-1.5 uppercase tracking-wider">
               {d}
             </div>
@@ -575,7 +588,7 @@ function VisaoMensal({
 
         <p className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1.5">
           <Sparkles size={11} className="text-amber-400" />
-          Toque para ver tarefas do dia. Pressione e segure para criar.
+          {t("agenda.dicaMensal")}
         </p>
       </div>
 
@@ -586,21 +599,21 @@ function VisaoMensal({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                  {DIAS_CURTOS[diaSelecionadoData.getDay()]}
+                  {diasCurtos[diaSelecionadoData.getDay()]}
                 </p>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-                  {diaSelecionadoData.getDate()} de {MESES_CURTOS[diaSelecionadoData.getMonth()]}
+                  {diaSelecionadoData.getDate()} {mesesCurtos[diaSelecionadoData.getMonth()]}
                 </p>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {tarefasDoDiaSelecionado.length} tarefa{tarefasDoDiaSelecionado.length !== 1 ? "s" : ""}
+                  {tarefasDoDiaSelecionado.length} {tarefasDoDiaSelecionado.length !== 1 ? t("tarefas.tarefaPlural") : t("tarefas.tarefaSingular")}
                 </p>
               </div>
               {diaSelecionado && (
                 <button
                   onClick={() => onCriarRapido(diaSelecionado)}
                   className="p-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  aria-label="Criar tarefa neste dia"
-                  title="Criar tarefa"
+                  aria-label={t("agenda.criarTarefa")}
+                  title={t("agenda.criarTarefa")}
                 >
                   <Plus size={14} />
                 </button>
@@ -609,17 +622,17 @@ function VisaoMensal({
 
             {tarefasDoDiaSelecionado.length === 0 ? (
               <p className="text-slate-500 text-sm text-center py-8">
-                Sem tarefas neste dia.
+                {t("agenda.semTarefasDia")}
               </p>
             ) : (
               <div className="space-y-2">
-                {tarefasDoDiaSelecionado.map((t) => (
+                {tarefasDoDiaSelecionado.map((tarefa) => (
                   <MiniCard
-                    key={t.id}
-                    tarefa={t}
-                    cor={corDaTarefa(t)}
-                    emoji={emojiDaTarefa(t)}
-                    onClick={() => onClicarTarefa(t)}
+                    key={tarefa.id}
+                    tarefa={tarefa}
+                    cor={corDaTarefa(tarefa)}
+                    emoji={emojiDaTarefa(tarefa)}
+                    onClick={() => onClicarTarefa(tarefa)}
                   />
                 ))}
               </div>
@@ -628,8 +641,8 @@ function VisaoMensal({
         ) : (
           <div className="text-center py-10 text-slate-500">
             <CalendarDays size={28} className="mx-auto opacity-40 mb-2" />
-            <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Selecione um dia</p>
-            <p className="text-xs">Toque numa data para ver as tarefas</p>
+            <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">{t("agenda.selecioneDia")}</p>
+            <p className="text-xs">{t("agenda.toqueParaVer")}</p>
           </div>
         )}
       </div>

@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import DisciplinaModal from "@/components/DisciplinaModal";
+import { useIdioma } from "@/contexts/LanguageContext";
 import type { Materia, Tarefa } from "@/types";
 import { toast } from "sonner";
+import type { DicionarioChave } from "@/lib/i18n";
 
 interface DisciplinasProps {
   onAbrirTarefasFiltradas?: (nome: string) => void;
@@ -25,6 +27,7 @@ interface DisciplinasProps {
 export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProps) {
   const { disciplinas, carregando, remover } = useDisciplinas();
   const { tarefas } = useTarefas();
+  const { t } = useIdioma();
   const [criando, setCriando] = useState(false);
   const [editando, setEditando] = useState<Materia | null>(null);
   const [confirmandoRemocao, setConfirmandoRemocao] = useState<string | null>(null);
@@ -69,9 +72,9 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
     }
     try {
       await remover(d.id);
-      toast.success(`${d.name} removida`);
+      toast.success(t("disciplinas.toastRemovida"));
     } catch {
-      toast.error("Erro ao remover disciplina");
+      toast.error(t("disciplinas.erroRemover"));
     } finally {
       setConfirmandoRemocao(null);
     }
@@ -82,11 +85,11 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
       {/* Cabeçalho */}
       <div className="mb-6 flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">Disciplinas</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">{t("disciplinas.titulo")}</h1>
           <p className="text-slate-500 text-sm mt-1">
             {disciplinas.length === 0
-              ? "Adicione suas disciplinas para organizar tarefas com identidade visual"
-              : `${disciplinas.length} disciplina${disciplinas.length !== 1 ? "s" : ""} cadastrada${disciplinas.length !== 1 ? "s" : ""}`}
+              ? t("disciplinas.subtituloVazio")
+              : `${disciplinas.length} ${disciplinas.length !== 1 ? t("disciplinas.discPlural") : t("disciplinas.discSingular")} ${disciplinas.length !== 1 ? t("disciplinas.cadastradaPlural") : t("disciplinas.cadastradaSingular")}`}
           </p>
         </div>
         <Button
@@ -94,7 +97,7 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
           className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
         >
           <Plus size={16} />
-          Nova disciplina
+          {t("disciplinas.novaDisciplina")}
         </Button>
       </div>
 
@@ -106,7 +109,7 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
         <>
           {/* Grade de cards */}
           {disciplinas.length === 0 ? (
-            <EmptyState onCriar={() => setCriando(true)} />
+            <EmptyState onCriar={() => setCriando(true)} t={t} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {disciplinas.map((d, idx) => {
@@ -123,6 +126,7 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
                     onEditar={() => setEditando(d)}
                     onRemover={() => handleRemover(d)}
                     onClicar={() => onAbrirTarefasFiltradas?.(d.name)}
+                    t={t}
                   />
                 );
               })}
@@ -138,7 +142,7 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
                   <Plus size={22} className="text-amber-400" />
                 </div>
                 <p className="text-sm font-medium text-slate-500 group-hover:text-amber-400 transition-colors">
-                  Adicionar disciplina
+                  {t("disciplinas.adicionarDisciplina")}
                 </p>
               </button>
             </div>
@@ -150,12 +154,12 @@ export default function Disciplinas({ onAbrirTarefasFiltradas }: DisciplinasProp
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles size={14} className="text-amber-400" />
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 font-['Space_Grotesk']">
-                  Adicionar rapidamente
+                  {t("disciplinas.adicionarRapidamente")}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {sugestoesRapidas.map((nome) => (
-                  <SugestaoRapida key={nome} nome={nome} />
+                  <SugestaoRapida key={nome} nome={nome} t={t} />
                 ))}
               </div>
             </div>
@@ -182,6 +186,7 @@ interface DisciplinaCardProps {
   onEditar: () => void;
   onRemover: () => void;
   onClicar: () => void;
+  t: (chave: DicionarioChave) => string;
 }
 
 function DisciplinaCard({
@@ -193,6 +198,7 @@ function DisciplinaCard({
   onEditar,
   onRemover,
   onClicar,
+  t,
 }: DisciplinaCardProps) {
   const cor = disciplina.color;
 
@@ -230,8 +236,8 @@ function DisciplinaCard({
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               {contagem.total === 0
-                ? "Nenhuma tarefa"
-                : `${contagem.total} tarefa${contagem.total !== 1 ? "s" : ""}`}
+                ? t("disciplinas.nenhumaTarefa")
+                : `${contagem.total} ${contagem.total !== 1 ? t("tarefas.tarefaPlural") : t("tarefas.tarefaSingular")}`}
             </p>
           </div>
         </div>
@@ -240,20 +246,24 @@ function DisciplinaCard({
         <div className="grid grid-cols-3 gap-2 mb-3">
           <Stat
             icon={<Clock size={11} />}
-            label="Pendentes"
+            label={t("disciplinas.pendentes")}
             valor={contagem.pendentes}
             color={contagem.urgentes > 0 ? "#ef4444" : "#94a3b8"}
-            destaque={contagem.urgentes > 0 ? `${contagem.urgentes} urgente${contagem.urgentes !== 1 ? "s" : ""}` : null}
+            destaque={
+              contagem.urgentes > 0
+                ? `${contagem.urgentes} ${contagem.urgentes !== 1 ? t("disciplinas.urgentePlural") : t("disciplinas.urgenteSingular")}`
+                : null
+            }
           />
           <Stat
             icon={<CheckCircle2 size={11} />}
-            label="Feitas"
+            label={t("disciplinas.feitas")}
             valor={contagem.concluidas}
             color="#10b981"
           />
           <Stat
             icon={<XCircle size={11} />}
-            label="Vencidas"
+            label={t("disciplinas.vencidas")}
             valor={contagem.expiradas}
             color={contagem.expiradas > 0 ? "#ef4444" : "#64748b"}
           />
@@ -270,7 +280,7 @@ function DisciplinaCard({
             aria-label={`Editar ${disciplina.name}`}
           >
             <Pencil size={11} />
-            Editar
+            {t("common.editar")}
           </button>
           <button
             onClick={(e) => {
@@ -283,7 +293,7 @@ function DisciplinaCard({
             aria-label={confirmandoRemocao ? `Confirmar remoção de ${disciplina.name}` : `Remover ${disciplina.name}`}
           >
             <Trash2 size={11} />
-            {confirmandoRemocao ? "Confirmar?" : "Remover"}
+            {confirmandoRemocao ? t("disciplinas.confirmarRemocao") : t("common.remover")}
           </button>
         </div>
       </div>
@@ -322,21 +332,21 @@ function Stat({
 // Empty state
 // ============================================================
 
-function EmptyState({ onCriar }: { onCriar: () => void }) {
+function EmptyState({ onCriar, t }: { onCriar: () => void; t: (chave: DicionarioChave) => string }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="w-20 h-20 rounded-3xl bg-amber-500/10 flex items-center justify-center mb-4">
         <BookOpen size={32} className="text-amber-400" aria-hidden="true" />
       </div>
       <p className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-1 font-['Space_Grotesk']">
-        Nenhuma disciplina cadastrada
+        {t("disciplinas.nenhumaCadastrada")}
       </p>
       <p className="text-slate-500 text-sm mb-5 max-w-sm">
-        Adicione disciplinas para dar identidade visual às suas tarefas — com emoji, cor e organização própria.
+        {t("disciplinas.descricaoVazia")}
       </p>
       <Button onClick={onCriar} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
         <Plus size={16} />
-        Criar primeira disciplina
+        {t("disciplinas.criarPrimeira")}
       </Button>
     </div>
   );
@@ -346,7 +356,7 @@ function EmptyState({ onCriar }: { onCriar: () => void }) {
 // Sugestão rápida (botão para adicionar uma padrão de um clique)
 // ============================================================
 
-function SugestaoRapida({ nome }: { nome: string }) {
+function SugestaoRapida({ nome, t }: { nome: string; t: (chave: DicionarioChave) => string }) {
   const { criar } = useDisciplinas();
   const [adicionando, setAdicionando] = useState(false);
   const cor = MATERIAS_CORES[nome] ?? "#94a3b8";
@@ -356,9 +366,9 @@ function SugestaoRapida({ nome }: { nome: string }) {
     setAdicionando(true);
     try {
       await criar({ name: nome, color: cor, emoji });
-      toast.success(`${nome} adicionada!`);
+      toast.success(t("disciplinas.toastAdicionada"));
     } catch {
-      toast.error("Erro ao adicionar");
+      toast.error(t("disciplinas.erroAdicionar"));
     } finally {
       setAdicionando(false);
     }
