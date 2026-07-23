@@ -13,9 +13,32 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
-## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais) ✅ CONCLUÍDA
+## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais + tutorial) ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real com cobertura completa (todas as páginas + todos os modais)
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real com cobertura completa (todas as páginas, todos os modais e o tutorial guiado)
+
+---
+
+## [Etapa 17 / Sessão 029i–k] - i18n real: fase 4 (varredura final — Configurações completa, componentes residuais e tutorial guiado)
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Continuação da Sessão 029f–h. Uma varredura final por strings em português ainda hardcoded revelou uma lacuna maior do que o esperado:
+- **Configuracoes.tsx traduzida por completo** — as abas Perfil, Aparência e Notificações (que tinham ficado pra trás na fase 1, só o seletor de idioma havia sido traduzido) agora usam `t()` em tudo: labels, placeholders, toasts (~70 novas chaves `config.*`)
+- **TarefaCard.tsx, HistoricoArquivos.tsx, ResetPassword.tsx** traduzidos
+- **Sistema de tutorial guiado traduzido por completo** — nunca havia sido tocado nas fases anteriores porque foi construído *antes* do sistema de i18n existir: `OfertaTourModal.tsx` (tela pós-onboarding), `TourContext.tsx` (os 19 passos — `TourStep` migrado de `title`/`description` literais em português para `tituloChave`/`descricaoChave: DicionarioChave`, seguindo o mesmo padrão já usado em `Welcome.tsx`), `TourOverlay.tsx` (botões "Pular tutorial"/"Anterior"/"Próximo"/"Concluir", contador "Passo X de Y")
+- Achado durante a varredura: um Grep por padrão de acentuação `[à-úÀ-Ú]{4,}` deu falso-negativo (não bateu com "ã", "ç" etc. apesar de estarem no range Unicode declarado) — verificação cruzada com `grep` literal por palavras comuns ("não") encontrou os arquivos do tutorial que tinham escapado
+
+### Resultado
+Cobertura de i18n real agora **verdadeiramente completa**: todas as páginas, todos os modais, todos os componentes residuais e o tutorial guiado respondem à troca de idioma (pt-BR/en/es). Segue intencionalmente em português apenas o que é dado armazenado no Supabase (status/prioridade/setor/origem) ou catálogo padrão de disciplinas — não é texto de interface.
+
+### Build
+✅ `npm run build` — 0 erros TS
+
+### Próximo passo
+Nenhum definido — usuário não indicou mais itens de escopo além da cobertura completa de i18n pedida em "Ent resolva".
 
 ---
 

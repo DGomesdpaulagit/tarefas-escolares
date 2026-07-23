@@ -8,6 +8,14 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 029i–k — 2026-07-23) — Sistema de tradução real (i18n) — fase 4 (varredura final, conclui a cobertura completa)
+- **Configuracoes.tsx traduzida por completo**: as abas Perfil, Aparência e Notificações (que na fase 1 só tinham o seletor de idioma traduzido) agora usam `t()` em todos os labels, placeholders e toasts — chaves `config.*` (~70 novas entradas)
+- **TarefaCard.tsx, HistoricoArquivos.tsx, ResetPassword.tsx** traduzidos — badges de status (`STATUS_LABEL_KEY`), formatação de data por locale no histórico de arquivos, e a tela inteira de redefinição de senha
+- **Sistema de tutorial guiado traduzido por completo** (nunca havia sido tocado nas fases anteriores por ter sido construído antes do i18n existir): `OfertaTourModal.tsx` (tela pós-onboarding oferecendo o tour), `TourContext.tsx` (os 19 passos do tour — `TourStep` migrado de `title`/`description` literais para `tituloChave`/`descricaoChave: DicionarioChave`, mesmo padrão já usado em `Welcome.tsx`), `TourOverlay.tsx` (botões "Pular tutorial"/"Anterior"/"Próximo"/"Concluir", contador "Passo X de Y")
+- Descoberta pela varredura final: o Grep por acentuação `[à-úÀ-Ú]` deu falso-negativo (não bateu com "ã"/"ç" etc.); verificação cruzada feita com `grep` literal por palavras como "não" encontrou os 3 arquivos do tutorial ainda pendentes
+- Build: 0 erros TypeScript validado após cada arquivo
+- **Com isso, a cobertura de i18n real do app está completa**: todas as páginas, todos os modais e o tutorial guiado respondem à troca de idioma (pt-BR/en/es). Segue intencionalmente em português apenas o que é dado (não interface): valores de status/prioridade/setor/origem armazenados no Supabase, nomes de matérias do catálogo padrão
+
 ### Adicionado (Etapa 17 / Sessão 029f–h — 2026-07-23) — Sistema de tradução real (i18n) — fase 3 (conclui todos os modais)
 - Estendido o dicionário (`pt-BR.ts`/`en.ts`/`es.ts`) com chaves para: `tarefaForm.*`, `disciplinaModal.*`, `mesadaMateriaModal.*`, `mesadaImportar.*`, `importarPlanilha.*`, `limparModal.*`
 - Todos os 6 modais do app traduzidos: **TarefaForm** (criar/editar tarefa, botões de ação, toasts), **DisciplinaModal** (criar/editar disciplina), **MesadaMateriaModal** e **MesadaImportarDisciplinasModal** (matérias do boletim da Mesada), **ImportarPlanilhaModal** (importação de planilha, preview, estados de sucesso/erro), **LimparTarefasModal** (confirmação destrutiva)
