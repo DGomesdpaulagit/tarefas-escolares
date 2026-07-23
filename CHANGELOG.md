@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido/Adicionado (Etapa 17 / Sessão 028f — 2026-07-22) — Tutorial: velocidade, oferta a novos usuários, card nunca cortado
+- **Animação mais lenta:** destaque (spotlight) agora se move em 0.6s (era 0.2s) e o card de explicação entra com `fadeSlideIn` 0.45s a cada passo, em vez de trocar instantaneamente
+- **Bug corrigido:** em passos com o alvo perto do rodapé da tela (ex: itens de baixo da Sidebar em Configurações), o card de Anterior/Próximo/Pular podia renderizar parcialmente fora da janela (atrás da barra de tarefas do sistema, por exemplo), ficando impossível de clicar. Agora a posição vertical do card é sempre limitada aos limites da janela — nunca fica cortado embaixo nem em cima
+- **Tutorial oferecido a usuários novos:** ao concluir (ou pular) o onboarding, uma tela pergunta "Quer um tour rápido guiado?" com opções "Ver tutorial" / "Agora não" — `OfertaTourModal.tsx`, disparado uma única vez via flag em `localStorage`
+- Build: 0 erros TypeScript
+
 ### Adicionado (Etapa 17 / Sessão 028e — 2026-07-22) — Tutorial guiado do app com spotlight
 - **`TourContext.tsx`** — 19 passos cobrindo todas as páginas e abas do app (Visão Geral, Tarefas, Disciplinas, Agenda, Métricas, Mesada quando habilitada, Arquivos, Configurações, menu do usuário), com navegação automática entre páginas e abertura/fechamento da sidebar mobile conforme o passo
 - **`TourOverlay.tsx`** — escurece o restante da tela e recorta (spotlight) o elemento sendo explicado via `box-shadow` no elemento alvo; bloqueia cliques fora do tutorial; card com título, descrição, contador de passos e botões Anterior/Próximo/Pular; tecla Esc encerra

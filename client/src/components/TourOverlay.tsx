@@ -56,13 +56,23 @@ export default function TourOverlay() {
       }
     : null;
 
-  // Posição do card: perto do alvo (embaixo, ou em cima se não couber); centralizado se não há alvo
+  // Posição do card: perto do alvo (embaixo, ou em cima se não couber); centralizado se não há alvo.
+  // A altura estimada é generosa e o resultado final SEMPRE é limitado aos limites da janela — o card
+  // nunca fica cortado embaixo (atrás da barra de tarefas do sistema, por exemplo) nem em cima.
   const cardWidth = 320;
+  const ALTURA_ESTIMADA = 240;
   let cardStyle: CSSProperties;
   if (alvo) {
     const espacoAbaixo = window.innerHeight - (alvo.top + alvo.height);
-    const emCima = espacoAbaixo < 220 && alvo.top > 220;
-    const top = emCima ? Math.max(MARGEM, alvo.top - 220 - MARGEM) : alvo.top + alvo.height + MARGEM;
+    const espacoAcima = alvo.top;
+    const preferirCima = espacoAbaixo < ALTURA_ESTIMADA + MARGEM && espacoAcima > espacoAbaixo;
+    const topBruto = preferirCima
+      ? alvo.top - ALTURA_ESTIMADA - MARGEM
+      : alvo.top + alvo.height + MARGEM;
+    const top = Math.min(
+      Math.max(MARGEM, topBruto),
+      window.innerHeight - ALTURA_ESTIMADA - MARGEM,
+    );
     const left = Math.min(Math.max(MARGEM, alvo.left), window.innerWidth - cardWidth - MARGEM);
     cardStyle = { position: "fixed", top, left, width: cardWidth };
   } else {
@@ -80,17 +90,18 @@ export default function TourOverlay() {
       {/* Destaque visual (recorte no escurecimento via box-shadow gigante) */}
       {alvo ? (
         <div
-          className="fixed rounded-xl ring-2 ring-amber-500 pointer-events-none transition-all duration-200"
+          className="fixed rounded-xl ring-2 ring-amber-500 pointer-events-none"
           style={{
             top: alvo.top,
             left: alvo.left,
             width: alvo.width,
             height: alvo.height,
             boxShadow: "0 0 0 9999px rgba(0,0,0,0.78)",
+            transition: "top 0.6s ease, left 0.6s ease, width 0.6s ease, height 0.6s ease",
           }}
         />
       ) : (
-        <div className="fixed inset-0 bg-black/78 pointer-events-none" />
+        <div className="fixed inset-0 bg-black/78 pointer-events-none transition-opacity duration-500" />
       )}
 
       {/* Escudo — bloqueia cliques no resto da tela; navegação só pelos botões do tutorial */}
@@ -105,8 +116,9 @@ export default function TourOverlay() {
       </button>
 
       <div
+        key={passoAtual}
         className="z-[201] bg-[var(--bg-card)] border border-amber-500/30 rounded-2xl shadow-2xl p-5"
-        style={{ ...cardStyle, animation: "scaleIn 0.15s ease-out both" }}
+        style={{ ...cardStyle, animation: "fadeSlideIn 0.45s ease-out both" }}
       >
         <p className="text-[10px] text-amber-500 font-semibold uppercase tracking-wider mb-1.5">
           Passo {passoAtual + 1} de {passos.length}

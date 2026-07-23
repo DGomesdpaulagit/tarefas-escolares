@@ -9,6 +9,7 @@ import VisaoGeral from "@/pages/VisaoGeral";
 import Mesada from "@/pages/Mesada";
 import UserMenu from "@/components/UserMenu";
 import TourOverlay from "@/components/TourOverlay";
+import OfertaTourModal, { OFERTA_TOUR_FLAG_KEY } from "@/components/OfertaTourModal";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTarefas } from "@/contexts/TarefasContext";
@@ -60,6 +61,9 @@ export default function Home() {
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const { setFiltros } = useTarefas();
   const { registrarNavegacao, registrarSidebar } = useTour();
+  const [mostrarOfertaTour, setMostrarOfertaTour] = useState(
+    () => localStorage.getItem(OFERTA_TOUR_FLAG_KEY) === "1",
+  );
 
   useEffect(() => {
     registrarNavegacao(setPagina);
@@ -128,6 +132,7 @@ export default function Home() {
       </div>
 
       <TourOverlay />
+      {mostrarOfertaTour && <OfertaTourModal onFechar={() => setMostrarOfertaTour(false)} />}
     </div>
   );
 }

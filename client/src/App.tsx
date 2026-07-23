@@ -11,6 +11,7 @@ import { MesadaProvider } from "./contexts/MesadaContext";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
 import MesadaNotificationChecker from "@/components/MesadaNotificationChecker";
 import { TourProvider } from "./contexts/TourContext";
+import { OFERTA_TOUR_FLAG_KEY } from "@/components/OfertaTourModal";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -115,6 +116,7 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
       <Onboarding
         onConcluir={() => {
           recarregar();
+          localStorage.setItem(OFERTA_TOUR_FLAG_KEY, "1");
           setEstado("ok");
         }}
       />
