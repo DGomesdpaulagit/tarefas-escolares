@@ -28,10 +28,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-const MESES = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez",
-];
+import { useIdioma } from "@/contexts/LanguageContext";
+import { CALENDARIO, type DicionarioChave } from "@/lib/i18n";
 
 const CONCEITOS: { valor: Conceito; label: string; cor: string }[] = [
   { valor: "MB", label: "MB", cor: "#10b981" },
@@ -52,6 +50,7 @@ type Aba = "lancamentos" | "acompanhamento" | "configuracoes";
 
 export default function Mesada() {
   const { config, materias, carregando } = useMesada();
+  const { t } = useIdioma();
   const [aba, setAba] = useState<Aba>("lancamentos");
 
   if (carregando || !config) {
@@ -68,29 +67,29 @@ export default function Mesada() {
         <div className="flex items-center gap-2 mb-1">
           <Wallet size={18} className="text-amber-400" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            Mesada por Desempenho
+            {t("mesada.titulo")}
           </h1>
         </div>
-        <p className="text-slate-500 text-sm">Uso pessoal — ano letivo {config.ano_letivo}</p>
+        <p className="text-slate-500 text-sm">{t("mesada.usoPessoal")} {config.ano_letivo}</p>
       </div>
 
       {/* Tabs */}
       <div data-tour="mesada-abas" className="flex gap-1 mb-6 border-b border-white/8 overflow-x-auto">
-        <AbaBotao label="Lançamentos" ativa={aba === "lancamentos"} onClick={() => setAba("lancamentos")} />
-        <AbaBotao label="Acompanhamento" ativa={aba === "acompanhamento"} onClick={() => setAba("acompanhamento")} />
-        <AbaBotao label="Configurações da Mesada" ativa={aba === "configuracoes"} onClick={() => setAba("configuracoes")} />
+        <AbaBotao label={t("mesada.abaLancamentos")} ativa={aba === "lancamentos"} onClick={() => setAba("lancamentos")} />
+        <AbaBotao label={t("mesada.abaAcompanhamento")} ativa={aba === "acompanhamento"} onClick={() => setAba("acompanhamento")} />
+        <AbaBotao label={t("mesada.abaConfiguracoes")} ativa={aba === "configuracoes"} onClick={() => setAba("configuracoes")} />
       </div>
 
       {materias.length === 0 && aba !== "configuracoes" ? (
         <div className="text-center py-16">
           <p className="text-slate-500 text-sm mb-3">
-            Nenhuma matéria do boletim cadastrada ainda.
+            {t("mesada.nenhumaMateria")}
           </p>
           <button
             onClick={() => setAba("configuracoes")}
             className="text-amber-500 hover:text-amber-400 text-sm font-medium"
           >
-            Ir para Configurações e adicionar matérias →
+            {t("mesada.irParaConfiguracoes")}
           </button>
         </div>
       ) : (
@@ -138,6 +137,8 @@ function termometroDaMateria(notasDaMateria: { conceito: Conceito }[]): { emoji:
 
 function AbaLancamentos() {
   const { config, materias, notas, notaDoMes, valorDoMes, lancarNota, removerNota, mbUsadosNoPeriodo } = useMesada();
+  const { t, idioma } = useIdioma();
+  const MESES = CALENDARIO[idioma].mesesCurtos;
   const hoje = new Date();
   const [mes, setMes] = useState(hoje.getMonth() + 1);
   const [salvandoId, setSalvandoId] = useState<string | null>(null);
@@ -154,17 +155,17 @@ function AbaLancamentos() {
       if (notaAtual?.conceito === conceito) {
         // Clicar de novo no conceito já selecionado remove o lançamento (corrige erro de digitação)
         await removerNota(notaAtual.id);
-        toast.success("Lançamento removido");
+        toast.success(t("mesada.toastLancamentoRemovido"));
         return;
       }
       const { limiteMbAtingido } = await lancarNota(materiaId, mes, conceito);
       if (limiteMbAtingido) {
-        toast.warning("Limite de MB no período atingido — este lançamento foi contabilizado como B");
+        toast.warning(t("mesada.toastLimiteMbAtingido"));
       } else {
-        toast.success("Lançamento salvo!");
+        toast.success(t("mesada.toastLancamentoSalvo"));
       }
     } catch {
-      toast.error("Erro ao salvar lançamento");
+      toast.error(t("mesada.erroSalvarLancamento"));
     } finally {
       setSalvandoId(null);
     }
@@ -176,7 +177,7 @@ function AbaLancamentos() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="flex-1 rounded-2xl border border-white/8 bg-[var(--bg-card)] p-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-slate-500 uppercase tracking-wider">Mês</p>
+            <p className="text-xs text-slate-500 uppercase tracking-wider">{t("mesada.mes")}</p>
             <select
               value={mes}
               onChange={(e) => setMes(Number(e.target.value))}
@@ -195,10 +196,10 @@ function AbaLancamentos() {
           >
             R$ {valorMes.toFixed(2)}
           </p>
-          <p className="text-xs text-slate-500">valor do mês</p>
+          <p className="text-xs text-slate-500">{t("mesada.valorDoMes")}</p>
         </div>
         <div className="flex-1 rounded-2xl border border-white/8 bg-[var(--bg-card)] p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">MBs usados no período</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{t("mesada.mbsUsados")}</p>
           <p
             className={`text-2xl font-bold font-['Space_Grotesk'] ${
               mbUsadosNoPeriodo >= config.limite_mb_por_periodo ? "text-red-400" : "text-slate-900 dark:text-white"
@@ -208,7 +209,7 @@ function AbaLancamentos() {
           </p>
           {mbUsadosNoPeriodo >= config.limite_mb_por_periodo && (
             <p className="text-xs text-red-400 flex items-center gap-1 mt-1">
-              <AlertTriangle size={11} /> Limite atingido — próximos MBs viram B
+              <AlertTriangle size={11} /> {t("mesada.limiteAtingido")}
             </p>
           )}
         </div>
@@ -293,6 +294,8 @@ function AbaLancamentos() {
 
 function AbaAcompanhamento() {
   const { config, materias, notas, notaDoMes, valorDoMes, valorAcumulado, progressoPercentual } = useMesada();
+  const { t, idioma } = useIdioma();
+  const MESES = CALENDARIO[idioma].mesesCurtos;
 
   const dadosPorMes = useMemo(() => {
     const somaPorMes: Record<number, number> = {};
@@ -360,11 +363,11 @@ function AbaAcompanhamento() {
     <div className="space-y-5">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-5 flex items-center gap-5">
-          <RingProgress percentual={progressoPercentual} />
+          <RingProgress percentual={progressoPercentual} t={t} />
           <div className="flex-1 space-y-1.5">
-            <StatLinha label="Acumulado" valor={`R$ ${valorAcumulado.toFixed(2)}`} color="#f59e0b" />
-            <StatLinha label="Meta" valor={`R$ ${config.meta_total.toFixed(2)}`} color="#94a3b8" />
-            <StatLinha label="Faltam" valor={`R$ ${faltam.toFixed(2)}`} color="#10b981" />
+            <StatLinha label={t("mesada.acumulado")} valor={`R$ ${valorAcumulado.toFixed(2)}`} color="#f59e0b" />
+            <StatLinha label={t("mesada.meta")} valor={`R$ ${config.meta_total.toFixed(2)}`} color="#94a3b8" />
+            <StatLinha label={t("mesada.faltam")} valor={`R$ ${faltam.toFixed(2)}`} color="#10b981" />
           </div>
         </div>
 
@@ -372,7 +375,7 @@ function AbaAcompanhamento() {
           <div className="flex items-center gap-2 mb-3">
             <Target size={14} className="text-amber-400" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-              Evolução mensal
+              {t("mesada.evolucaoMensal")}
             </h3>
           </div>
           <ResponsiveContainer width="100%" height={160}>
@@ -380,7 +383,7 @@ function AbaAcompanhamento() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
               <XAxis dataKey="mes" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`R$ ${v.toFixed(2)}`, "Valor"]} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`R$ ${v.toFixed(2)}`, t("mesada.valor")]} />
               <Bar dataKey="valor" radius={[4, 4, 0, 0]}>
                 {dadosPorMes.map((d, i) => (
                   <Cell key={i} fill={d.valor >= 0 ? "#10b981" : "#ef4444"} />
@@ -397,7 +400,7 @@ function AbaAcompanhamento() {
           <div className="flex items-center gap-2 mb-3">
             <Wallet size={14} className="text-amber-400" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-              Grade do boletim
+              {t("mesada.gradeBoletim")}
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -405,14 +408,14 @@ function AbaAcompanhamento() {
               <thead>
                 <tr>
                   <th className="text-left text-slate-500 font-medium pb-2 pr-3 sticky left-0 bg-[var(--bg-card)]">
-                    Matéria
+                    {t("mesada.materia")}
                   </th>
                   {meses.map((mes) => (
                     <th key={mes} className="text-center text-slate-500 font-medium pb-2 px-1 min-w-[44px]">
                       {MESES[mes - 1]}
                     </th>
                   ))}
-                  <th className="text-right text-slate-500 font-medium pb-2 pl-3">Total</th>
+                  <th className="text-right text-slate-500 font-medium pb-2 pl-3">{t("mesada.total")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -459,7 +462,7 @@ function AbaAcompanhamento() {
               <tfoot>
                 <tr className="border-t border-white/10">
                   <td className="py-2 pr-3 font-semibold text-slate-900 dark:text-white sticky left-0 bg-[var(--bg-card)]">
-                    Total
+                    {t("mesada.total")}
                   </td>
                   {meses.map((mes) => (
                     <td key={mes} className="text-center py-2 px-1 text-[10px] font-semibold text-slate-500">
@@ -482,11 +485,11 @@ function AbaAcompanhamento() {
           <div className="flex items-center gap-2 mb-3">
             <Sparkles size={14} className="text-amber-400" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-              Desempenho por matéria
+              {t("mesada.desempenhoPorMateria")}
             </h3>
           </div>
           <p className="text-xs text-slate-500 mb-3">
-            Quantas notas de cada conceito você tirou em cada matéria no período.
+            {t("mesada.quantasNotas")}
           </p>
           <ResponsiveContainer width="100%" height={Math.max(160, distribuicaoPorMateria.length * 34)}>
             <BarChart data={distribuicaoPorMateria} layout="vertical" margin={{ left: 8 }}>
@@ -512,20 +515,20 @@ function AbaAcompanhamento() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/8">
               {materiaDestaque && materiaDestaque.MB > 0 && (
                 <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-3">
-                  <p className="text-[11px] text-emerald-400 font-medium mb-0.5">✨ Onde você manda bem</p>
+                  <p className="text-[11px] text-emerald-400 font-medium mb-0.5">{t("mesada.ondeVoceManda")}</p>
                   <p className="text-sm text-slate-900 dark:text-slate-100">
-                    {materiaDestaque.emoji} <strong>{materiaDestaque.nome}</strong> — {materiaDestaque.MB} MB de {materiaDestaque.total} lançamento{materiaDestaque.total !== 1 ? "s" : ""}
+                    {materiaDestaque.emoji} <strong>{materiaDestaque.nome}</strong> — {materiaDestaque.MB} MB {t("metricas.de")} {materiaDestaque.total} {t(materiaDestaque.total !== 1 ? "mesada.lancamentoPlural" : "mesada.lancamentoSingular")}
                   </p>
                 </div>
               )}
               {materiaAtencao && (materiaAtencao.I > 0 || materiaAtencao.R > 0) && (
                 <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-3">
-                  <p className="text-[11px] text-red-400 font-medium mb-0.5">⚠️ Precisa de atenção</p>
+                  <p className="text-[11px] text-red-400 font-medium mb-0.5">{t("mesada.precisaAtencao")}</p>
                   <p className="text-sm text-slate-900 dark:text-slate-100">
                     {materiaAtencao.emoji} <strong>{materiaAtencao.nome}</strong>
                     {materiaAtencao.I > 0
-                      ? ` — ${materiaAtencao.I} penalidade${materiaAtencao.I !== 1 ? "s" : ""} (I)`
-                      : ` — maioria dos conceitos é R`}
+                      ? ` — ${materiaAtencao.I} ${t(materiaAtencao.I !== 1 ? "mesada.penalidadePlural" : "mesada.penalidadeSingular")} (I)`
+                      : ` — ${t("mesada.maioriaConceitosR")}`}
                   </p>
                 </div>
               )}
@@ -539,7 +542,7 @@ function AbaAcompanhamento() {
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle size={14} className="text-red-400" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-              Penalidades no período
+              {t("mesada.penalidadesNoPeriodo")}
             </h3>
           </div>
           <div className="space-y-1.5">
@@ -556,7 +559,7 @@ function AbaAcompanhamento() {
   );
 }
 
-function RingProgress({ percentual }: { percentual: number }) {
+function RingProgress({ percentual, t }: { percentual: number; t: (chave: DicionarioChave) => string }) {
   const size = 100;
   const stroke = 9;
   const r = (size - stroke) / 2;
@@ -582,7 +585,7 @@ function RingProgress({ percentual }: { percentual: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-xl font-bold text-amber-400 font-['Space_Grotesk'] leading-none">{percentual}%</span>
-        <span className="text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">da meta</span>
+        <span className="text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">{t("mesada.daMeta")}</span>
       </div>
     </div>
   );
@@ -605,6 +608,7 @@ function StatLinha({ label, valor, color }: { label: string; valor: string; colo
 
 function AbaConfiguracoes() {
   const { config, materias, atualizarConfig, removerMateria } = useMesada();
+  const { t } = useIdioma();
   const [editando, setEditando] = useState<MesadaMateria | null>(null);
   const [criando, setCriando] = useState(false);
   const [importando, setImportando] = useState(false);
@@ -627,21 +631,21 @@ function AbaConfiguracoes() {
     setSalvando(true);
     try {
       await atualizarConfig(form);
-      toast.success("Configurações salvas!");
+      toast.success(t("mesada.toastConfigSalva"));
     } catch {
-      toast.error("Erro ao salvar configurações");
+      toast.error(t("mesada.erroSalvarConfig"));
     } finally {
       setSalvando(false);
     }
   };
 
   const handleRemoverMateria = async (id: string, nome: string) => {
-    if (!confirm(`Remover "${nome}"? Todos os lançamentos dessa matéria também serão apagados.`)) return;
+    if (!confirm(`${t("mesada.confirmarRemoverPrefixo")} "${nome}"? ${t("mesada.confirmarRemoverAviso")}`)) return;
     try {
       await removerMateria(id);
-      toast.success("Matéria removida");
+      toast.success(t("mesada.toastMateriaRemovida"));
     } catch {
-      toast.error("Erro ao remover matéria");
+      toast.error(t("mesada.erroRemoverMateria"));
     }
   };
 
@@ -652,31 +656,31 @@ function AbaConfiguracoes() {
         <div className="flex items-center gap-2 mb-4">
           <Settings2 size={14} className="text-amber-400" />
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            Período e valores por conceito
+            {t("mesada.periodoValores")}
           </h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <CampoNumero label="Mês de início" value={form.mes_inicio} onChange={(v) => setForm({ ...form, mes_inicio: v })} min={1} max={12} />
-          <CampoNumero label="Mês final" value={form.mes_fim} onChange={(v) => setForm({ ...form, mes_fim: v })} min={1} max={12} />
+          <CampoNumero label={t("mesada.mesInicio")} value={form.mes_inicio} onChange={(v) => setForm({ ...form, mes_inicio: v })} min={1} max={12} />
+          <CampoNumero label={t("mesada.mesFinal")} value={form.mes_fim} onChange={(v) => setForm({ ...form, mes_fim: v })} min={1} max={12} />
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           <CampoMoeda label="MB" value={form.valor_mb} onChange={(v) => setForm({ ...form, valor_mb: v })} />
           <CampoMoeda label="B" value={form.valor_b} onChange={(v) => setForm({ ...form, valor_b: v })} />
           <CampoMoeda label="R" value={form.valor_r} onChange={(v) => setForm({ ...form, valor_r: v })} />
-          <CampoMoeda label="I (penalidade)" value={form.valor_i} onChange={(v) => setForm({ ...form, valor_i: v })} />
+          <CampoMoeda label={`I ${t("mesada.penalidade")}`} value={form.valor_i} onChange={(v) => setForm({ ...form, valor_i: v })} />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
           <CampoNumero
-            label="Limite de MB no período"
+            label={t("mesada.limiteMbPeriodo")}
             value={form.limite_mb_por_periodo}
             onChange={(v) => setForm({ ...form, limite_mb_por_periodo: v })}
             min={0}
             max={50}
           />
-          <CampoMoeda label="Meta total" value={form.meta_total} onChange={(v) => setForm({ ...form, meta_total: v })} />
+          <CampoMoeda label={t("mesada.metaTotal")} value={form.meta_total} onChange={(v) => setForm({ ...form, meta_total: v })} />
         </div>
 
         <button
@@ -685,7 +689,7 @@ function AbaConfiguracoes() {
           className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm px-4 py-2 rounded-lg inline-flex items-center gap-2 disabled:opacity-50"
         >
           {salvando ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} />}
-          Salvar configurações
+          {t("mesada.salvarConfiguracoes")}
         </button>
       </div>
 
@@ -693,26 +697,26 @@ function AbaConfiguracoes() {
       <div className="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
-            Matérias do boletim
+            {t("mesada.materiasDoBoletim")}
           </h3>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setImportando(true)}
               className="text-slate-400 hover:text-slate-200 text-xs font-medium inline-flex items-center gap-1"
             >
-              <Import size={13} /> Importar Disciplinas
+              <Import size={13} /> {t("mesada.importarDisciplinas")}
             </button>
             <button
               onClick={() => setCriando(true)}
               className="text-amber-500 hover:text-amber-400 text-xs font-medium inline-flex items-center gap-1"
             >
-              <Plus size={13} /> Nova matéria
+              <Plus size={13} /> {t("mesada.novaMateria")}
             </button>
           </div>
         </div>
 
         {materias.length === 0 ? (
-          <p className="text-xs text-slate-500 text-center py-6">Nenhuma matéria cadastrada ainda</p>
+          <p className="text-xs text-slate-500 text-center py-6">{t("mesada.nenhumaMateriaCadastrada")}</p>
         ) : (
           <div className="space-y-1.5">
             {materias.map((m) => (
