@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/supabase/client";
 import { toast } from "sonner";
 import type { Session } from "@supabase/supabase-js";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 export default function ResetPassword() {
   const [, setLocation] = useLocation();
+  const { t } = useIdioma();
   const [session, setSession] = useState<Session | null>(null);
   const [aguardando, setAguardando] = useState(true);
   const [novaSenha, setNovaSenha] = useState("");
@@ -44,11 +46,11 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (novaSenha.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
+      toast.error(t("login.erroSenhaCurta"));
       return;
     }
     if (novaSenha !== confirmar) {
-      toast.error("As senhas não conferem");
+      toast.error(t("resetPassword.erroSenhasNaoConferem"));
       return;
     }
 
@@ -57,12 +59,12 @@ export default function ResetPassword() {
       const { error } = await supabase.auth.updateUser({ password: novaSenha });
       if (error) throw error;
 
-      toast.success("Senha alterada com sucesso!");
+      toast.success(t("resetPassword.toastSenhaAlterada"));
       // Encerra a sessão temporária de recovery e redireciona para o login
       await supabase.auth.signOut();
       setLocation("/");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao alterar senha";
+      const msg = err instanceof Error ? err.message : t("resetPassword.erroAlterarSenha");
       toast.error(msg);
     } finally {
       setSalvando(false);
@@ -75,7 +77,7 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="text-amber-400 animate-spin" />
-          <p className="text-slate-400 text-sm">Verificando link de recuperação...</p>
+          <p className="text-slate-400 text-sm">{t("resetPassword.verificandoLink")}</p>
         </div>
       </div>
     );
@@ -91,24 +93,24 @@ export default function ResetPassword() {
               <BookOpen size={20} className="text-black" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-lg font-bold text-white font-['Space_Grotesk']">Tarefas</p>
-              <p className="text-xs text-slate-500">Escolares</p>
+              <p className="text-lg font-bold text-white font-['Space_Grotesk']">{t("sidebar.brandLinha1")}</p>
+              <p className="text-xs text-slate-500">{t("sidebar.brandLinha2")}</p>
             </div>
           </div>
 
           <div className="bg-[var(--bg-surface)] border border-red-500/20 rounded-2xl p-6 shadow-2xl text-center">
             <AlertTriangle size={40} className="mx-auto mb-4 text-red-400" />
             <h1 className="text-xl font-bold text-white font-['Space_Grotesk'] mb-2">
-              Link inválido ou expirado
+              {t("resetPassword.linkInvalido")}
             </h1>
             <p className="text-sm text-slate-400 mb-6">
-              O link de recuperação pode ter expirado. Solicite um novo link de recuperação.
+              {t("resetPassword.linkPodeExpirado")}
             </p>
             <Button
               onClick={() => setLocation("/")}
               className="bg-amber-500 hover:bg-amber-400 text-black font-semibold"
             >
-              Voltar ao login
+              {t("login.voltarAoLogin")}
             </Button>
           </div>
         </div>
@@ -125,8 +127,8 @@ export default function ResetPassword() {
             <BookOpen size={20} className="text-black" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-lg font-bold text-white font-['Space_Grotesk']">Tarefas</p>
-            <p className="text-xs text-slate-500">Escolares</p>
+            <p className="text-lg font-bold text-white font-['Space_Grotesk']">{t("sidebar.brandLinha1")}</p>
+            <p className="text-xs text-slate-500">{t("sidebar.brandLinha2")}</p>
           </div>
         </div>
 
@@ -134,17 +136,17 @@ export default function ResetPassword() {
           <div className="flex items-center gap-3 mb-1">
             <ShieldCheck size={22} className="text-amber-400" />
             <h1 className="text-2xl font-bold text-white font-['Space_Grotesk']">
-              Nova senha
+              {t("resetPassword.novaSenhaTitulo")}
             </h1>
           </div>
           <p className="text-sm text-slate-400 mb-6">
-            Escolha uma senha segura com pelo menos 6 caracteres.
+            {t("resetPassword.escolhaSenhaSegura")}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label htmlFor="nova" className="text-xs font-semibold text-slate-300 mb-1.5 block">
-                Nova senha
+                {t("resetPassword.novaSenhaTitulo")}
               </label>
               <div className="relative">
                 <Input
@@ -164,7 +166,7 @@ export default function ResetPassword() {
                   type="button"
                   onClick={() => setMostrarSenha(!mostrarSenha)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 focus:outline-none"
-                  aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                  aria-label={mostrarSenha ? t("login.ocultarSenha") : t("login.mostrarSenha")}
                 >
                   {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -173,7 +175,7 @@ export default function ResetPassword() {
 
             <div>
               <label htmlFor="confirmar" className="text-xs font-semibold text-slate-300 mb-1.5 block">
-                Confirmar senha
+                {t("resetPassword.confirmarSenhaLabel")}
               </label>
               <Input
                 id="confirmar"
@@ -189,7 +191,7 @@ export default function ResetPassword() {
                 }`}
               />
               {confirmar && novaSenha !== confirmar && (
-                <p className="text-xs text-red-400 mt-1">As senhas não conferem</p>
+                <p className="text-xs text-red-400 mt-1">{t("resetPassword.erroSenhasNaoConferem")}</p>
               )}
             </div>
 
@@ -211,9 +213,9 @@ export default function ResetPassword() {
                   ))}
                 </div>
                 <p className="text-xs text-slate-500">
-                  {novaSenha.length < 6 ? "Senha muito curta"
-                    : novaSenha.length < 10 ? "Força média"
-                    : "Senha forte"}
+                  {novaSenha.length < 6 ? t("resetPassword.senhaMuitoCurta")
+                    : novaSenha.length < 10 ? t("resetPassword.forcaMedia")
+                    : t("resetPassword.senhaForte")}
                 </p>
               </div>
             )}
@@ -224,16 +226,16 @@ export default function ResetPassword() {
               className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold h-10 mt-2 disabled:opacity-50"
             >
               {salvando ? (
-                <><Loader2 size={16} className="animate-spin mr-2" />Salvando...</>
+                <><Loader2 size={16} className="animate-spin mr-2" />{t("resetPassword.salvando")}</>
               ) : (
-                "Salvar nova senha"
+                t("resetPassword.salvarNovaSenha")
               )}
             </Button>
           </form>
         </div>
 
         <p className="text-xs text-slate-600 text-center mt-6">
-          Seus dados são armazenados com segurança via Supabase
+          {t("login.dadosSeguranca")}
         </p>
       </div>
     </div>

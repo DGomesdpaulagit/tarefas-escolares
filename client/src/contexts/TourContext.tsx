@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MESADA_MODULE_ENABLED } from "@/lib/featureFlags";
+import type { DicionarioChave } from "@/lib/i18n";
 
 export interface TourStep {
   /** valor do atributo data-tour do elemento a destacar; null = card central sem recorte */
   id: string | null;
   /** página (estado `pagina` de Home.tsx) para navegar antes de mostrar este passo; null = mantém a atual */
   page: string | null;
-  title: string;
-  description: string;
+  tituloChave: DicionarioChave;
+  descricaoChave: DicionarioChave;
   somenteMesada?: boolean;
 }
 
@@ -15,124 +16,118 @@ const PASSOS_BASE: TourStep[] = [
   {
     id: null,
     page: "visao-geral",
-    title: "Bem-vindo ao Tarefas Escolares! 👋",
-    description:
-      "Vamos fazer um tour rápido pelas principais áreas do app. Você pode sair a qualquer momento clicando em \"Pular tutorial\".",
+    tituloChave: "tour.boasVindasTitulo",
+    descricaoChave: "tour.boasVindasDesc",
   },
   {
     id: "nav-visao-geral",
     page: "visao-geral",
-    title: "Visão Geral",
-    description:
-      "Sua página inicial: progresso da semana, desempenho geral, próximos prazos, tarefas expiradas e um resumo das suas disciplinas.",
+    tituloChave: "tour.visaoGeralTitulo",
+    descricaoChave: "tour.visaoGeralDesc",
   },
   {
     id: "vg-nova-tarefa",
     page: "visao-geral",
-    title: "Criar tarefa",
-    description: "Esse botão cria uma tarefa nova rapidamente — funciona de qualquer lugar do app.",
+    tituloChave: "tour.novaTarefaTitulo",
+    descricaoChave: "tour.novaTarefaDesc",
   },
   {
     id: "nav-tarefas",
     page: "tarefas",
-    title: "Tarefas",
-    description: "A lista completa de tarefas, com busca, ordenação e filtros.",
+    tituloChave: "tour.tarefasTitulo",
+    descricaoChave: "tour.tarefasDesc",
   },
   {
     id: "tarefas-filtros",
     page: "tarefas",
-    title: "Filtros",
-    description: "Filtre por status, disciplina, prioridade ou busque por texto — inclusive em anotações e links.",
+    tituloChave: "tour.filtrosTitulo",
+    descricaoChave: "tour.filtrosDesc",
   },
   {
     id: "nav-disciplinas",
     page: "disciplinas",
-    title: "Disciplinas",
-    description: "Seu catálogo de matérias, cada uma com emoji e cor próprios, usados em toda a interface.",
+    tituloChave: "tour.disciplinasTitulo",
+    descricaoChave: "tour.disciplinasDesc",
   },
   {
     id: "disciplinas-nova",
     page: "disciplinas",
-    title: "Adicionar disciplina",
-    description: "Clique aqui pra cadastrar uma disciplina nova — escolha o emoji e a cor do jeito que quiser.",
+    tituloChave: "tour.disciplinaNovaTitulo",
+    descricaoChave: "tour.disciplinaNovaDesc",
   },
   {
     id: "nav-agenda",
     page: "agenda",
-    title: "Agenda",
-    description: "Calendário semanal ou mensal com todas as suas tarefas organizadas por dia.",
+    tituloChave: "tour.agendaTitulo",
+    descricaoChave: "tour.agendaDesc",
   },
   {
     id: "agenda-toggle",
     page: "agenda",
-    title: "Semana ou Mês",
-    description:
-      "Alterne entre as duas visões. Dica: segure o clique num dia vazio pra criar uma tarefa direto por lá.",
+    tituloChave: "tour.agendaToggleTitulo",
+    descricaoChave: "tour.agendaToggleDesc",
   },
   {
     id: "nav-metricas",
     page: "metricas",
-    title: "Métricas",
-    description: "Gráficos de desempenho e um Perfil Inteligente com insights automáticos.",
+    tituloChave: "tour.metricasTitulo",
+    descricaoChave: "tour.metricasDesc",
   },
   {
     id: "metricas-insights",
     page: "metricas",
-    title: "Perfil Inteligente",
-    description:
-      "O app calcula sozinho coisas como sua matéria mais produtiva, a mais atrasada e seu ritmo dos últimos 7 dias.",
+    tituloChave: "tour.insightsTitulo",
+    descricaoChave: "tour.insightsDesc",
   },
   {
     id: "nav-mesada",
     page: "mesada",
-    title: "Mesada por Desempenho",
-    description:
-      "Módulo pessoal: lance o conceito (MB/B/R/I) de cada matéria por mês e acompanhe o valor acumulado automaticamente.",
+    tituloChave: "tour.mesadaTitulo",
+    descricaoChave: "tour.mesadaDesc",
     somenteMesada: true,
   },
   {
     id: "mesada-abas",
     page: "mesada",
-    title: "Três abas da Mesada",
-    description:
-      "Lançamentos (registrar conceitos), Acompanhamento (gráficos e a grade do boletim) e Configurações (valores e matérias).",
+    tituloChave: "tour.mesadaAbasTitulo",
+    descricaoChave: "tour.mesadaAbasDesc",
     somenteMesada: true,
   },
   {
     id: "nav-arquivos",
     page: "arquivos",
-    title: "Arquivos",
-    description: "Importe planilhas Excel/CSV com suas tarefas e exporte tudo em JSON ou Excel quando quiser.",
+    tituloChave: "tour.arquivosTitulo",
+    descricaoChave: "tour.arquivosDesc",
   },
   {
     id: "nav-configuracoes",
     page: "configuracoes",
-    title: "Configurações",
-    description: "Perfil, ano escolar, tema claro/escuro e notificações — tudo aqui.",
+    tituloChave: "tour.configuracoesTitulo",
+    descricaoChave: "tour.configuracoesDesc",
   },
   {
     id: "config-abas",
     page: "configuracoes",
-    title: "Seções de Configurações",
-    description: "Navegue entre Perfil, Acadêmico, Aparência e Notificações por essas abas.",
+    tituloChave: "tour.configAbasTitulo",
+    descricaoChave: "tour.configAbasDesc",
   },
   {
     id: "config-tutorial-button",
     page: "configuracoes",
-    title: "Reveja quando quiser",
-    description: "Esse tutorial fica sempre disponível aqui, é só clicar de novo.",
+    tituloChave: "tour.revejaTitulo",
+    descricaoChave: "tour.revejaDesc",
   },
   {
     id: "user-menu",
     page: null,
-    title: "Seu menu",
-    description: "No canto superior direito: acesso rápido ao seu perfil, configurações e sair da conta.",
+    tituloChave: "tour.userMenuTitulo",
+    descricaoChave: "tour.userMenuDesc",
   },
   {
     id: null,
     page: null,
-    title: "Pronto! 🎓",
-    description: "Agora você já conhece o Tarefas Escolares. Bom estudo!",
+    tituloChave: "tour.prontoTitulo",
+    descricaoChave: "tour.prontoDesc",
   },
 ];
 

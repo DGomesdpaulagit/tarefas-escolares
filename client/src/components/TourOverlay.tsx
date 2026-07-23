@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { useTour } from "@/contexts/TourContext";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 const MARGEM = 16;
 const PADDING_ALVO = 8;
@@ -23,6 +24,7 @@ function medirAlvo(id: string | null): Rect | null {
 
 export default function TourOverlay() {
   const { ativo, passoAtual, passos, proximo, anterior, encerrar } = useTour();
+  const { t } = useIdioma();
   const [rect, setRect] = useState<Rect | null>(null);
 
   const passo = passos[passoAtual];
@@ -86,7 +88,7 @@ export default function TourOverlay() {
   }
 
   return (
-    <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true" aria-label="Tutorial guiado">
+    <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true" aria-label={t("tour.dialogoAria")}>
       {/* Destaque visual (recorte no escurecimento via box-shadow gigante) */}
       {alvo ? (
         <div
@@ -110,9 +112,9 @@ export default function TourOverlay() {
       <button
         onClick={encerrar}
         className="fixed top-4 right-4 z-[201] text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2 text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
-        aria-label="Pular tutorial"
+        aria-label={t("tour.pularTutorial")}
       >
-        <X size={13} /> Pular tutorial
+        <X size={13} /> {t("tour.pularTutorial")}
       </button>
 
       <div
@@ -121,12 +123,12 @@ export default function TourOverlay() {
         style={{ ...cardStyle, animation: "fadeSlideIn 0.45s ease-out both" }}
       >
         <p className="text-[10px] text-amber-500 font-semibold uppercase tracking-wider mb-1.5">
-          Passo {passoAtual + 1} de {passos.length}
+          {t("tour.passo")} {passoAtual + 1} {t("tour.de")} {passos.length}
         </p>
         <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] mb-1.5">
-          {passo.title}
+          {t(passo.tituloChave)}
         </h3>
-        <p className="text-sm text-slate-500 leading-relaxed mb-4">{passo.description}</p>
+        <p className="text-sm text-slate-500 leading-relaxed mb-4">{t(passo.descricaoChave)}</p>
 
         <div className="flex items-center justify-between gap-2">
           <button
@@ -134,13 +136,13 @@ export default function TourOverlay() {
             disabled={isPrimeiro}
             className="text-xs font-medium text-slate-500 hover:text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1 px-2 py-1.5"
           >
-            <ChevronLeft size={14} /> Anterior
+            <ChevronLeft size={14} /> {t("tour.anterior")}
           </button>
           <button
             onClick={isUltimo ? encerrar : proximo}
             className="bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold rounded-lg px-4 py-2 inline-flex items-center gap-1"
           >
-            {isUltimo ? "Concluir" : "Próximo"}
+            {isUltimo ? t("tour.concluir") : t("tour.proximo")}
             {!isUltimo && <ChevronRight size={14} />}
           </button>
         </div>

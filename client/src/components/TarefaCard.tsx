@@ -15,17 +15,26 @@ import { AlertTriangle, Calendar, Clock, ExternalLink, Pencil, Trash2, XCircle }
 import { useState } from "react";
 import TarefaForm from "./TarefaForm";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
+import type { DicionarioChave } from "@/lib/i18n";
 
 interface TarefaCardProps {
   tarefa: Tarefa;
   index: number;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  Concluída: "✓ Concluída",
-  "Em Andamento": "⟳ Em Andamento",
-  "Não iniciada": "○ Não iniciada",
-  "Passou do Prazo": "✕ Passou do Prazo",
+const STATUS_ICONS: Record<string, string> = {
+  Concluída: "✓",
+  "Em Andamento": "⟳",
+  "Não iniciada": "○",
+  "Passou do Prazo": "✕",
+};
+
+const STATUS_LABEL_KEY: Record<string, DicionarioChave> = {
+  "Concluída": "status.concluida",
+  "Em Andamento": "status.emAndamento",
+  "Não iniciada": "status.naoIniciada",
+  "Passou do Prazo": "status.passouPrazo",
 };
 
 const PRIORIDADE_LABELS: Record<string, string> = {
@@ -37,6 +46,7 @@ const PRIORIDADE_LABELS: Record<string, string> = {
 export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
   const { toggleConcluida, removerTarefa } = useTarefas();
   const { disciplinas } = useDisciplinas();
+  const { t } = useIdioma();
   const [editando, setEditando] = useState(false);
   const [confirmandoRemocao, setConfirmandoRemocao] = useState(false);
 
@@ -53,7 +63,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
 
   const handleToggle = async () => {
     if (expirada) {
-      toast.error("Esta tarefa expirou e não pode ser concluída");
+      toast.error(t("tarefaCard.erroExpirada"));
       return;
     }
     try {
@@ -61,7 +71,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
       if (concluida) soundService.playDesmarcada();
       else soundService.playConcluida();
     } catch {
-      toast.error("Erro ao atualizar tarefa");
+      toast.error(t("tarefaForm.erroAtualizar"));
     }
   };
 
@@ -70,9 +80,9 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
       try {
         await removerTarefa(tarefa.id);
         soundService.playRemovida();
-        toast.success("Tarefa removida");
+        toast.success(t("tarefaForm.toastRemovida"));
       } catch {
-        toast.error("Erro ao remover tarefa");
+        toast.error(t("tarefaForm.erroRemover"));
       }
     } else {
       setConfirmandoRemocao(true);
@@ -96,8 +106,8 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
         aria-label={`Tarefa: ${tarefa.title}`}
       >
         {expirada && (
-          <div className="absolute top-2 right-2 z-10" title="Prazo encerrado">
-            <XCircle size={16} className="text-red-500" aria-label="Tarefa expirada — prazo encerrado" />
+          <div className="absolute top-2 right-2 z-10" title={t("tarefaCard.prazoEncerrado")}>
+            <XCircle size={16} className="text-red-500" aria-label={t("tarefaCard.prazoEncerrado")} />
           </div>
         )}
         {urgente && !concluida && !expirada && (
@@ -124,17 +134,17 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
               }}
               title={
                 expirada
-                  ? "Prazo encerrado — não pode ser concluída"
+                  ? t("tarefaCard.prazoEncerradoNaoPodeConcluir")
                   : concluida
-                  ? "Marcar como pendente"
-                  : "Marcar como concluída"
+                  ? t("tarefaForm.marcarPendente")
+                  : t("tarefaForm.marcarConcluida")
               }
               aria-label={
                 expirada
-                  ? "Tarefa expirada — concluir desabilitado"
+                  ? t("tarefaCard.expiradaConcluirDesabilitado")
                   : concluida
-                  ? "Marcar como pendente"
-                  : "Marcar como concluída"
+                  ? t("tarefaForm.marcarPendente")
+                  : t("tarefaForm.marcarConcluida")
               }
             >
               {concluida && (
@@ -178,7 +188,9 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                     border: `1px solid ${statusColor}40`,
                   }}
                 >
-                  {expirada ? "✕ Prazo encerrado" : STATUS_LABELS[statusEfetivo] ?? statusEfetivo}
+                  {expirada
+                    ? t("tarefaCard.prazoEncerradoBadge")
+                    : `${STATUS_ICONS[statusEfetivo] ?? ""} ${STATUS_LABEL_KEY[statusEfetivo] ? t(STATUS_LABEL_KEY[statusEfetivo]) : statusEfetivo}`}
                 </span>
 
                 {tarefa.sector && (
@@ -193,7 +205,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
 
                 {urgente && !concluida && !expirada && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30 font-semibold">
-                    Urgente
+                    {t("tarefaCard.urgente")}
                   </span>
                 )}
               </div>
@@ -226,7 +238,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
           {tarefa.progress > 0 && (
             <div className="mt-3 ml-8">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-slate-500">Progresso</span>
+                <span className="text-xs text-slate-500">{t("tarefaCard.progresso")}</span>
                 <span className="text-xs font-medium text-amber-400">{tarefa.progress}%</span>
               </div>
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden" role="progressbar" aria-valuenow={tarefa.progress} aria-valuemin={0} aria-valuemax={100}>
@@ -255,19 +267,19 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                aria-label="Abrir link de referência"
+                aria-label={t("tarefaCard.abrirLinkReferencia")}
               >
                 <ExternalLink size={11} aria-hidden="true" />
-                <span>Referência</span>
+                <span>{t("tarefaCard.referencia")}</span>
               </a>
             )}
             <button
               onClick={() => setEditando(true)}
               className="flex items-center gap-1 text-xs text-slate-400 hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 rounded"
-              aria-label="Editar tarefa"
+              aria-label={t("tarefaCard.editarTarefa")}
             >
               <Pencil size={11} aria-hidden="true" />
-              <span>Editar</span>
+              <span>{t("common.editar")}</span>
             </button>
             <button
               onClick={handleRemover}
@@ -276,10 +288,10 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                   ? "text-red-400 font-semibold"
                   : "text-slate-400 hover:text-red-400"
               }`}
-              aria-label={confirmandoRemocao ? "Confirmar remoção" : "Remover tarefa"}
+              aria-label={confirmandoRemocao ? t("tarefaCard.confirmarRemocao") : t("tarefaCard.removerTarefa")}
             >
               <Trash2 size={11} aria-hidden="true" />
-              <span>{confirmandoRemocao ? "Confirmar?" : "Remover"}</span>
+              <span>{confirmandoRemocao ? t("common.confirmar") : t("common.remover")}</span>
             </button>
           </div>
         </div>

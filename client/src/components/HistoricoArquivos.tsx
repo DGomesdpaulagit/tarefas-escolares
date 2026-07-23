@@ -2,25 +2,29 @@ import { useArquivos } from "@/contexts/ArquivosContext";
 import { FileText, Trash2, Calendar, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useIdioma } from "@/contexts/LanguageContext";
+
+const LOCALE_POR_IDIOMA: Record<string, string> = { "pt-BR": "pt-BR", en: "en-US", es: "es-ES" };
 
 export default function HistoricoArquivos() {
   const { arquivos, removerArquivo, limparHistorico } = useArquivos();
+  const { t, idioma } = useIdioma();
 
   const handleRemover = async (id: string) => {
     try {
       await removerArquivo(id);
-      toast.success("Removido do histórico");
+      toast.success(t("arquivos.toastRemovido"));
     } catch {
-      toast.error("Erro ao remover");
+      toast.error(t("arquivos.erroRemover"));
     }
   };
 
   const handleLimpar = async () => {
     try {
       await limparHistorico();
-      toast.success("Histórico limpo");
+      toast.success(t("arquivos.toastHistoricoLimpo"));
     } catch {
-      toast.error("Erro ao limpar");
+      toast.error(t("historicoArquivos.erroLimpar"));
     }
   };
 
@@ -28,14 +32,14 @@ export default function HistoricoArquivos() {
     return (
       <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center">
         <FileText size={32} className="mx-auto mb-3 text-slate-500" aria-hidden="true" />
-        <p className="text-slate-400">Nenhum arquivo importado ainda</p>
-        <p className="text-xs text-slate-500 mt-1">Importe uma planilha para ver o histórico aqui</p>
+        <p className="text-slate-400">{t("historicoArquivos.nenhumArquivo")}</p>
+        <p className="text-xs text-slate-500 mt-1">{t("historicoArquivos.importeParaVer")}</p>
       </div>
     );
   }
 
   const formatarData = (iso: string) =>
-    new Date(iso).toLocaleDateString("pt-BR", {
+    new Date(iso).toLocaleDateString(LOCALE_POR_IDIOMA[idioma] ?? "pt-BR", {
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit",
     });
@@ -50,9 +54,9 @@ export default function HistoricoArquivos() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white font-['Space_Grotesk']">Histórico de Importações</h3>
+        <h3 className="text-sm font-semibold text-white font-['Space_Grotesk']">{t("arquivos.historicoImportacoes")}</h3>
         <Button size="sm" variant="ghost" onClick={handleLimpar} className="text-xs text-slate-500 hover:text-red-400 hover:bg-red-500/10 h-7">
-          Limpar
+          {t("tarefas.limpar")}
         </Button>
       </div>
 
@@ -68,7 +72,7 @@ export default function HistoricoArquivos() {
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="flex items-center gap-1 text-slate-400">
                     <Package size={12} aria-hidden="true" />
-                    <span>{arquivo.imported_count} tarefa(s)</span>
+                    <span>{arquivo.imported_count} {t(arquivo.imported_count !== 1 ? "tarefas.tarefaPlural" : "tarefas.tarefaSingular")}</span>
                   </div>
                   <div className="flex items-center gap-1 text-slate-400">
                     <Calendar size={12} aria-hidden="true" />

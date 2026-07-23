@@ -1,5 +1,6 @@
 import { useTour } from "@/contexts/TourContext";
 import { Sparkles } from "lucide-react";
+import { useIdioma } from "@/contexts/LanguageContext";
 
 export const OFERTA_TOUR_FLAG_KEY = "tarefas_oferecer_tour_v1";
 
@@ -9,6 +10,7 @@ interface OfertaTourModalProps {
 
 export default function OfertaTourModal({ onFechar }: OfertaTourModalProps) {
   const { iniciar } = useTour();
+  const { t } = useIdioma();
 
   const responder = (comecar: boolean) => {
     localStorage.removeItem(OFERTA_TOUR_FLAG_KEY);
@@ -21,7 +23,7 @@ export default function OfertaTourModal({ onFechar }: OfertaTourModalProps) {
       className="fixed inset-0 z-[150] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Oferecer tutorial guiado"
+      aria-label={t("ofertaTour.aria")}
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => responder(false)} aria-hidden="true" />
       <div
@@ -32,23 +34,23 @@ export default function OfertaTourModal({ onFechar }: OfertaTourModalProps) {
           <Sparkles size={26} className="text-amber-400" />
         </div>
         <h2 className="text-lg font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] mb-1.5">
-          Conta criada! 🎉
+          {t("ofertaTour.titulo")}
         </h2>
         <p className="text-sm text-slate-500 mb-5">
-          Quer um tour rápido guiado pelas principais áreas do app antes de começar?
+          {t("ofertaTour.pergunta")}
         </p>
         <div className="flex gap-3">
           <button
             onClick={() => responder(false)}
             className="flex-1 border border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 rounded-lg py-2.5 text-sm font-medium transition-colors"
           >
-            Agora não
+            {t("ofertaTour.agoraNao")}
           </button>
           <button
             onClick={() => responder(true)}
             className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-lg py-2.5 text-sm transition-colors"
           >
-            Ver tutorial
+            {t("ofertaTour.verTutorial")}
           </button>
         </div>
       </div>
