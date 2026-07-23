@@ -8,6 +8,14 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 029f–h — 2026-07-23) — Sistema de tradução real (i18n) — fase 3 (conclui todos os modais)
+- Estendido o dicionário (`pt-BR.ts`/`en.ts`/`es.ts`) com chaves para: `tarefaForm.*`, `disciplinaModal.*`, `mesadaMateriaModal.*`, `mesadaImportar.*`, `importarPlanilha.*`, `limparModal.*`
+- Todos os 6 modais do app traduzidos: **TarefaForm** (criar/editar tarefa, botões de ação, toasts), **DisciplinaModal** (criar/editar disciplina), **MesadaMateriaModal** e **MesadaImportarDisciplinasModal** (matérias do boletim da Mesada), **ImportarPlanilhaModal** (importação de planilha, preview, estados de sucesso/erro), **LimparTarefasModal** (confirmação destrutiva)
+- Build: 0 erros TypeScript validado a cada modal (3 commits incrementais)
+- **Com isso, a cobertura de i18n real do app está completa**: todas as páginas e todos os modais respondem à troca de idioma (pt-BR/en/es)
+
+**Ainda intencionalmente em português** (dados, não interface): valores de status/prioridade/setor/origem armazenados no Supabase, nomes de matérias do catálogo padrão (`MATERIAS_PADRAO`). **Pendência não crítica remanescente:** alguns toasts/mensagens de erro dentro de `contexts/` e `services/` que não passam pela UI diretamente podem ainda estar hardcoded — não mapeados nesta varredura.
+
 ### Adicionado (Etapa 17 / Sessão 029b–e — 2026-07-23) — Sistema de tradução real (i18n) — fase 2 (conclui a tradução das páginas principais)
 - Estendido o dicionário (`pt-BR.ts`/`en.ts`/`es.ts`) com chaves para: `tarefas.*`, `disciplinas.*`, `agenda.*`, `metricas.*`, `arquivos.*`, `mesada.*`, `welcome.*`, `onboarding.*`
 - **`CALENDARIO`** adicionado ao sistema de i18n (`diasCurtos`/`mesesCurtos`/`mesesCompletos` por idioma) — usado pela Agenda e pela Mesada, que antes tinham arrays de nomes de dias/meses fixos em português

@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-07-23 (Sessão 029 — Mesada + Tutorial mesclados em `main`; i18n real cobrindo todas as páginas principais, modais pendentes)
+> **Última atualização:** 2026-07-23 (Sessão 029 — Mesada + Tutorial mesclados em `main`; i18n real com cobertura completa — páginas + todos os modais)
 
 ---
 
@@ -500,7 +500,7 @@ Build validado (0 erros TS) em todos os blocos. Cálculo conferido contra o exem
 **Pendências resolvidas nesta sessão:** `git push` foi concluído com sucesso (usuário configurou `git config --global credential.helper manager` e gerou um novo token, revogando o antigo que havia sido exposto). Merge de `v3-mesada-pessoal` em `main` e push confirmados no GitHub.
 
 **Pós-projeto v2.1 (opcional, fora do escopo original, não relacionado à Mesada):**
-- [x] Implementação real de i18n em runtime (pt-BR/en/es) — Sessão 029, páginas principais concluídas (Sidebar, topbar, Login, Configurações, Visão Geral, Tarefas, Disciplinas, Agenda, Métricas, Arquivos, Mesada, Welcome, Onboarding). **Pendente:** modais (`TarefaForm`, `DisciplinaModal`, `MesadaMateriaModal`, `MesadaImportarDisciplinasModal`, `ImportarPlanilhaModal`, `LimparTarefasModal`) e toasts de `contexts/`/`services/`
+- [x] Implementação real de i18n em runtime (pt-BR/en/es) — Sessão 029, **cobertura completa**: todas as páginas (Sidebar, topbar, Login, Configurações, Visão Geral, Tarefas, Disciplinas, Agenda, Métricas, Arquivos, Mesada, Welcome, Onboarding) + todos os 6 modais (`TarefaForm`, `DisciplinaModal`, `MesadaMateriaModal`, `MesadaImportarDisciplinasModal`, `ImportarPlanilhaModal`, `LimparTarefasModal`). Pendência residual não crítica: alguns toasts dentro de `contexts/`/`services/` não mapeados
 - [ ] Testes manuais ampliados em mobile real (iOS PWA)
 - [ ] Otimização de bundle (chunks > 500kB)
 
@@ -584,6 +584,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-05-30 | [Etapa 17 / Sessão 027] Planejamento v3.0 (Módulo de Mesada, uso pessoal): tag `v2.1.0-publico`, branch `v3-mesada-pessoal`, especificação técnica completa em `docs/V3_ESPECIFICACAO_MODULO_MESADA.md` — nenhum código implementado, implementação fica para a próxima conversa |
 | 2026-07-23 | [Etapa 17 / Sessão 029a] Decisão do usuário: mesclar `v3-mesada-pessoal` em `main` (um só projeto/link Vercel, sem separação por enquanto — ver aviso na seção 22). Iniciada fase 1 do i18n real: dicionários `pt-BR/en/es`, `LanguageContext`, seletor de idioma funcional em Configurações, traduzidos Sidebar/topbar/UserMenu/Login/Configurações/Visão Geral. Corrigido bug de lançamento na Mesada (clicar de novo no conceito remove) |
 | 2026-07-23 | [Etapa 17 / Sessão 029b–e] Fase 2 do i18n real: traduzidas Tarefas, Disciplinas, Agenda (+ `CALENDARIO[idioma]` para dias/meses), Métricas, Arquivos (data por locale), Mesada (3 abas), Welcome (5 slides), Onboarding (3 passos) — 9 commits incrementais, build 0 erros em cada um. Pendente: modais e toasts de contexts/services |
+| 2026-07-23 | [Etapa 17 / Sessão 029f–h] Fase 3 do i18n real (final): traduzidos os 6 modais — TarefaForm, DisciplinaModal, MesadaMateriaModal, MesadaImportarDisciplinasModal, ImportarPlanilhaModal, LimparTarefasModal — 3 commits incrementais, build 0 erros. Cobertura de i18n real considerada completa (páginas + modais) |
 | 2026-07-22 | [Etapa 17 / Sessão 028] Módulo de Mesada completo (branch `v3-mesada-pessoal`) em 6 blocos: (1) base — migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), `Mesada.tsx`, `MesadaMateriaModal.tsx`; (2) importar Disciplinas em lote; (3) Grade do boletim + gráfico de desempenho por matéria; (4) termômetro, lembrete mensal, virada de ano herdando config, data ao vivo; (5) Tutorial guiado do app com spotlight (`TourContext`, `TourOverlay`, 19 passos); (6) ajustes finos do tutorial (velocidade, posição do card, oferta a usuários novos) — build 0 erros em todos os blocos, sem próximos passos pendentes |
 
 ---

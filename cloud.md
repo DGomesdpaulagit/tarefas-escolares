@@ -13,9 +13,34 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
-## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n fase 1 e 2 ✅ CONCLUÍDA — páginas principais traduzidas, modais pendentes
+## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais) ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real cobrindo todas as páginas principais (modais ficam para uma próxima sessão)
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real com cobertura completa (todas as páginas + todos os modais)
+
+---
+
+## [Etapa 17 / Sessão 029f–h] - i18n real: fase 3 (todos os modais — conclui o i18n)
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Continuação direta da Sessão 029b–e. Traduzidos os 6 modais do app, um a um, com build validado (0 erros TS) e commit a cada um:
+- **TarefaForm** — modal de criar/editar tarefa (o mais usado do app): título, todos os labels de campo, botões de ação (marcar concluída/pendente, excluir com dupla confirmação), toasts
+- **DisciplinaModal** — criar/editar disciplina (preview, nome, sugestão de visual, emoji, cor)
+- **MesadaMateriaModal** — matéria do boletim da Mesada (vínculo com Disciplina existente, categorias traduzidas mantendo os valores de dados intactos)
+- **MesadaImportarDisciplinasModal** — importação em lote de Disciplinas pra Mesada
+- **ImportarPlanilhaModal** — fluxo de importação (drag-and-drop, preview, sucesso, erro)
+- **LimparTarefasModal** — confirmação de ação destrutiva
+
+### Resultado
+Cobertura de i18n real considerada **completa**: toda a interface visível (páginas + modais) responde à troca de idioma pt-BR/en/es. Restam apenas alguns toasts pontuais dentro de `contexts/`/`services/` não mapeados nesta varredura (não bloqueiam o uso — são mensagens de erro genéricas de fallback).
+
+### Build
+✅ `npm run build` — 0 erros TS após cada modal (3 commits incrementais)
+
+### Próximo passo
+Nenhum obrigatório. Se quiser 100% de cobertura, falta revisar toasts residuais em `contexts/`/`services/`. Depende de nova instrução do usuário.
 
 ---
 
