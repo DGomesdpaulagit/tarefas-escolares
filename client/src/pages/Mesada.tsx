@@ -11,6 +11,7 @@ import {
   Pencil,
   Plus,
   Settings2,
+  Sparkles,
   Target,
   Trash2,
   Wallet,
@@ -21,6 +22,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -263,7 +265,7 @@ function AbaLancamentos() {
 // ============================================================
 
 function AbaAcompanhamento() {
-  const { config, notas, valorAcumulado, progressoPercentual } = useMesada();
+  const { config, materias, notas, notaDoMes, valorDoMes, valorAcumulado, progressoPercentual } = useMesada();
 
   const dadosPorMes = useMemo(() => {
     const somaPorMes: Record<number, number> = {};
@@ -277,6 +279,51 @@ function AbaAcompanhamento() {
     () => notas.filter((n) => n.conceito === "I").sort((a, b) => a.mes - b.mes),
     [notas],
   );
+
+  const materiasAtivas = useMemo(() => materias.filter((m) => m.ativa), [materias]);
+
+  const meses = useMemo(() => {
+    if (!config) return [];
+    const lista: number[] = [];
+    for (let m = config.mes_inicio; m <= config.mes_fim; m++) lista.push(m);
+    return lista;
+  }, [config]);
+
+  // Distribuição de conceitos por matéria — pra identificar onde está a dificuldade
+  const distribuicaoPorMateria = useMemo(() => {
+    return materiasAtivas.map((m) => {
+      const notasDaMateria = notas.filter((n) => n.materia_id === m.id);
+      const contagem = { MB: 0, B: 0, R: 0, I: 0 };
+      let soma = 0;
+      for (const n of notasDaMateria) {
+        contagem[n.conceito] += 1;
+        soma += n.valor_calculado;
+      }
+      return {
+        nome: m.nome,
+        emoji: m.emoji ?? "📘",
+        ...contagem,
+        total: notasDaMateria.length,
+        media: notasDaMateria.length > 0 ? soma / notasDaMateria.length : null,
+      };
+    });
+  }, [materiasAtivas, notas]);
+
+  // Matéria de atenção: mais penalidades (I); empate desempata pela menor média
+  const materiaAtencao = useMemo(() => {
+    const comLancamentos = distribuicaoPorMateria.filter((d) => d.total > 0);
+    if (comLancamentos.length === 0) return null;
+    return [...comLancamentos].sort((a, b) => {
+      if (b.I !== a.I) return b.I - a.I;
+      return (a.media ?? 0) - (b.media ?? 0);
+    })[0];
+  }, [distribuicaoPorMateria]);
+
+  const materiaDestaque = useMemo(() => {
+    const comLancamentos = distribuicaoPorMateria.filter((d) => d.total > 0);
+    if (comLancamentos.length === 0) return null;
+    return [...comLancamentos].sort((a, b) => b.MB - a.MB || (b.media ?? 0) - (a.media ?? 0))[0];
+  }, [distribuicaoPorMateria]);
 
   if (!config) return null;
 
@@ -316,6 +363,149 @@ function AbaAcompanhamento() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Grade do boletim — igual à planilha original */}
+      {materiasAtivas.length > 0 && meses.length > 0 && (
+        <div className="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Wallet size={14} className="text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
+              Grade do boletim
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs border-collapse min-w-[560px]">
+              <thead>
+                <tr>
+                  <th className="text-left text-slate-500 font-medium pb-2 pr-3 sticky left-0 bg-[var(--bg-card)]">
+                    Matéria
+                  </th>
+                  {meses.map((mes) => (
+                    <th key={mes} className="text-center text-slate-500 font-medium pb-2 px-1 min-w-[44px]">
+                      {MESES[mes - 1]}
+                    </th>
+                  ))}
+                  <th className="text-right text-slate-500 font-medium pb-2 pl-3">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materiasAtivas.map((m) => {
+                  const totalMateria = notas
+                    .filter((n) => n.materia_id === m.id)
+                    .reduce((s, n) => s + n.valor_calculado, 0);
+                  return (
+                    <tr key={m.id} className="border-t border-white/5">
+                      <td className="py-1.5 pr-3 whitespace-nowrap sticky left-0 bg-[var(--bg-card)]">
+                        <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100">
+                          <span>{m.emoji ?? "📘"}</span>
+                          {m.nome}
+                        </span>
+                      </td>
+                      {meses.map((mes) => {
+                        const nota = notaDoMes(m.id, mes);
+                        const cor = nota ? CONCEITOS.find((c) => c.valor === nota.conceito)?.cor : undefined;
+                        return (
+                          <td key={mes} className="text-center py-1.5 px-1">
+                            {nota ? (
+                              <span
+                                className="inline-flex items-center justify-center w-6 h-6 rounded-md text-[10px] font-bold"
+                                style={{ backgroundColor: `${cor}25`, color: cor }}
+                              >
+                                {nota.conceito}
+                              </span>
+                            ) : (
+                              <span className="text-slate-700">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                      <td
+                        className="text-right py-1.5 pl-3 font-semibold font-['Space_Grotesk']"
+                        style={{ color: totalMateria >= 0 ? "#10b981" : "#ef4444" }}
+                      >
+                        R$ {totalMateria.toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-white/10">
+                  <td className="py-2 pr-3 font-semibold text-slate-900 dark:text-white sticky left-0 bg-[var(--bg-card)]">
+                    Total
+                  </td>
+                  {meses.map((mes) => (
+                    <td key={mes} className="text-center py-2 px-1 text-[10px] font-semibold text-slate-500">
+                      {valorDoMes(mes) !== 0 ? valorDoMes(mes).toFixed(0) : "—"}
+                    </td>
+                  ))}
+                  <td className="text-right py-2 pl-3 font-bold text-amber-400 font-['Space_Grotesk']">
+                    R$ {valorAcumulado.toFixed(2)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Distribuição de conceitos por matéria — onde está a dificuldade */}
+      {distribuicaoPorMateria.some((d) => d.total > 0) && (
+        <div className="rounded-2xl border border-white/8 bg-[var(--bg-card)] p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles size={14} className="text-amber-400" />
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white font-['Space_Grotesk']">
+              Desempenho por matéria
+            </h3>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">
+            Quantas notas de cada conceito você tirou em cada matéria no período.
+          </p>
+          <ResponsiveContainer width="100%" height={Math.max(160, distribuicaoPorMateria.length * 34)}>
+            <BarChart data={distribuicaoPorMateria} layout="vertical" margin={{ left: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" horizontal={false} />
+              <XAxis type="number" allowDecimals={false} tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis
+                type="category"
+                dataKey="nome"
+                width={110}
+                tick={{ fill: "#94a3b8", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              {CONCEITOS.map((c) => (
+                <Bar key={c.valor} dataKey={c.valor} name={c.label} stackId="a" fill={c.cor} radius={0} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+
+          {(materiaAtencao || materiaDestaque) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/8">
+              {materiaDestaque && materiaDestaque.MB > 0 && (
+                <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-3">
+                  <p className="text-[11px] text-emerald-400 font-medium mb-0.5">✨ Onde você manda bem</p>
+                  <p className="text-sm text-slate-900 dark:text-slate-100">
+                    {materiaDestaque.emoji} <strong>{materiaDestaque.nome}</strong> — {materiaDestaque.MB} MB de {materiaDestaque.total} lançamento{materiaDestaque.total !== 1 ? "s" : ""}
+                  </p>
+                </div>
+              )}
+              {materiaAtencao && (materiaAtencao.I > 0 || materiaAtencao.R > 0) && (
+                <div className="rounded-xl bg-red-500/5 border border-red-500/20 p-3">
+                  <p className="text-[11px] text-red-400 font-medium mb-0.5">⚠️ Precisa de atenção</p>
+                  <p className="text-sm text-slate-900 dark:text-slate-100">
+                    {materiaAtencao.emoji} <strong>{materiaAtencao.nome}</strong>
+                    {materiaAtencao.I > 0
+                      ? ` — ${materiaAtencao.I} penalidade${materiaAtencao.I !== 1 ? "s" : ""} (I)`
+                      : ` — maioria dos conceitos é R`}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {penalidades.length > 0 && (
         <div className="rounded-2xl border border-red-500/25 bg-red-500/5 p-5">

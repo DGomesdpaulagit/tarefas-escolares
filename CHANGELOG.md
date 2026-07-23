@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 17 / Sessão 028c — 2026-07-22) — Mesada: Grade do boletim + Distribuição por matéria
+- **Grade do boletim** na aba Acompanhamento — tabela matérias × meses (mesmo layout da planilha original do usuário), célula colorida por conceito, linha de total por mês e coluna de total por matéria
+- **Gráfico "Desempenho por matéria"** — barras empilhadas horizontais mostrando quantos MB/B/R/I cada matéria teve no período, pra identificar onde está a dificuldade
+- **Cards de insight automáticos** — "Onde você manda bem" (matéria com mais MB) e "Precisa de atenção" (matéria com mais penalidades I, ou predominância de R)
+- Build: 0 erros TypeScript
+
 ### Adicionado (Etapa 17 / Sessão 028b — 2026-07-22) — Mesada: importar Disciplinas existentes em lote
 - **`MesadaMateriaModal` (feedback do usuário):** faltava um jeito rápido de trazer as Disciplinas já cadastradas no app (Português, Matemática, etc.) para as matérias do boletim da Mesada sem digitar uma por uma
 - **`MesadaImportarDisciplinasModal.tsx`** — novo modal com lista de checkboxes das Disciplinas ainda não vinculadas a nenhuma matéria da Mesada; seleção múltipla + botão "Importar (N)" cria todas de uma vez, herdando nome/emoji/cor
