@@ -132,6 +132,7 @@ export default function Configuracoes() {
 }
 
 function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>["user"]; atualizarSenha: (s: string) => Promise<void> }) {
+  const { t } = useIdioma();
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [nome, setNome] = useState("");
   const [bio, setBio] = useState("");
@@ -164,16 +165,16 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    if (file.size > 5 * 1024 * 1024) { toast.error("Imagem deve ter no máximo 5 MB"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error(t("config.erroImagemTamanho")); return; }
     setUploadandoAvatar(true);
     try {
       const base64 = await compressImage(file, 256);
       await profileService.upsert({ id: user.id, avatar_url: base64 });
       setAvatarUrl(base64);
-      toast.success("Avatar atualizado!");
+      toast.success(t("config.toastAvatarAtualizado"));
     } catch (err) {
       console.error("Avatar error:", err);
-      toast.error("Erro ao salvar avatar. Tente novamente.");
+      toast.error(t("config.erroSalvarAvatar"));
     } finally {
       setUploadandoAvatar(false);
       e.target.value = "";
@@ -185,9 +186,9 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
     setSalvando(true);
     try {
       await profileService.upsert({ id: user.id, name: nome, bio });
-      toast.success("Perfil atualizado!");
+      toast.success(t("config.toastPerfilAtualizado"));
     } catch {
-      toast.error("Erro ao atualizar perfil");
+      toast.error(t("config.erroAtualizarPerfil"));
     } finally {
       setSalvando(false);
     }
@@ -195,16 +196,16 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
 
   const salvarSenha = async () => {
     if (!novaSenha) return;
-    if (novaSenha !== confirmarSenha) { toast.error("Senhas não conferem"); return; }
-    if (novaSenha.length < 6) { toast.error("Senha deve ter ao menos 6 caracteres"); return; }
+    if (novaSenha !== confirmarSenha) { toast.error(t("config.erroSenhasNaoConferem")); return; }
+    if (novaSenha.length < 6) { toast.error(t("config.erroSenhaCurta")); return; }
     setSalvandoSenha(true);
     try {
       await atualizarSenha(novaSenha);
       setNovaSenha("");
       setConfirmarSenha("");
-      toast.success("Senha atualizada!");
+      toast.success(t("config.toastSenhaAtualizada"));
     } catch {
-      toast.error("Erro ao atualizar senha");
+      toast.error(t("config.erroAtualizarSenha"));
     } finally {
       setSalvandoSenha(false);
     }
@@ -213,7 +214,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
   return (
     <div className="space-y-6">
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Informações do Perfil</h2>
+        <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">{t("config.infoPerfil")}</h2>
 
         {/* Avatar */}
         <div className="flex items-center gap-4">
@@ -235,13 +236,13 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
             </button>
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-200">{nome || "Sem nome"}</p>
+            <p className="text-sm font-medium text-slate-200">{nome || t("config.semNome")}</p>
             <p className="text-xs text-slate-500">{user?.email}</p>
             <button
               onClick={() => fileInputRef.current?.click()}
               className="text-xs text-amber-400 hover:text-amber-300 mt-1 transition-colors"
             >
-              Alterar foto
+              {t("config.alterarFoto")}
             </button>
           </div>
           <input
@@ -254,24 +255,24 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="nome-perfil" className="text-slate-300 text-sm">Nome</Label>
+          <Label htmlFor="nome-perfil" className="text-slate-300 text-sm">{t("config.nome")}</Label>
           <Input
             id="nome-perfil"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             className="bg-white/5 border-white/10 text-white focus:border-amber-500"
-            placeholder="Seu nome"
+            placeholder={t("config.nomePlaceholder")}
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="bio-perfil" className="text-slate-300 text-sm">Bio</Label>
+          <Label htmlFor="bio-perfil" className="text-slate-300 text-sm">{t("config.bio")}</Label>
           <Textarea
             id="bio-perfil"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500 resize-none"
-            placeholder="Conte um pouco sobre você..."
+            placeholder={t("config.bioPlaceholder")}
             rows={2}
             maxLength={200}
           />
@@ -279,21 +280,21 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-slate-300 text-sm">Email</Label>
+          <Label className="text-slate-300 text-sm">{t("config.email")}</Label>
           <Input value={user?.email ?? ""} disabled className="bg-white/5 border-white/10 text-slate-500" />
-          <p className="text-xs text-slate-600">O email não pode ser alterado aqui</p>
+          <p className="text-xs text-slate-600">{t("config.emailNaoAlteravel")}</p>
         </div>
 
         <Button onClick={salvarPerfil} disabled={salvando} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
           {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          Salvar Perfil
+          {t("config.salvarPerfil")}
         </Button>
       </div>
 
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Alterar Senha</h2>
+        <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">{t("config.alterarSenha")}</h2>
         <div className="space-y-1.5">
-          <Label htmlFor="nova-senha" className="text-slate-300 text-sm">Nova Senha</Label>
+          <Label htmlFor="nova-senha" className="text-slate-300 text-sm">{t("config.novaSenha")}</Label>
           <Input
             id="nova-senha"
             type="password"
@@ -305,7 +306,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="confirmar-nova-senha" className="text-slate-300 text-sm">Confirmar Nova Senha</Label>
+          <Label htmlFor="confirmar-nova-senha" className="text-slate-300 text-sm">{t("config.confirmarNovaSenha")}</Label>
           <Input
             id="confirmar-nova-senha"
             type="password"
@@ -318,7 +319,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
         </div>
         <Button onClick={salvarSenha} disabled={salvandoSenha || !novaSenha} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
           {salvandoSenha ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          Atualizar Senha
+          {t("config.atualizarSenha")}
         </Button>
       </div>
     </div>
@@ -328,6 +329,7 @@ function AbaPerfil({ user, atualizarSenha }: { user: ReturnType<typeof useAuth>[
 function AbaTema() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { t } = useIdioma();
   const [salvando, setSalvando] = useState(false);
 
   const aplicarTema = async (novoTema: "dark" | "light") => {
@@ -335,9 +337,10 @@ function AbaTema() {
     setSalvando(true);
     try {
       if (user) await profileService.upsert({ id: user.id, theme: novoTema });
-      toast.success(`Tema ${novoTema === "dark" ? "escuro" : "claro"} aplicado!`);
+      const palavra = novoTema === "dark" ? t("config.temaEscuroPalavra") : t("config.temaClaroPalavra");
+      toast.success(`${palavra.charAt(0).toUpperCase() + palavra.slice(1)} ${t("config.toastTemaAplicadoSufixo")}`);
     } catch {
-      toast.error("Erro ao salvar preferência de tema");
+      toast.error(t("config.erroSalvarTema"));
     } finally {
       setSalvando(false);
     }
@@ -345,8 +348,8 @@ function AbaTema() {
 
   return (
     <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">Aparência</h2>
-      <p className="text-xs text-slate-500">Escolha o tema da interface</p>
+      <h2 className="text-sm font-semibold text-slate-200 font-['Space_Grotesk']">{t("config.aparencia")}</h2>
+      <p className="text-xs text-slate-500">{t("config.escolherTema")}</p>
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => aplicarTema("dark")}
@@ -357,8 +360,8 @@ function AbaTema() {
           aria-pressed={theme === "dark"}
         >
           <div className="w-full h-12 rounded-lg mb-2 border border-white/10" style={{ background: "#0f1117" }} />
-          <p className="text-xs font-medium text-slate-300 text-center">Escuro</p>
-          {theme === "dark" && <p className="text-xs text-amber-400 text-center">✓ Ativo</p>}
+          <p className="text-xs font-medium text-slate-300 text-center">{t("config.escuro")}</p>
+          {theme === "dark" && <p className="text-xs text-amber-400 text-center">✓ {t("config.ativo")}</p>}
         </button>
         <button
           onClick={() => aplicarTema("light")}
@@ -369,16 +372,17 @@ function AbaTema() {
           aria-pressed={theme === "light"}
         >
           <div className="w-full h-12 rounded-lg mb-2 border border-slate-200" style={{ background: "#f0f3f8" }} />
-          <p className="text-xs font-medium text-slate-300 text-center">Claro</p>
-          {theme === "light" && <p className="text-xs text-amber-400 text-center">✓ Ativo</p>}
+          <p className="text-xs font-medium text-slate-300 text-center">{t("config.claro")}</p>
+          {theme === "light" && <p className="text-xs text-amber-400 text-center">✓ {t("config.ativo")}</p>}
         </button>
       </div>
-      {salvando && <p className="text-xs text-slate-500 text-center">Salvando preferência...</p>}
+      {salvando && <p className="text-xs text-slate-500 text-center">{t("config.salvandoPreferencia")}</p>}
     </div>
   );
 }
 
 function AbaNotificacoes({ userId }: { userId?: string }) {
+  const { t } = useIdioma();
   const [settings, setSettings] = useState({
     notify_3_days: true,
     notify_2_days: true,
@@ -413,11 +417,11 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     try {
       const granted = await notificationService.requestPermission();
       setPermissao(notificationService.getPermission());
-      if (!granted) { toast.error("Permissão de notificação negada"); return; }
+      if (!granted) { toast.error(t("config.erroPermissaoNegada")); return; }
       await notificationService.subscribe(userId);
-      toast.success("Notificações push ativadas! 🔔");
+      toast.success(t("config.toastPushAtivado"));
     } catch {
-      toast.error("Erro ao ativar notificações");
+      toast.error(t("config.erroAtivarNotificacoes"));
     } finally {
       setAtivandoPush(false);
     }
@@ -427,7 +431,7 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
     if (!userId) return;
     await notificationService.unsubscribe(userId);
     setPermissao("default");
-    toast.success("Notificações push desativadas");
+    toast.success(t("config.toastPushDesativado"));
   };
 
   const salvar = async () => {
@@ -437,9 +441,9 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
       await settingsService.upsertNotifications(userId, settings);
       soundService.setEnabled(settings.sound_enabled);
       if (settings.sound_enabled) soundService.playConcluida();
-      toast.success("Configurações salvas!");
+      toast.success(t("config.toastConfigSalvas"));
     } catch {
-      toast.error("Erro ao salvar");
+      toast.error(t("config.erroSalvarGenerico"));
     } finally {
       setSalvando(false);
     }
@@ -454,8 +458,8 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
 
   const enviarTeste = async () => {
     const ok = await notificationService.sendTest();
-    if (ok) toast.success("Notificação de teste enviada!");
-    else toast.error("Não foi possível enviar (verifique permissão).");
+    if (ok) toast.success(t("config.toastTesteEnviado"));
+    else toast.error(t("config.erroTesteNaoEnviado"));
   };
 
   return (
@@ -465,11 +469,11 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
         <div className="flex items-center gap-2">
           <Bell size={14} className="text-amber-400" />
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
-            Notificações push
+            {t("config.notificacoesPush")}
           </h2>
         </div>
         <p className="text-xs text-slate-500">
-          Receba alertas mesmo com o app/site fechado, direto no seu celular ou computador.
+          {t("config.receberAlertas")}
         </p>
 
         {pushSuportado ? (
@@ -487,25 +491,25 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
                 </div>
                 <div>
                   <p className={`text-sm font-semibold ${ativo ? "text-green-400" : "text-amber-400"}`}>
-                    {ativo ? "Notificações ativas" : "Notificações desativadas"}
+                    {ativo ? t("config.notificacoesAtivas") : t("config.notificacoesDesativadas")}
                   </p>
                   <p className="text-[11px] text-slate-500 mt-0.5">
                     {ativo
-                      ? "Avisos chegam mesmo com o app fechado"
-                      : "Ative para receber alertas em segundo plano"}
+                      ? t("config.avisosChegamFechado")
+                      : t("config.ativeParaAlertas")}
                   </p>
                 </div>
               </div>
               {ativo ? (
                 <Button size="sm" variant="outline" onClick={desativarPush}
                   className="border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-xs">
-                  Desativar
+                  {t("config.desativar")}
                 </Button>
               ) : (
                 <Button size="sm" onClick={ativarPush} disabled={ativandoPush}
                   className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs gap-1">
                   {ativandoPush ? <Loader2 size={12} className="animate-spin" /> : null}
-                  Ativar
+                  {t("config.ativar")}
                 </Button>
               )}
             </div>
@@ -517,15 +521,14 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
                 onClick={enviarTeste}
                 className="w-full border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white/10 bg-transparent text-xs"
               >
-                Enviar notificação de teste
+                {t("config.enviarTeste")}
               </Button>
             )}
           </>
         ) : (
           <div className="rounded-xl p-3 border border-white/10 bg-white/5">
             <p className="text-xs text-slate-500">
-              ⚠️ Seu navegador não suporta notificações push.
-              No iPhone, abra pelo Safari e adicione o app à tela inicial.
+              {t("config.navegadorNaoSuporta")}
             </p>
           </div>
         )}
@@ -534,33 +537,33 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
       {/* Quando notificar */}
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-1">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk'] mb-1">
-          Quando avisar
+          {t("config.quandoAvisar")}
         </h2>
         <p className="text-xs text-slate-500 mb-3">
-          Escolha em que momentos você quer ser lembrado das suas tarefas.
+          {t("config.escolhaMomentos")}
         </p>
 
         <div className="space-y-1">
           {([
             {
               key: "notify_3_days" as const,
-              label: "3 dias antes do prazo",
-              desc: "Tempo de sobra pra começar",
+              label: t("config.notif3dias"),
+              desc: t("config.notif3diasDesc"),
             },
             {
               key: "notify_2_days" as const,
-              label: "2 dias antes do prazo",
-              desc: "Hora de focar",
+              label: t("config.notif2dias"),
+              desc: t("config.notif2diasDesc"),
             },
             {
               key: "notify_1_day" as const,
-              label: "1 dia antes / no dia",
-              desc: "Lembrete do dia da entrega",
+              label: t("config.notif1dia"),
+              desc: t("config.notif1diaDesc"),
             },
             {
               key: "notify_on_create" as const,
-              label: "Ao criar uma tarefa",
-              desc: "Confirmação imediata local",
+              label: t("config.notifCriar"),
+              desc: t("config.notifCriarDesc"),
             },
           ]).map(({ key, label, desc }) => (
             <div
@@ -590,10 +593,10 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
       {/* Sons */}
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5 space-y-1">
         <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk'] mb-1">
-          Sons no app
+          {t("config.sonsNoApp")}
         </h2>
         <p className="text-xs text-slate-500 mb-3">
-          Feedback sonoro suave para ações como concluir tarefas.
+          {t("config.feedbackSonoro")}
         </p>
         <div className="flex items-center justify-between gap-3 py-2.5">
           <div className="flex-1 min-w-0">
@@ -601,24 +604,24 @@ function AbaNotificacoes({ userId }: { userId?: string }) {
               htmlFor="sound_enabled"
               className="text-sm font-medium text-slate-900 dark:text-slate-200 cursor-pointer"
             >
-              Ativar sons de transição
+              {t("config.ativarSons")}
             </Label>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Concluir, adicionar e remover tarefas tocam um som leve
+              {t("config.sonsDescricao")}
             </p>
           </div>
           <Switch
             id="sound_enabled"
             checked={settings.sound_enabled}
             onCheckedChange={() => toggle("sound_enabled")}
-            aria-label="Ativar sons de transição"
+            aria-label={t("config.ativarSons")}
           />
         </div>
       </div>
 
       <Button onClick={salvar} disabled={salvando} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2">
         {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-        Salvar preferências
+        {t("config.salvarPreferencias")}
       </Button>
     </div>
   );
@@ -660,9 +663,9 @@ function AbaAcademico({ userId }: { userId?: string }) {
         school_year: anoEscolar || null,
         language: idioma,
       });
-      toast.success("Preferências acadêmicas atualizadas!");
+      toast.success(t("config.toastAcademicoAtualizado"));
     } catch {
-      toast.error("Erro ao salvar");
+      toast.error(t("config.erroSalvarGenerico"));
     } finally {
       setSalvando(false);
     }
@@ -683,11 +686,11 @@ function AbaAcademico({ userId }: { userId?: string }) {
         <div className="flex items-center gap-2">
           <GraduationCap size={14} className="text-amber-400" />
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200 font-['Space_Grotesk']">
-            Ano escolar
+            {t("config.anoEscolar")}
           </h2>
         </div>
         <p className="text-xs text-slate-500">
-          Em qual etapa você está estudando?
+          {t("config.emQualEtapa")}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {ANOS_ESCOLARES.map((ano) => {
@@ -756,8 +759,7 @@ function AbaAcademico({ userId }: { userId?: string }) {
       {/* Atalho para Disciplinas */}
       <div className="bg-[var(--bg-card)] border border-white/8 rounded-xl p-5">
         <p className="text-xs text-slate-500">
-          As disciplinas agora têm uma página dedicada com cards visuais,
-          emoji e cor própria. Acesse pelo menu lateral em <strong className="text-slate-700 dark:text-slate-300">Disciplinas</strong>.
+          {t("config.disciplinasDedicadas")} <strong className="text-slate-700 dark:text-slate-300">{t("nav.disciplinas")}</strong>.
         </p>
       </div>
 
@@ -767,7 +769,7 @@ function AbaAcademico({ userId }: { userId?: string }) {
         className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
       >
         {salvando ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-        Salvar preferências
+        {t("config.salvarPreferencias")}
       </Button>
     </div>
   );
