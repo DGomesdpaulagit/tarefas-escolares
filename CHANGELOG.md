@@ -8,6 +8,12 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 17 / Sessão 029l — 2026-07-23) — i18n: strings restantes da Visão Geral (dashboard)
+- Usuário reportou, testando o app já publicado em produção com o idioma trocado pra inglês, que a aba **Overview** (dashboard) ainda mostrava várias strings em português: labels do card de progresso semanal (Concluídas/Pendentes/Total da semana), card de desempenho geral (Feitas/Ativas/Expiradas, "Taxa de conclusão", "Sua produtividade desde o início"), empty states ("Sem prazos próximos...", "Nenhuma tarefa expirada"), contador "X pendente(s)" nas disciplinas, e a contagem de dias ("Faltam X dias" / "X dias atrás")
+- **Causa:** `VisaoGeral.tsx` havia sido marcada como "traduzida" na fase 2, mas só os headers principais tinham sido cobertos — vários textos menores (labels, empty states) ficaram para trás. `labelDiasRestantes()` em `tarefasData.ts` era uma função utilitária pura (fora de componente React), sem acesso ao idioma
+- **Correção:** ~20 novas chaves `visaoGeral.*` e `diasRestantes.*` (com prefixo/sufixo separados por idioma, já que a ordem das palavras muda entre pt-BR "Faltam X dias" / en "X days left" / es "Faltan X días"). `labelDiasRestantes()` refatorada para receber `t()` como parâmetro; atualizados os 3 pontos de uso (`VisaoGeral.tsx`, `TarefaCard.tsx`, `Agenda.tsx`)
+- Build: 0 erros TypeScript. Deploy de produção verificado via bundle publicado (hash do JS conferido, strings novas confirmadas no ar)
+
 ### Adicionado (Etapa 17 / Sessão 029i–k — 2026-07-23) — Sistema de tradução real (i18n) — fase 4 (varredura final, conclui a cobertura completa)
 - **Configuracoes.tsx traduzida por completo**: as abas Perfil, Aparência e Notificações (que na fase 1 só tinham o seletor de idioma traduzido) agora usam `t()` em todos os labels, placeholders e toasts — chaves `config.*` (~70 novas entradas)
 - **TarefaCard.tsx, HistoricoArquivos.tsx, ResetPassword.tsx** traduzidos — badges de status (`STATUS_LABEL_KEY`), formatação de data por locale no histórico de arquivos, e a tela inteira de redefinição de senha

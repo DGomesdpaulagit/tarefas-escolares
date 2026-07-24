@@ -13,9 +13,32 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
-## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais + tutorial) ✅ CONCLUÍDA
+## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais + tutorial) + deploy de produção validado ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app + i18n real com cobertura completa (todas as páginas, todos os modais e o tutorial guiado)
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app com `VITE_ENABLE_MESADA_MODULE=true` ativa em produção + i18n real com cobertura completa (todas as páginas, todos os modais, tutorial guiado e Visão Geral revisada)
+
+---
+
+## [Etapa 17 / Sessão 029l] - Deploy de produção: ativação da Mesada + correção de i18n na Visão Geral
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Usuário pediu para publicar o deploy. Durante a verificação, dois problemas foram encontrados e corrigidos:
+
+1. **Aba Mesada não aparecia em produção** — a feature flag `VITE_ENABLE_MESADA_MODULE` só existia no `.env.local` (gitignored), nunca tinha sido configurada nas Environment Variables do projeto no Vercel (herança de quando a ideia era ter 2 projetos separados). Usuário adicionou a variável manualmente no painel do Vercel (Settings → Environments → Production → Environment Variables) seguindo passo a passo guiado; disparado um commit vazio + push para forçar rebuild com a variável nova. Verificado via bundle publicado (grep pela string "Mesada por Desempenho" no JS de produção) que o módulo está ativo.
+
+2. **Strings residuais em português na Visão Geral** — usuário testou o app publicado com idioma trocado para inglês e reportou vários textos ainda em português no dashboard (Overview): labels de progresso/desempenho, empty states, contador de dias restantes/atrasados. Causa: `VisaoGeral.tsx` foi marcada como "traduzida" na fase 2 do i18n, mas só os headers principais tinham sido cobertos; `labelDiasRestantes()` era uma função utilitária pura sem acesso ao idioma. Corrigidas ~20 strings, `labelDiasRestantes()` refatorada para receber `t()` como parâmetro (atualizados 3 pontos de uso: VisaoGeral, TarefaCard, Agenda).
+
+### Resultado
+Deploy de produção (`tarefas-escolares-five.vercel.app`) verificado e funcionando: módulo da Mesada visível, i18n completo (incluindo Visão Geral) confirmado via inspeção do bundle publicado.
+
+### Build
+✅ `npm run build` — 0 erros TS (2 rodadas, uma por correção)
+
+### Próximo passo
+Nenhum definido.
 
 ---
 

@@ -1,6 +1,6 @@
 # MEMORY.md — Tarefas Escolares
 > Fonte oficial de contexto do projeto. Atualizar após cada sessão de trabalho.
-> **Última atualização:** 2026-07-23 (Sessão 029 — Mesada + Tutorial mesclados em `main`; i18n real com cobertura completa — páginas, todos os modais e o tutorial guiado)
+> **Última atualização:** 2026-07-23 (Sessão 029 — Mesada + Tutorial mesclados em `main`; i18n real com cobertura completa — páginas, todos os modais, tutorial guiado e Visão Geral revisada pós-deploy; `VITE_ENABLE_MESADA_MODULE=true` configurada em produção no Vercel)
 
 ---
 
@@ -586,6 +586,7 @@ O Claude lê este MEMORY.md, identifica o próximo passo e pergunta se pode inic
 | 2026-07-23 | [Etapa 17 / Sessão 029b–e] Fase 2 do i18n real: traduzidas Tarefas, Disciplinas, Agenda (+ `CALENDARIO[idioma]` para dias/meses), Métricas, Arquivos (data por locale), Mesada (3 abas), Welcome (5 slides), Onboarding (3 passos) — 9 commits incrementais, build 0 erros em cada um. Pendente: modais e toasts de contexts/services |
 | 2026-07-23 | [Etapa 17 / Sessão 029f–h] Fase 3 do i18n real (final): traduzidos os 6 modais — TarefaForm, DisciplinaModal, MesadaMateriaModal, MesadaImportarDisciplinasModal, ImportarPlanilhaModal, LimparTarefasModal — 3 commits incrementais, build 0 erros. Cobertura de i18n real considerada completa (páginas + modais) |
 | 2026-07-23 | [Etapa 17 / Sessão 029i–k] Fase 4 do i18n real (varredura final): Configuracoes.tsx traduzida por completo (abas Perfil/Aparência/Notificações), TarefaCard/HistoricoArquivos/ResetPassword traduzidos, e o **tutorial guiado inteiro** traduzido — OfertaTourModal, TourContext (19 passos, `TourStep` migrado para `tituloChave`/`descricaoChave: DicionarioChave`), TourOverlay (botões e contador de passos). Build 0 erros. Cobertura de i18n real agora completa em todo o app |
+| 2026-07-23 | [Etapa 17 / Sessão 029l] Usuário testou o deploy publicado e reportou strings ainda em português na Visão Geral (dashboard) mesmo com idioma em inglês. Corrigidas ~20 strings menores que a fase 2 tinha deixado passar (labels de progresso/desempenho, empty states, contador de disciplinas pendentes). `labelDiasRestantes()` (função utilitária pura em `tarefasData.ts`) refatorada para receber `t()` como parâmetro, já que não tinha acesso ao contexto de idioma — 3 pontos de uso atualizados. Build 0 erros, deploy verificado no ar via bundle publicado |
 | 2026-07-22 | [Etapa 17 / Sessão 028] Módulo de Mesada completo (branch `v3-mesada-pessoal`) em 6 blocos: (1) base — migration `007_mesada_module`, `mesadaService.ts`, `MesadaContext.tsx` (Eixo A + limite de MB travando), `Mesada.tsx`, `MesadaMateriaModal.tsx`; (2) importar Disciplinas em lote; (3) Grade do boletim + gráfico de desempenho por matéria; (4) termômetro, lembrete mensal, virada de ano herdando config, data ao vivo; (5) Tutorial guiado do app com spotlight (`TourContext`, `TourOverlay`, 19 passos); (6) ajustes finos do tutorial (velocidade, posição do card, oferta a usuários novos) — build 0 erros em todos os blocos, sem próximos passos pendentes |
 
 ---
