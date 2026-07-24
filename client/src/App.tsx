@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { LanguageProvider, useIdioma } from "./contexts/LanguageContext";
@@ -20,6 +20,7 @@ import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Welcome, { welcomeJaVisto } from "./pages/Welcome";
+import Descadastrar from "./pages/Descadastrar";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { profileService } from "@/services/profileService";
@@ -28,6 +29,13 @@ import { settingsService } from "@/services/settingsService";
 
 function Router() {
   const { estaAutenticado, carregando } = useAuth();
+  const [local] = useLocation();
+
+  // Rota pública do responsável — quem abre não tem conta, então precisa
+  // passar por fora do gate de autenticação e do Welcome.
+  if (local === "/descadastrar") {
+    return <Descadastrar />;
+  }
 
   if (carregando) {
     return (

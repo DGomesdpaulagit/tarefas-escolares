@@ -1,6 +1,13 @@
 # Roadmap — Tarefas Escolares
 
-## v4.0 — PRÓXIMA A SER IMPLEMENTADA (planejada na Sessão 029, 2026-07-23)
+## v4.0 — ✅ IMPLEMENTADA (Sessão 030, 2026-07-24)
+
+Banco, 4 Edge Functions, agendamento no pg_cron (`0 11 25 * *`) e todo o frontend estão no ar. **Falta só a `RESEND_API_KEY`**, que só o usuário pode gerar e configurar como secret no painel do Supabase — sem ela o envio falha e o log registra o motivo; todo o resto do fluxo já foi verificado rodando.
+
+Descrição original do planejamento abaixo, mantida como referência:
+
+---
+
 
 ### 🎯 Recurso principal: relatório mensal de acompanhamento para o responsável
 

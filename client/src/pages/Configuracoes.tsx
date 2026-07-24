@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import React from "react";
-import { Camera, Loader2, Save, User, Bell, Palette, GraduationCap, Languages, Check, HelpCircle } from "lucide-react";
+import { Camera, Loader2, Save, User, Bell, Palette, GraduationCap, Languages, Check, HelpCircle, MailCheck } from "lucide-react";
+import ResponsavelPainel from "@/components/ResponsavelPainel";
 import type { Perfil } from "@/types";
 import { settingsService } from "@/services/settingsService";
 import { soundService } from "@/services/soundService";
@@ -18,7 +19,7 @@ import { useTour } from "@/contexts/TourContext";
 import { useIdioma } from "@/contexts/LanguageContext";
 import { ehIdiomaValido } from "@/lib/i18n";
 
-type Aba = "perfil" | "academico" | "tema" | "notificacoes";
+type Aba = "perfil" | "academico" | "tema" | "notificacoes" | "responsavel";
 
 const ANOS_ESCOLARES = [
   "6º Ano",
@@ -85,6 +86,7 @@ export default function Configuracoes() {
             { id: "academico", label: t("config.abaAcademico"), icon: GraduationCap },
             { id: "tema", label: t("config.abaTema"), icon: Palette },
             { id: "notificacoes", label: t("config.abaNotificacoes"), icon: Bell },
+            { id: "responsavel", label: t("config.abaResponsavel"), icon: MailCheck },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -125,6 +127,7 @@ export default function Configuracoes() {
           {abaAtiva === "academico" && <AbaAcademico userId={user?.id} />}
           {abaAtiva === "tema" && <AbaTema />}
           {abaAtiva === "notificacoes" && <AbaNotificacoes userId={user?.id} />}
+          {abaAtiva === "responsavel" && <ResponsavelPainel userId={user?.id} />}
         </div>
       </div>
     </div>

@@ -12,10 +12,46 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
-## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo + deploy validado + planejamento v5.0 ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 18 - v4.0 (relatório mensal para o responsável)
+## SESSÃO ATUAL: [Sessão 030] - Implementação completa da v4.0 ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app com `VITE_ENABLE_MESADA_MODULE=true` ativa em produção + i18n real com cobertura completa + planejamento da v5.0 registrado
+## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) em `main` + i18n completo + **v4.0 implementada** (banco, 4 Edge Functions, frontend e agendamento no ar) — falta apenas a `RESEND_API_KEY`, que só o usuário pode configurar
+
+---
+
+## [Etapa 18 / Sessão 030] - v4.0: relatório mensal para o responsável (implementação completa)
+**Data:** 2026-07-24
+**Branch:** `main`
+**Status:** ✅ Concluída (código pronto e verificado; envio real depende de secret do usuário)
+
+### O que foi feito
+Implementada a v4.0 inteira seguindo o checklist da seção 9 de `docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md` — nenhuma decisão ficou pendente, tudo já tinha sido fechado na Sessão 029n.
+
+**Banco:** migration `008_guardian_reports` aplicada via MCP — `guardians`, `guardian_codes`, `guardian_reports_log`, com RLS exatamente como a seção 4 da especificação exigia: o cliente lê a própria linha de `guardians` mas nunca escreve, e `guardian_codes` não tem policy nenhuma (inacessível ao cliente — senão ele leria o código que deveria vir do responsável). Adicionada uma coluna que não estava na especificação, `guardians.unsubscribe_token`, necessária para o link de saída do rodapé funcionar sem login.
+
+**Edge Functions (4, todas ACTIVE):** `guardian-request-code` (rate limit 60s, 6 dígitos via `crypto.getRandomValues`, grava só o hash SHA-256, invalida o código se o e-mail não sair), `guardian-verify-code` (expiração 30min, uso único, teto de 5 tentativas), `enviar-relatorio-responsavel` (agregação + texto no idioma do perfil + log) e `guardian-unsubscribe` (pública, `verify_jwt=false`).
+
+**Agendamento:** job `enviar-relatorio-responsavel-mensal` no pg_cron em `0 11 25 * *` (08:00 de Brasília). O header com o bearer foi reaproveitado do job `send-daily-notifications` já existente por SQL, sem o token passar pelo chat.
+
+**Frontend:** `guardianService.ts`, `ResponsavelPainel.tsx` (o fluxo das 3 operações, reaproveitado nos dois lugares), aba **Responsável** em Configurações, passo **3 de 4** no Onboarding (sempre pulável), página pública `/descadastrar`, e ~55 chaves i18n novas nos 3 idiomas.
+
+### Dois problemas encontrados durante o teste (e corrigidos)
+
+1. **A página de descadastro não podia morar na Edge Function.** O gateway do Supabase devolve toda resposta de Edge Function como `Content-Type: text/plain` com CSP `sandbox` e `nosniff` — proteção anti-phishing no domínio deles. Verificado no navegador: o HTML aparecia como texto cru, com acentuação quebrada. A função virou API JSON e a interface passou para `/descadastrar` dentro do app. Efeito colateral bom: o link do e-mail agora aponta para o domínio do app, não para `*.supabase.co`.
+
+2. **Falha de envio bloqueava o mês inteiro.** O log gravava `status = 'falhou'` e, pelo `UNIQUE(guardian_id, referencia)`, a execução seguinte pulava aquele responsável — ou seja, uma instabilidade momentânea do Resend faria o relatório do mês nunca sair. Corrigido: só envio bem-sucedido bloqueia, e a gravação virou `upsert`. Confirmado por teste (`pulados: 0` na segunda chamada, contra o comportamento anterior).
+
+### Verificação feita
+- `npm run build` — 0 erros TS
+- Fluxo de descadastro testado ponta a ponta no navegador com um responsável de teste real: link inválido → "Link inválido"; token válido → tela de confirmação → clique → "Cancelado", com o `status` virando `removido` no banco
+- Função de relatório invocada de verdade: encontrou o responsável, agregou os dados, tentou enviar e falhou **só** na chave do Resend (`RESEND_API_KEY nao configurada`), gravando o log corretamente — ou seja, todo o pipeline roda
+- Dados de teste removidos do banco ao final (as três tabelas voltaram a zero linhas)
+
+### Não verificado (e por quê)
+O fluxo de código (cadastrar/editar/excluir) não foi exercitado ponta a ponta porque exige login na conta do usuário e uma `RESEND_API_KEY` válida — nenhum dos dois eu posso providenciar.
+
+### Próximo passo
+Usuário gera a API key no Resend e configura como secret `RESEND_API_KEY` no painel do Supabase (ele mesmo — nunca colada em chat). Depois disso, testar os 3 fluxos de código no app e o e-mail chegando. Só então avaliar a compra do domínio próprio (o domínio de teste do Resend só entrega para o e-mail dono da conta).
 
 ---
 

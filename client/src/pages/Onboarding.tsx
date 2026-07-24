@@ -15,12 +15,14 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useIdioma } from "@/contexts/LanguageContext";
 import type { DicionarioChave } from "@/lib/i18n";
+import ResponsavelPainel from "@/components/ResponsavelPainel";
+import type { Responsavel } from "@/types";
 
 interface OnboardingProps {
   onConcluir: () => void;
 }
 
-type Passo = 1 | 2 | 3;
+type Passo = 1 | 2 | 3 | 4;
 
 export default function Onboarding({ onConcluir }: OnboardingProps) {
   const { user } = useAuth();
@@ -32,6 +34,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
   const [ano, setAno] = useState("");
   const [selecionadas, setSelecionadas] = useState<Set<string>>(new Set());
   const [salvando, setSalvando] = useState(false);
+  const [responsavel, setResponsavel] = useState<Responsavel | null>(null);
 
   // Pré-preenche nome a partir do user metadata
   useEffect(() => {
@@ -88,6 +91,18 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
     }
   };
 
+  /**
+   * Ao entrar no passo do responsável, grava o nome antes: o e-mail com o
+   * código diz quem está pedindo, e sem isso chegaria com o prefixo do login.
+   */
+  const avancar = async () => {
+    const proximo = (passo + 1) as Passo;
+    if (proximo === 3 && user && nome.trim()) {
+      await profileService.upsert({ id: user.id, name: nome.trim() }).catch(() => null);
+    }
+    setPasso(proximo);
+  };
+
   const pular = async () => {
     if (!user) return;
     setSalvando(true);
@@ -130,7 +145,7 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
 
           {/* Stepper */}
           <div className="flex items-center gap-2">
-            {[1, 2, 3].map((n) => (
+            {[1, 2, 3, 4].map((n) => (
               <div key={n} className="flex-1 flex items-center gap-2">
                 <div
                   className={`flex-1 h-1.5 rounded-full transition-all ${
@@ -141,11 +156,12 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
             ))}
           </div>
           <div className="flex justify-between mt-2">
-            <span className="text-xs text-slate-500">{t("onboarding.passoDe3")} {passo} {t("onboarding.de3")}</span>
+            <span className="text-xs text-slate-500">{t("onboarding.passo")} {passo} {t("onboarding.deTotal")}</span>
             <span className="text-xs text-slate-500">
               {passo === 1 && t("onboarding.sobreVoce")}
               {passo === 2 && t("onboarding.suasDisciplinas")}
-              {passo === 3 && t("onboarding.pronto")}
+              {passo === 3 && t("onboarding.responsavelStepper")}
+              {passo === 4 && t("onboarding.pronto")}
             </span>
           </div>
         </div>
@@ -170,10 +186,14 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
             />
           )}
           {passo === 3 && (
+            <PassoResponsavel userId={user?.id} onMudanca={setResponsavel} t={t} />
+          )}
+          {passo === 4 && (
             <PassoRevisao
               nome={nome}
               ano={ano}
               selecionadas={selecionadas}
+              responsavel={responsavel}
               t={t}
             />
           )}
@@ -193,9 +213,9 @@ export default function Onboarding({ onConcluir }: OnboardingProps) {
             </Button>
           )}
           <div className="ml-auto flex items-center gap-3">
-            {passo < 3 ? (
+            {passo < 4 ? (
               <Button
-                onClick={() => setPasso((p) => (p + 1) as Passo)}
+                onClick={avancar}
                 className="bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
               >
                 {t("onboarding.proximo")}
@@ -362,18 +382,52 @@ function PassoDisciplinas({
 }
 
 // ============================================================
-// Passo 3 — Revisão final
+// Passo 3 — Responsável (opcional)
+// ============================================================
+
+function PassoResponsavel({
+  userId,
+  onMudanca,
+  t,
+}: {
+  userId: string | undefined;
+  onMudanca: (r: Responsavel | null) => void;
+  t: (chave: DicionarioChave) => string;
+}) {
+  return (
+    <div className="space-y-5">
+      <div className="text-center">
+        <div className="text-6xl mb-3">👨‍👩‍👦</div>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-['Space_Grotesk']">
+          {t("onboarding.responsavelTitulo")}
+        </h2>
+        <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
+          {t("onboarding.responsavelDesc")}
+        </p>
+      </div>
+
+      <div className="max-w-md mx-auto">
+        <ResponsavelPainel userId={userId} compacto onMudanca={onMudanca} />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// Passo 4 — Revisão final
 // ============================================================
 
 function PassoRevisao({
   nome,
   ano,
   selecionadas,
+  responsavel,
   t,
 }: {
   nome: string;
   ano: string;
   selecionadas: Set<string>;
+  responsavel: Responsavel | null;
   t: (chave: DicionarioChave) => string;
 }) {
   const nomeExibido = nome.trim() || t("onboarding.estudante");
@@ -394,6 +448,10 @@ function PassoRevisao({
       <div className="max-w-md mx-auto space-y-4">
         <ResumoLinha label={t("onboarding.nome")} valor={nomeExibido} />
         {ano.trim() && <ResumoLinha label={t("onboarding.ano")} valor={ano.trim()} />}
+        <ResumoLinha
+          label={t("onboarding.responsavelResumoLabel")}
+          valor={responsavel?.email ?? t("onboarding.responsavelResumoNenhum")}
+        />
         <div>
           <p className="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2">
             {t("onboarding.disciplinas")} ({lista.length})

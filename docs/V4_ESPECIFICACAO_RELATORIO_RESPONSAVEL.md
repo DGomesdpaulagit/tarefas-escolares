@@ -2,7 +2,7 @@
 
 **Documento de planejamento para iniciar uma NOVA conversa.**
 **Criado em:** 2026-07-23
-**Status:** Planejado, nenhum código implementado ainda.
+**Status:** ✅ **IMPLEMENTADA na Sessão 030 (2026-07-24).** Documento mantido como referência de projeto. Duas coisas saíram diferentes do previsto aqui — ver seção 10, no final.
 **Ordem de execução:** esta é a **v4.0** — vem ANTES da v5.0 (registro por imagem, ver `V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`).
 
 ---
@@ -233,3 +233,25 @@ Dados a calcular para o mês de referência (do dia 1 até o dia do envio):
 - [ ] Testar os 3 fluxos ponta a ponta: cadastrar → código → ativo; editar → código no e-mail antigo → troca; excluir → código → parado
 - [ ] Testar os caminhos de erro: código expirado, 5 tentativas erradas, reenvio antes dos 60s
 - [ ] Testar o descadastro pelo próprio responsável via link do rodapé
+
+---
+
+## 10. O que saiu diferente na implementação (Sessão 030)
+
+### 10.1 A página de descadastro não pôde ficar na Edge Function
+
+A seção 9 previa `guardian-unsubscribe` como "endpoint público do link de saída". Ele existe e funciona, mas **não pode devolver HTML**: o gateway do Supabase força `Content-Type: text/plain` com `Content-Security-Policy: default-src 'none'; sandbox` e `X-Content-Type-Options: nosniff` em toda resposta de Edge Function — é a proteção deles contra páginas de phishing hospedadas no domínio `*.supabase.co`. Na prática o HTML chegava ao navegador como texto cru e com acentuação quebrada.
+
+**Solução:** a função virou API JSON (`GET` consulta o token, `POST` efetiva) e a interface passou a morar no app, em `client/src/pages/Descadastrar.tsx`, numa rota pública `/descadastrar` que fica fora do gate de autenticação e do Welcome. O link no rodapé do relatório aponta para `${APP_URL}/descadastrar?token=…` — o que de quebra é um endereço mais confiável para quem recebe do que uma URL `supabase.co`.
+
+O `GET` deliberadamente **não** descadastra: scanners de e-mail e proxies de segurança pré-carregam links, e isso cancelaria o envio sem ninguém ter clicado. A confirmação é um `POST` explícito.
+
+### 10.2 Falha de envio bloqueava o mês inteiro
+
+A seção 5 dizia "checar o log ANTES de enviar, gravar DEPOIS" — o que estava certo, mas incompleto. Como o log grava tanto `enviado` quanto `falhou`, e o `UNIQUE(guardian_id, referencia)` é por mês, uma tentativa que falhasse deixaria uma linha que faria toda execução seguinte **pular** aquele responsável. Uma instabilidade momentânea do provedor custaria o relatório do mês inteiro.
+
+**Correção:** a checagem de idempotência filtra por `status = 'enviado'`, e a gravação virou `upsert` com `onConflict: "guardian_id,referencia"`, de modo que a retentativa reescreve a linha da falha.
+
+### 10.3 Coluna nova, não prevista na seção 4
+
+`guardians.unsubscribe_token` (`text NOT NULL DEFAULT encode(gen_random_bytes(24), 'hex')`) — o link de saída precisa identificar o responsável sem login, e usar o `id` da linha para isso permitiria adivinhação/enumeração.

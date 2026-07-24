@@ -8,6 +8,31 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 18 / Sessão 030 — 2026-07-24) — v4.0: relatório mensal para o responsável
+Implementação completa da especificação `docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`.
+
+**Banco (`supabase/migrations/008_guardian_reports.sql`, aplicada):**
+- `guardians` (1 responsável por usuário, `UNIQUE(user_id)`, + `unsubscribe_token` gerado por `gen_random_bytes`), `guardian_codes` (só o hash SHA-256 do código, nunca o texto puro) e `guardian_reports_log` (`UNIQUE(guardian_id, referencia)` para não mandar o mesmo mês duas vezes)
+- RLS nas três: o cliente **lê** a própria linha de `guardians` mas nunca escreve (toda escrita passa pela Edge Function que valida o código — senão bastava o console do navegador pra trocar o e-mail sem código); `guardian_codes` fica **sem nenhuma policy**, ou seja, inacessível ao cliente (se ele lesse a tabela, leria o código que deveria vir do responsável); `guardian_reports_log` é legível pelo dono, para transparência
+
+**Edge Functions (4, deployadas):**
+- `guardian-request-code` — rate limit de 60s, gera 6 dígitos com `crypto.getRandomValues`, grava só o hash, valida a operação e envia o e-mail ao endereço que autoriza (o novo no cadastro; o **atual** em editar/excluir). Se o e-mail não sai, o código é invalidado na hora
+- `guardian-verify-code` — valida expiração (30min), uso único e o teto de 5 tentativas, e só então executa a operação em `guardians`
+- `enviar-relatorio-responsavel` — agendada no pg_cron em `0 11 25 * *` (08:00 de Brasília, dia 25). Classifica as tarefas com a mesma regra de `getStatusEfetivo()` do cliente, monta o texto no idioma de `profiles.language` e grava o log
+- `guardian-unsubscribe` — API pública (`verify_jwt = false`) do link de saída do rodapé
+
+**Frontend:**
+- `guardianService.ts` + `ResponsavelPainel.tsx` (fluxo completo das 3 operações: form de e-mail → código de 6 dígitos → confirmação, com contador de expiração, reenvio bloqueado por 60s e erros traduzidos)
+- Nova aba **Responsável** em Configurações (com histórico dos relatórios enviados) e novo passo **3 de 4** no Onboarding, sempre pulável
+- Nova página pública `/descadastrar` (`Descadastrar.tsx`), fora do gate de autenticação e de Welcome — quem abre é o responsável, que não tem conta
+- ~55 chaves i18n novas (`resp.*`, `config.abaResponsavel`, `onboarding.responsavel*`) nos 3 idiomas. As chaves `onboarding.passoDe3`/`de3` viraram `onboarding.passo`/`deTotal`, já que o fluxo passou a ter 4 passos
+
+**Dois problemas encontrados durante o teste e corrigidos:**
+- A página de descadastro **não podia** ser servida em HTML pela Edge Function: o gateway do Supabase força `Content-Type: text/plain` + CSP `sandbox` em todas as respostas (proteção anti-phishing no domínio deles), então o HTML aparecia como texto cru e com acentuação quebrada. A função virou API JSON e a interface passou a morar no app, em `/descadastrar` — o que também deixa o link do e-mail apontando para o domínio do app em vez de `*.supabase.co`
+- Uma falha de envio gravava `status = 'falhou'` no log e, por causa do `UNIQUE(guardian_id, referencia)`, a execução seguinte **pulava o mês** — uma indisponibilidade momentânea do Resend faria o relatório daquele mês nunca sair. Agora o bloqueio só vale para envio bem-sucedido, e a gravação virou `upsert`
+
+**Pendência do usuário:** gerar a `RESEND_API_KEY` na conta do Resend e configurar como secret no painel do Supabase. Sem ela o envio falha com `RESEND_API_KEY não configurada` (verificado) — todo o resto do fluxo já roda.
+
 ### Corrigido (Etapa 17 / Sessão 029l — 2026-07-23) — i18n: strings restantes da Visão Geral (dashboard)
 - Usuário reportou, testando o app já publicado em produção com o idioma trocado pra inglês, que a aba **Overview** (dashboard) ainda mostrava várias strings em português: labels do card de progresso semanal (Concluídas/Pendentes/Total da semana), card de desempenho geral (Feitas/Ativas/Expiradas, "Taxa de conclusão", "Sua produtividade desde o início"), empty states ("Sem prazos próximos...", "Nenhuma tarefa expirada"), contador "X pendente(s)" nas disciplinas, e a contagem de dias ("Faltam X dias" / "X dias atrás")
 - **Causa:** `VisaoGeral.tsx` havia sido marcada como "traduzida" na fase 2, mas só os headers principais tinham sido cobertos — vários textos menores (labels, empty states) ficaram para trás. `labelDiasRestantes()` em `tarefasData.ts` era uma função utilitária pura (fora de componente React), sem acesso ao idioma

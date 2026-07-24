@@ -447,6 +447,30 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
+### 🔴 AÇÃO PENDENTE DO USUÁRIO (bloqueia o envio real da v4.0)
+
+Gerar a API key no [Resend](https://resend.com) e configurar como secret **`RESEND_API_KEY`** no painel do Supabase (Edge Functions → Secrets). Ele mesmo faz isso — a chave nunca deve ser colada no chat nem versionada. Enquanto não existir, o relatório mensal falha e registra `RESEND_API_KEY nao configurada` em `guardian_reports_log`; todo o resto do fluxo já está funcionando.
+
+Opcional, na mesma tela: `EMAIL_FROM` (default `Tarefas Escolares <onboarding@resend.dev>`) e `APP_URL` (default `https://tarefas-escolares-five.vercel.app`).
+
+Lembrete: o domínio de teste do Resend só entrega para o e-mail dono da conta. Comprar domínio próprio (~R$40/ano) só depois do fluxo validado ponta a ponta.
+
+### ✅ v4.0 IMPLEMENTADA — Relatório mensal para o responsável (Sessão 030, 2026-07-24)
+
+Especificação: `docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md` (seção 10 registra o que saiu diferente do planejado).
+
+**Banco** — migration `008_guardian_reports`: `guardians`, `guardian_codes`, `guardian_reports_log`. RLS crítica: o cliente lê a própria linha de `guardians` mas **nunca escreve** (toda escrita passa pela Edge Function que valida o código), e `guardian_codes` **não tem policy nenhuma** — se o cliente lesse essa tabela, leria o código que deveria vir do responsável.
+
+**Edge Functions** — `guardian-request-code`, `guardian-verify-code`, `enviar-relatorio-responsavel` (cron `0 11 25 * *` = 08:00 de Brasília, dia 25) e `guardian-unsubscribe` (pública, `verify_jwt=false`).
+
+**Frontend** — `guardianService.ts`, `ResponsavelPainel.tsx` (fluxo das 3 operações, usado em dois lugares), aba Responsável em Configurações, passo 3 de 4 no Onboarding (pulável), página pública `/descadastrar`, ~55 chaves i18n nos 3 idiomas.
+
+**Duas armadilhas descobertas aqui, que valem para qualquer trabalho futuro neste projeto:**
+1. **Edge Function do Supabase não serve HTML.** O gateway força `text/plain` + CSP `sandbox` + `nosniff` em toda resposta — proteção anti-phishing no domínio deles. Qualquer página que precise ser aberta por alguém (link de e-mail, retorno de webhook visível) tem de morar no app, não na função.
+2. **Log de envio com `UNIQUE` por mês precisa distinguir sucesso de falha.** A versão inicial pulava o mês depois de qualquer tentativa registrada, inclusive as que falharam — uma instabilidade momentânea custaria o relatório inteiro. Hoje só `status = 'enviado'` bloqueia, e a gravação é `upsert`.
+
+---
+
 **🎉 v2.1.0 FINALIZADA E PÚBLICA (tag `v2.1.0-publico`, commit `80adcd8`) — todas as fases originais entregues**
 
 **Fases concluídas (v2.1.0):**

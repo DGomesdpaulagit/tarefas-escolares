@@ -44,6 +44,29 @@ export interface Perfil {
   updated_at: string;
 }
 
+// v4.0 — Responsável que recebe o relatório mensal
+export type StatusResponsavel = "pendente" | "ativo" | "removido";
+export type AcaoResponsavel = "cadastrar" | "editar" | "excluir";
+
+export interface Responsavel {
+  id: string;
+  user_id: string;
+  email: string;
+  nome: string | null;
+  status: StatusResponsavel;
+  criado_em: string;
+  confirmado_em: string | null;
+}
+
+export interface RelatorioEnviado {
+  id: string;
+  guardian_id: string;
+  referencia: string;
+  enviado_em: string;
+  status: string;
+  erro: string | null;
+}
+
 export type Conceito = "MB" | "B" | "R" | "I";
 export type CategoriaMesada = "principal" | "complementar" | "menor" | "outra";
 
