@@ -8,6 +8,27 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 19 / Sessão 031 — 2026-07-24) — v5.0: registro de tarefas por imagem (análise por IA)
+Implementação completa da especificação `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`. Decisões tomadas no início da conversa: provedor **Anthropic Claude** (`claude-sonnet-5`) e limite de **5 análises por dia por usuário**.
+
+**Banco (`supabase/migrations/009_task_images.sql`, aplicada):**
+- Bucket privado `task-images` no Storage, RLS por pasta (`{user_id}/...`), mesmo padrão do bucket `avatars`
+- `image_analysis_usage` — um registro por **tentativa** de análise (não por importação confirmada), porque o custo acontece na chamada à IA, não na confirmação da tarefa. Só leitura para o cliente; escrita exclusiva da Edge Function
+
+**Edge Function `analisar-imagem-tarefas` (deployada):**
+- Checa o limite diário (janela rolante de 24h) **antes** de qualquer chamada paga
+- Baixa a imagem do Storage com service role, envia em base64 para o Claude com um prompt pedindo JSON estrito (`title`, `subject_name`, `due_date`, `priority`, `confidence`), incluindo a data de hoje e as disciplinas já cadastradas do usuário como contexto
+- **A regra de "detalhamento incompleto" é aplicada de forma determinística no código**, não delegada à confiança que o modelo declara — mantém o critério estável entre execuções
+
+**Frontend:**
+- `imageImportService.ts` — upload, chamada da função, e **apaga a imagem do Storage logo após a análise** (o app não precisa reter a foto original depois de extrair as tarefas — fotos de agenda podem ter nome de colegas, endereço da escola etc.)
+- `ImportarImagemModal.tsx` — mesmo padrão visual do `ImportarPlanilhaModal`, upload via câmera (mobile) ou arquivo (desktop), cards com badge verde (pronta) ou âmbar (falta detalhar) e botão "Completar" por card
+- `TarefaForm.tsx` ganhou as props `initial` (pré-preenche a criação) e `onSalvou` (dispara só quando uma tarefa nova é de fato criada, não ao cancelar — usada para tirar o candidato completado da lista pendente do modal)
+- Botão "Importar por foto" ao lado do "Importar" (planilha) em `Tarefas.tsx`
+- ~30 chaves i18n novas (`importarImagem.*`, `tarefas.importarFoto`) nos 3 idiomas
+
+**Pendência do usuário:** gerar a `ANTHROPIC_API_KEY` no console da Anthropic e configurar como secret no painel do Supabase. Sem ela a função responde `chave_ia_nao_configurada` — nenhuma chamada paga é feita.
+
 ### Adicionado (Etapa 18 / Sessão 030 — 2026-07-24) — v4.0: relatório mensal para o responsável
 Implementação completa da especificação `docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`.
 

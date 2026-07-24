@@ -12,10 +12,40 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 18 - v4.0 (relatório mensal para o responsável)
-## SESSÃO ATUAL: [Sessão 030] - Implementação completa da v4.0 ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem)
+## SESSÃO ATUAL: [Sessão 031] - Implementação completa da v5.0 ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) em `main` + i18n completo + **v4.0 implementada** (banco, 4 Edge Functions, frontend e agendamento no ar) — falta apenas a `RESEND_API_KEY`, que só o usuário pode configurar
+## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) + v4.0 (relatório ao responsável) + **v5.0 implementada** (banco, Edge Function de análise e frontend no ar) — faltam duas secrets, que só o usuário pode configurar: `RESEND_API_KEY` (v4.0) e `ANTHROPIC_API_KEY` (v5.0)
+
+---
+
+## [Etapa 19 / Sessão 031] - v5.0: registro de tarefas por imagem (implementação completa)
+**Data:** 2026-07-24
+**Branch:** `main`
+**Status:** ✅ Concluída (código pronto e verificado; análise real depende de secret do usuário)
+
+### O que foi feito
+Usuário decidiu, no início da conversa, as duas pendências da especificação (`docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`, seção 4): provedor **Anthropic Claude** e limite diário de **5 análises por usuário**. A partir daí, implementação completa seguindo o checklist da seção 7.
+
+**Banco:** migration `009_task_images` aplicada — bucket privado `task-images` no Storage (RLS por pasta `{user_id}/...`) e tabela `image_analysis_usage`, que registra cada *tentativa* de análise (não cada importação confirmada), porque o custo acontece na chamada à IA. É essa tabela que sustenta o limite diário.
+
+**Edge Function `analisar-imagem-tarefas`:** checa o limite antes de gastar qualquer coisa, baixa a imagem do Storage, chama o Claude (`claude-sonnet-5`) com a imagem em base64 e um prompt pedindo JSON estrito, incluindo como contexto a data de hoje e as disciplinas já cadastradas do usuário. A regra de "detalhamento incompleto" da seção 5 da especificação foi implementada de forma determinística no código — a confiança que o modelo declara é só mais um dado, não decide sozinha.
+
+**Frontend:** `imageImportService.ts`, `ImportarImagemModal.tsx` (mesmo padrão visual do `ImportarPlanilhaModal`, com captura de câmera no mobile), extensão do `TarefaForm.tsx` com as props `initial` e `onSalvou` para o fluxo de "completar" uma tarefa candidata incompleta, botão "Importar por foto" em `Tarefas.tsx`, e ~30 chaves i18n nos 3 idiomas.
+
+**Decisão tomada durante a implementação, não coberta pela especificação original:** o que fazer com a foto depois de analisada. Resolvido apagando sempre — sucesso ou erro — logo após a resposta da Edge Function. Fotos de agenda/quadro de avisos podem conter nome de colegas, endereço da escola etc., e o app não tem motivo para reter isso além do tempo da análise.
+
+### Verificação feita
+- `npm run build` — 0 erros TS
+- App carrega sem erros de console no navegador
+- Edge Function testada sem autenticação: responde `nao_autenticado` (401) como esperado
+- Bucket `task-images` confirmado como privado, com as 3 policies de Storage (select/insert/delete por pasta própria) e a tabela `image_analysis_usage` com RLS ativa
+
+### Não verificado (e por quê)
+O fluxo completo (upload real → análise real → revisão → importação) não foi exercitado ponta a ponta: exige login na sua conta (sem credenciais disponíveis nesta sessão) e a `ANTHROPIC_API_KEY`, que ainda não está configurada. Também evitei simular uma chamada autenticada de teste porque isso consumiria uma das suas 5 análises diárias reais.
+
+### Próximo passo
+Usuário gera a API key no console da Anthropic e configura como secret `ANTHROPIC_API_KEY` no painel do Supabase (nunca colada em chat). Depois, testar o fluxo com uma foto real de agenda/quadro de avisos. A pendência da v4.0 (`RESEND_API_KEY`) continua em aberto, independente desta.
 
 ---
 

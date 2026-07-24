@@ -2,7 +2,7 @@
 
 **Documento de planejamento para iniciar uma NOVA conversa.**
 **Criado em:** 2026-07-23
-**Status:** Planejado, nenhum código implementado ainda.
+**Status:** ✅ **IMPLEMENTADA na Sessão 031 (2026-07-24).** Documento mantido como referência de projeto. Decisões tomadas e o que saiu diferente do previsto: ver seção 8 (fora de escopo, inalterada) e a nova seção 9 no final.
 **Ordem de execução:** esta é a **v5.0** — vem DEPOIS da v4.0 (relatório mensal para o responsável, ver `V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`).
 
 ---
@@ -111,3 +111,27 @@ Nesses casos:
 - [ ] Limite de uso diário (proteção de custo) — a definir com o usuário
 - [ ] i18n: novas strings em pt-BR/en/es seguindo o padrão já estabelecido no resto do app
 - [ ] Build 0 erros + testes manuais com fotos reais de quadro/agenda antes de considerar pronto
+
+---
+
+## 9. Como foi implementada (Sessão 031, 2026-07-24)
+
+**Decisões do usuário no início da conversa:** provedor **Anthropic Claude** (modelo `claude-sonnet-5`) e limite diário de **5 análises por usuário**.
+
+**Banco** — migration `009_task_images`: bucket privado `task-images` no Storage (RLS por pasta `{user_id}/...`, igual ao padrão de `avatars`) + tabela `image_analysis_usage` (um registro por *tentativa* de análise, não por importação confirmada — é isso que sustenta o limite de custo, já que o gasto acontece na chamada à API, não na confirmação da tarefa). RLS: leitura própria (a UI mostra "N análises restantes hoje"), escrita só via service role.
+
+**Edge Function `analisar-imagem-tarefas`:**
+- Checa o limite diário (janela rolante de 24h) **antes** de gastar qualquer coisa
+- Baixa a imagem do Storage com service role, converte para base64, monta um prompt em português pedindo um array JSON estrito (`title`, `subject_name`, `due_date`, `priority`, `confidence`), incluindo a data de hoje (para resolver "amanhã"/"sexta-feira") e a lista de disciplinas já cadastradas do usuário (para a IA preferir esses nomes exatos)
+- **A regra de "detalhamento incompleto" (seção 5) é aplicada de forma determinística na função**, não delegada à opinião livre do modelo — a confiança que a IA declara é só um dado a mais, não decide sozinha o que fica incompleto
+- Cada tentativa é registrada em `image_analysis_usage` (sucesso ou falha) — inclusive quando a resposta da IA não é um JSON válido
+
+**Frontend:**
+- `imageImportService.ts` — upload para o Storage, chamada da Edge Function, e **apaga a imagem do Storage logo depois da análise** (o app não precisa guardar a foto original depois de extrair as tarefas dela — nem a spec original pedia retenção)
+- `ImportarImagemModal.tsx` — mesmo padrão visual do `ImportarPlanilhaModal`, com `<input accept="image/*" capture="environment">` (abre a câmera no celular, seletor de arquivo no desktop). Cards com badge verde (pronta) ou âmbar (falta detalhar); botão único "Importar prontas" para as completas, botão "Completar" por card nas incompletas
+- `TarefaForm.tsx` ganhou dois pontos de extensão: prop `initial` (pré-preenche título/disciplina/data/prioridade na criação) e prop `onSalvou` (chamada só quando uma tarefa NOVA é criada com sucesso — usada para tirar aquele candidato da lista pendente do modal sem depender de inferir "salvou vs. cancelou" a partir do `onClose`, que é chamado nos dois casos)
+- Botão "Importar por foto" ao lado do "Importar" (planilha) em `Tarefas.tsx`
+
+**Diferença do plano original:** a especificação não detalhava o que fazer com a imagem depois da análise. Decisão tomada na implementação: apagar sempre, sucesso ou erro — é o comportamento mais simples e mais respeitoso com o dado (fotos de agenda/quadro de avisos podem conter nome de outros alunos, endereço da escola etc.).
+
+**Pendência do usuário:** gerar a `ANTHROPIC_API_KEY` no [console da Anthropic](https://console.anthropic.com) e configurar como secret no painel do Supabase. Sem ela a função responde `chave_ia_nao_configurada` e nenhuma chamada paga é feita.

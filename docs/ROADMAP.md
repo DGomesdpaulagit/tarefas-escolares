@@ -19,15 +19,19 @@ No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo 
 
 **Provedor de e-mail definido: Resend** (Sessão 029). Nenhuma decisão pendente — a v4 está pronta para começar. Primeiro passo: usuário gera a API key no Resend e configura como secret `RESEND_API_KEY` no Supabase. Pendência prática a resolver durante a implementação: o domínio remetente (começar com o domínio de teste do Resend, avaliar comprar domínio próprio depois — ver seção 6 da especificação).
 
-## v5.0 — Planejado (Sessão 029, 2026-07-23)
+## v5.0 — ✅ IMPLEMENTADA (Sessão 031, 2026-07-24)
+
+Banco (bucket `task-images` + `image_analysis_usage`), Edge Function `analisar-imagem-tarefas` e todo o frontend estão no ar. Provedor: **Anthropic Claude** (`claude-sonnet-5`), limite de **5 análises/dia por usuário**. **Falta só a `ANTHROPIC_API_KEY`**, que só o usuário pode gerar e configurar como secret no painel do Supabase — sem ela a função responde `chave_ia_nao_configurada` sem gastar nada.
+
+Descrição original do planejamento abaixo, mantida como referência (seção 9 da especificação registra o que saiu diferente):
+
+---
 
 ### 🎯 Recurso principal: registro de tarefas por imagem (análise por IA)
 
 Usuário tira uma foto/print do quadro de avisos, agenda escolar em papel ou mensagem da escola, e o app usa análise de IA sobre a imagem pra identificar e sugerir as tarefas automaticamente — com o mesmo fluxo de revisão já usado na importação de planilha. Se uma tarefa extraída vier incompleta (sem data, sem matéria, título vago), o app recomenda ativamente que o usuário complete o detalhamento antes de salvar.
 
-**Especificação técnica completa:** [`docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`](./V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md) — arquitetura (Storage + Edge Function + provedor de IA de visão), decisão pendente de provedor (Claude/GPT-4/Gemini — requer API key do usuário), regras de "detalhamento incompleto", e checklist de implementação passo a passo.
-
-- [ ] Ver especificação completa e decidir provedor de IA de visão antes de começar
+**Especificação técnica completa:** [`docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`](./V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md) — arquitetura (Storage + Edge Function + provedor de IA de visão), regras de "detalhamento incompleto", e o que foi implementado (seção 9).
 
 ### Outras melhorias candidatas para v5
 

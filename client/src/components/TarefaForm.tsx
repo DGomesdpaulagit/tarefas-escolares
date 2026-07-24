@@ -22,6 +22,15 @@ import { useIdioma } from "@/contexts/LanguageContext";
 interface TarefaFormProps {
   tarefa?: Tarefa;
   initialDueDate?: string;
+  /** Pré-preenche a criação com o que já foi identificado (ex: análise de imagem por IA). */
+  initial?: Partial<{
+    title: string;
+    subject_name: string;
+    due_date: string;
+    priority: PrioridadeTarefa;
+  }>;
+  /** Chamado só quando uma tarefa NOVA é criada com sucesso (não em edição, nem ao cancelar). */
+  onSalvou?: () => void;
   onClose: () => void;
 }
 
@@ -34,7 +43,7 @@ const STATUS_OPTIONS: StatusTarefa[] = [
 
 const PRIORIDADE_OPTIONS: PrioridadeTarefa[] = ["Alta", "Média", "Baixa"];
 
-export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFormProps) {
+export default function TarefaForm({ tarefa, initialDueDate, initial, onSalvou, onClose }: TarefaFormProps) {
   const { adicionarTarefa, atualizarTarefa, removerTarefa, toggleConcluida } = useTarefas();
   const { disciplinas } = useDisciplinas();
   const { t } = useIdioma();
@@ -54,14 +63,14 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
   })();
 
   const [form, setForm] = useState({
-    title: tarefa?.title ?? "",
-    subject_name: tarefa?.subject_name ?? "Português",
+    title: tarefa?.title ?? initial?.title ?? "",
+    subject_name: tarefa?.subject_name ?? initial?.subject_name ?? "Português",
     subject_id: tarefa?.subject_id ?? null,
     status: tarefa?.status ?? ("Não iniciada" as StatusTarefa),
-    priority: tarefa?.priority ?? ("Média" as PrioridadeTarefa),
+    priority: tarefa?.priority ?? initial?.priority ?? ("Média" as PrioridadeTarefa),
     sector: tarefa?.sector ?? "Trabalho",
     origin: tarefa?.origin ?? "SALA",
-    due_date: tarefa?.due_date ?? initialDueDate ?? "",
+    due_date: tarefa?.due_date ?? initial?.due_date ?? initialDueDate ?? "",
     progress: tarefa?.progress ?? 0,
     notes: tarefa?.notes ?? "",
     link: tarefa?.link ?? "",
@@ -143,6 +152,7 @@ export default function TarefaForm({ tarefa, initialDueDate, onClose }: TarefaFo
         await adicionarTarefa(payload);
         soundService.playAdicionada();
         toast.success(t("tarefaForm.toastAdicionada"));
+        onSalvou?.();
       }
       onClose();
     } catch {

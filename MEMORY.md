@@ -447,13 +447,25 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-### 🔴 AÇÃO PENDENTE DO USUÁRIO (bloqueia o envio real da v4.0)
+### 🔴 DUAS AÇÕES PENDENTES DO USUÁRIO (bloqueiam envio/análise reais)
 
-Gerar a API key no [Resend](https://resend.com) e configurar como secret **`RESEND_API_KEY`** no painel do Supabase (Edge Functions → Secrets). Ele mesmo faz isso — a chave nunca deve ser colada no chat nem versionada. Enquanto não existir, o relatório mensal falha e registra `RESEND_API_KEY nao configurada` em `guardian_reports_log`; todo o resto do fluxo já está funcionando.
+1. **v4.0 (relatório ao responsável):** gerar a API key no [Resend](https://resend.com) e configurar como secret **`RESEND_API_KEY`** no painel do Supabase (Edge Functions → Secrets). Enquanto não existir, o relatório mensal falha e registra `RESEND_API_KEY nao configurada` em `guardian_reports_log`. Opcional, na mesma tela: `EMAIL_FROM` (default `Tarefas Escolares <onboarding@resend.dev>`) e `APP_URL` (default `https://tarefas-escolares-five.vercel.app`). Lembrete: o domínio de teste do Resend só entrega para o e-mail dono da conta — comprar domínio próprio (~R$40/ano) só depois do fluxo validado ponta a ponta.
 
-Opcional, na mesma tela: `EMAIL_FROM` (default `Tarefas Escolares <onboarding@resend.dev>`) e `APP_URL` (default `https://tarefas-escolares-five.vercel.app`).
+2. **v5.0 (registro de tarefas por imagem):** gerar a API key no [console da Anthropic](https://console.anthropic.com) e configurar como secret **`ANTHROPIC_API_KEY`** no painel do Supabase. Enquanto não existir, `analisar-imagem-tarefas` responde `chave_ia_nao_configurada` sem gastar nada.
 
-Lembrete: o domínio de teste do Resend só entrega para o e-mail dono da conta. Comprar domínio próprio (~R$40/ano) só depois do fluxo validado ponta a ponta.
+Nos dois casos: a chave nunca deve ser colada no chat nem versionada — o usuário configura direto no painel.
+
+### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
+
+Especificação: `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` (seção 9 registra o que foi decidido e o que saiu diferente). Decisões do usuário: provedor **Anthropic Claude** (`claude-sonnet-5`), limite de **5 análises/dia por usuário**.
+
+**Banco** — migration `009_task_images`: bucket privado `task-images` (RLS por pasta `{user_id}/...`) + `image_analysis_usage` (um registro por tentativa de análise, não por importação confirmada — sustenta o limite de custo).
+
+**Edge Function** — `analisar-imagem-tarefas`: checa limite antes de gastar, baixa a imagem do Storage, chama o Claude com prompt estruturado, aplica a regra de "detalhamento incompleto" **deterministicamente no código** (não delega à confiança que o modelo declara).
+
+**Frontend** — `imageImportService.ts` (apaga a imagem do Storage logo após a análise, sucesso ou erro — decisão tomada na implementação, a spec original não cobria isso), `ImportarImagemModal.tsx`, `TarefaForm.tsx` ganhou `initial`/`onSalvou` para o fluxo de completar tarefas incompletas, botão em `Tarefas.tsx`, ~30 chaves i18n.
+
+**Não testado ponta a ponta** (login e chave de API indisponíveis nesta sessão): o fluxo real de foto → análise → revisão → importação. Backend verificado por outras vias (401 sem auth, bucket privado, policies corretas).
 
 ### ✅ v4.0 IMPLEMENTADA — Relatório mensal para o responsável (Sessão 030, 2026-07-24)
 
