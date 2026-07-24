@@ -13,9 +13,25 @@ Lido automaticamente no início de cada nova conversa.
 ---
 
 ## ETAPA ATUAL: Etapa 17 - v3.0 (Mesada + Tutorial, agora em `main`) / i18n real
-## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo (páginas + modais + tutorial) + deploy de produção validado ✅ CONCLUÍDA
+## SESSÃO ATUAL: [Sessão 029] - Merge para main + i18n completo + deploy validado + planejamento v5.0 ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app com `VITE_ENABLE_MESADA_MODULE=true` ativa em produção + i18n real com cobertura completa (todas as páginas, todos os modais, tutorial guiado e Visão Geral revisada)
+## STATUS DO PROJETO: 🎉 v2.1.0 base estável + v3.0 (Mesada + Tutorial) MESCLADA em `main`, publicada em tarefas-escolares-five.vercel.app com `VITE_ENABLE_MESADA_MODULE=true` ativa em produção + i18n real com cobertura completa + planejamento da v5.0 registrado
+
+---
+
+## [Etapa 17 / Sessão 029m] - Planejamento v5.0: registro de tarefas por imagem (IA) + lista de melhorias
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída (planejamento — sem código)
+
+### O que foi feito
+Ao encerrar a sessão, usuário pediu duas coisas: (1) um recurso novo — registrar tarefas a partir de foto/print analisada por IA, recomendando o usuário detalhar mais quando a tarefa extraída vier incompleta; (2) uma lista de melhorias para a v5.0. Dado o tamanho do recurso de imagem (precisa de Storage bucket novo, Edge Function nova, decisão de provedor de IA de visão e API key que só o usuário pode configurar), a implementação ficou para a próxima conversa — feito o planejamento completo:
+
+- **`docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`** (novo, mesmo padrão do `V3_ESPECIFICACAO_MODULO_MESADA.md`) — arquitetura completa (upload → Storage → Edge Function → API de visão → tela de revisão reaproveitando o padrão do `ImportarPlanilhaModal.tsx`), decisão pendente de provedor (Claude/GPT-4/Gemini), regras exatas de quando uma tarefa extraída é considerada "incompleta" e precisa de recomendação de detalhamento, e checklist de implementação passo a passo
+- **`docs/ROADMAP.md`** — nova seção "v5.0 — Planejado" no topo do arquivo, com o recurso de imagem como destaque + 8 outras melhorias candidatas (assistente de estudos por IA, resumo semanal automático, PWA offline completo, exportar Agenda para `.ics`, heatmap de conclusão, metas por período, compartilhamento de tarefa avulsa via link). Também atualizados dois itens antigos da seção "v3.0 — Visão de Longo Prazo" que já estavam desatualizados: OCR marcado como superado pela nova especificação, multi-idioma marcado como entregue
+
+### Próximo passo
+Próxima conversa: decidir o provedor de IA de visão com o usuário (isso precisa de uma API key que ele mesmo vai configurar como secret no Supabase, nunca colada em chat) e seguir o checklist do documento de especificação.
 
 ---
 

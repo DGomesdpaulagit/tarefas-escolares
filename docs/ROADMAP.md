@@ -1,5 +1,29 @@
 # Roadmap — Tarefas Escolares
 
+## v5.0 — Planejado (Sessão 029, 2026-07-23)
+
+Lista de melhorias levantada ao final da Sessão 029, a pedido do usuário ("quero que crie uma lista de melhorias para o v.5"). Nenhuma implementada ainda — fica para uma próxima conversa.
+
+### 🎯 Recurso principal: registro de tarefas por imagem (análise por IA)
+
+Usuário tira uma foto/print do quadro de avisos, agenda escolar em papel ou mensagem da escola, e o app usa análise de IA sobre a imagem pra identificar e sugerir as tarefas automaticamente — com o mesmo fluxo de revisão já usado na importação de planilha. Se uma tarefa extraída vier incompleta (sem data, sem matéria, título vago), o app recomenda ativamente que o usuário complete o detalhamento antes de salvar.
+
+**Especificação técnica completa:** [`docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`](./V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md) — arquitetura (Storage + Edge Function + provedor de IA de visão), decisão pendente de provedor (Claude/GPT-4/Gemini — requer API key do usuário), regras de "detalhamento incompleto", e checklist de implementação passo a passo.
+
+- [ ] Ver especificação completa e decidir provedor de IA de visão antes de começar
+
+### Outras melhorias candidatas para v5
+
+- [ ] **Assistente de estudos por IA** — dado o histórico de desempenho (Métricas), sugerir automaticamente em quais matérias focar essa semana
+- [ ] **Resumo semanal automático** — notificação/email no domingo à noite com o que vem pela frente na semana
+- [ ] **Modo offline (PWA completo)** — cache de tarefas via Service Worker para uso sem internet, sincronizando quando a conexão voltar
+- [ ] **Exportar Agenda para o calendário do celular** — gerar arquivo `.ics` a partir das tarefas com prazo, importável no Google Calendar/Apple Calendar
+- [ ] **Widget de tarefas do dia** — versão simplificada da Visão Geral pensada para tela de bloqueio/widget do celular (PWA installable já existe; isso é sobre um recorte de dados mais enxuto)
+- [ ] **Histórico de conclusão em gráfico de calor (heatmap)** — visualização estilo GitHub contributions, mostrando os dias mais produtivos do mês/ano
+- [ ] **Metas por período** — usuário define uma meta de tarefas concluídas por semana/mês e acompanha o progresso
+- [ ] **Compartilhamento de tarefa avulsa** — gerar link de leitura (sem exigir login) para um responsável acompanhar uma tarefa específica, sem abrir mão de RLS no resto do app
+- [ ] Itens antigos ainda pendentes da lista de longo prazo (ver seção "v3.0 — Visão de Longo Prazo" abaixo): drag & drop, tarefas recorrentes, tags customizáveis, integração com Google Calendar
+
 ## v3.0 — Módulo de Mesada + Tutorial guiado (branch pessoal `v3-mesada-pessoal`, Sessão 028 — 2026-07-22) ✅ CONCLUÍDA
 
 **Uso exclusivamente pessoal — não publicar em `main`.**
@@ -155,7 +179,7 @@
 - [ ] App mobile (React Native ou PWA)
 - [ ] Integração com Google Calendar
 - [ ] Integração com Microsoft Teams
-- [ ] OCR — fotografar quadro-negro para criar tarefa
+- [x] OCR — fotografar quadro-negro para criar tarefa — **superado pela especificação completa da v5.0**, ver seção no topo deste arquivo e `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`
 - [ ] IA — sugestão de prioridade automática
-- [ ] Multi-idioma completo
+- [x] Multi-idioma completo — entregue na Sessão 029 (i18n real pt-BR/en/es, cobertura completa de páginas, modais, componentes e tutorial guiado)
 - [ ] Plano Pro com funcionalidades avançadas
