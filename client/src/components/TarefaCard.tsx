@@ -226,7 +226,7 @@ export default function TarefaCard({ tarefa, index }: TarefaCardProps) {
                 style={{ color: diasColor }}
               >
                 <Clock size={11} aria-hidden="true" />
-                <span>{labelDiasRestantes(diasRestantes)}</span>
+                <span>{labelDiasRestantes(diasRestantes, t)}</span>
               </div>
             )}
 

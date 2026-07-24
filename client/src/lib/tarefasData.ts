@@ -1,4 +1,5 @@
 import type { StatusTarefa, PrioridadeTarefa, Tarefa } from "@/types";
+import type { DicionarioChave } from "@/lib/i18n";
 
 export type { StatusTarefa, PrioridadeTarefa };
 
@@ -57,13 +58,19 @@ export function getStatusEfetivo(tarefa: Tarefa): StatusTarefa {
 }
 
 /** Texto humano para a contagem de dias. */
-export function labelDiasRestantes(dias: number | null): string {
+export function labelDiasRestantes(dias: number | null, t: (chave: DicionarioChave) => string): string {
   if (dias === null) return "";
-  if (dias === 0) return "Último dia";
-  if (dias === 1) return "Falta 1 dia";
-  if (dias > 0) return `Faltam ${dias} dias`;
-  if (dias === -1) return "1 dia atrás";
-  return `${Math.abs(dias)} dias atrás`;
+  if (dias === 0) return t("diasRestantes.ultimoDia");
+  if (dias === 1) return t("diasRestantes.falta1Dia");
+  if (dias > 0) {
+    return [t("diasRestantes.faltamPrefix"), String(dias), t("diasRestantes.diasPalavra"), t("diasRestantes.faltamSuffix")]
+      .filter(Boolean)
+      .join(" ");
+  }
+  if (dias === -1) return t("diasRestantes.umDiaAtras");
+  return [t("diasRestantes.atrasPrefix"), String(Math.abs(dias)), t("diasRestantes.diasPalavra"), t("diasRestantes.atrasSuffix")]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export const MATERIAS_CORES: Record<string, string> = {

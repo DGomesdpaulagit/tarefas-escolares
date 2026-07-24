@@ -203,7 +203,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
             className="lg:col-span-2"
           >
             {proximosPrazos.length === 0 ? (
-              <EmptyMini texto="Sem prazos próximos — você está em dia!" />
+              <EmptyMini texto={t("visaoGeral.semPrazosProximos")} />
             ) : (
               <div className="space-y-2">
                 {proximosPrazos.map((t) => (
@@ -231,7 +231,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
             }
           >
             {expiradas.length === 0 ? (
-              <EmptyMini texto="Nenhuma tarefa expirada 🎉" />
+              <EmptyMini texto={t("visaoGeral.nenhumaExpirada")} />
             ) : (
               <div className="space-y-2">
                 {expiradas.map((t) => (
@@ -263,7 +263,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
             }
           >
             {disciplinasResumo.length === 0 ? (
-              <EmptyMini texto="Adicione suas primeiras disciplinas para começar" />
+              <EmptyMini texto={t("visaoGeral.adicionePrimeirasDisciplinas")} />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                 {disciplinasResumo.map((d) => (
@@ -284,8 +284,8 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
                     </p>
                     <p className="text-[10px] text-slate-500">
                       {d.pendentes === 0
-                        ? "Em dia"
-                        : `${d.pendentes} pendente${d.pendentes !== 1 ? "s" : ""}`}
+                        ? t("visaoGeral.emDia")
+                        : `${d.pendentes} ${t(d.pendentes !== 1 ? "visaoGeral.pendentesPlural" : "visaoGeral.pendenteSingular")}`}
                     </p>
                   </button>
                 ))}
@@ -330,8 +330,8 @@ function CardProgressoSemana({
       </div>
       <p className="text-xs text-slate-500 mb-4">
         {total === 0
-          ? "Nenhuma tarefa programada para esta semana"
-          : `Você concluiu ${concluidas} de ${total} tarefas`}
+          ? t("visaoGeral.semanaVazia")
+          : `${t("visaoGeral.voceConcluiu")} ${concluidas} ${t("visaoGeral.de")} ${total} ${t(total !== 1 ? "tarefas.tarefaPlural" : "tarefas.tarefaSingular")}`}
       </p>
 
       <div className="flex items-center gap-5">
@@ -341,19 +341,19 @@ function CardProgressoSemana({
         {/* Stats */}
         <div className="flex-1 space-y-2">
           <StatLinha
-            label="Concluídas"
+            label={t("sidebar.concluidas")}
             valor={concluidas}
             color="#10b981"
             icon={<CheckCircle2 size={11} />}
           />
           <StatLinha
-            label="Pendentes"
+            label={t("sidebar.pendentes")}
             valor={pendentes}
             color="#f59e0b"
             icon={<Clock size={11} />}
           />
           <StatLinha
-            label="Total da semana"
+            label={t("visaoGeral.totalDaSemana")}
             valor={total}
             color="#94a3b8"
             icon={<CalendarDays size={11} />}
@@ -365,6 +365,7 @@ function CardProgressoSemana({
 }
 
 function RingProgress({ percentual }: { percentual: number }) {
+  const { t } = useIdioma();
   const size = 110;
   const stroke = 9;
   const r = (size - stroke) / 2;
@@ -399,7 +400,7 @@ function RingProgress({ percentual }: { percentual: number }) {
         <span className="text-2xl font-bold text-amber-400 font-['Space_Grotesk'] leading-none">
           {percentual}%
         </span>
-        <span className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">concluído</span>
+        <span className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">{t("visaoGeral.concluidoRing")}</span>
       </div>
     </div>
   );
@@ -452,12 +453,12 @@ function CardDesempenho({
           {t("visaoGeral.desempenhoGeral")}
         </h3>
       </div>
-      <p className="text-xs text-slate-500 mb-4">Sua produtividade desde o início</p>
+      <p className="text-xs text-slate-500 mb-4">{t("visaoGeral.produtividadeDesdeInicio")}</p>
 
       <div className="space-y-3">
         <div>
           <div className="flex justify-between items-baseline mb-1.5">
-            <span className="text-xs text-slate-500">Taxa de conclusão</span>
+            <span className="text-xs text-slate-500">{t("visaoGeral.taxaConclusao")}</span>
             <span className="text-xl font-bold text-amber-400 font-['Space_Grotesk'] leading-none">
               {taxa}%
             </span>
@@ -471,15 +472,15 @@ function CardDesempenho({
         </div>
 
         <div className="grid grid-cols-3 gap-2 pt-1">
-          <MiniStat valor={concluidas} label="Feitas" color="#10b981" />
-          <MiniStat valor={ativas} label="Ativas" color="#f59e0b" />
-          <MiniStat valor={expiradasTotal} label="Expiradas" color="#ef4444" />
+          <MiniStat valor={concluidas} label={t("visaoGeral.feitas")} color="#10b981" />
+          <MiniStat valor={ativas} label={t("visaoGeral.ativas")} color="#f59e0b" />
+          <MiniStat valor={expiradasTotal} label={t("visaoGeral.expiradas")} color="#ef4444" />
         </div>
 
         <p className="text-[10px] text-slate-500 text-center pt-1">
           {total === 0
-            ? "Adicione sua primeira tarefa para começar"
-            : `${total} tarefa${total !== 1 ? "s" : ""} no total`}
+            ? t("visaoGeral.adicionePrimeiraTarefa")
+            : `${total} ${t(total !== 1 ? "tarefas.tarefaPlural" : "tarefas.tarefaSingular")} ${t("visaoGeral.noTotal")}`}
         </p>
       </div>
     </div>
@@ -550,6 +551,7 @@ function LinhaTarefa({
   emoji: string;
   onClick: () => void;
 }) {
+  const { t } = useIdioma();
   const eff = getStatusEfetivo(tarefa);
   const expirada = eff === "Passou do Prazo";
   const dias = diasAteVencimento(tarefa.due_date);
@@ -589,7 +591,7 @@ function LinhaTarefa({
                 className="text-[11px] font-medium"
                 style={{ color: expirada ? "#ef4444" : urgente ? "#ef4444" : "#94a3b8" }}
               >
-                {labelDiasRestantes(dias)}
+                {labelDiasRestantes(dias, t)}
               </span>
             </>
           )}

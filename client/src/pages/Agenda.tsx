@@ -433,6 +433,7 @@ function MiniCard({
   emoji: string;
   onClick: () => void;
 }) {
+  const { t } = useIdioma();
   const eff = getStatusEfetivo(tarefa);
   const expirada = eff === "Passou do Prazo";
   const concluida = eff === "Concluída";
@@ -458,7 +459,7 @@ function MiniCard({
         borderColor: expirada ? undefined : `${cor}35`,
       }}
       aria-label={`${tarefa.title} — ${tarefa.subject_name}`}
-      title={`${tarefa.title}${labelDiasRestantes(dias) ? " — " + labelDiasRestantes(dias) : ""}`}
+      title={`${tarefa.title}${labelDiasRestantes(dias, t) ? " — " + labelDiasRestantes(dias, t) : ""}`}
     >
       <div className="flex items-start gap-1 sm:gap-1.5">
         <span className="text-sm sm:text-base leading-tight shrink-0" aria-hidden="true">
