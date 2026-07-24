@@ -18,25 +18,37 @@ Resumo em requisitos:
 | R1 | No **onboarding** (primeiro acesso), o usuário pode cadastrar o e-mail de um responsável |
 | R2 | Todo **dia 25**, um relatório do mês é enviado automaticamente para esse e-mail |
 | R3 | O relatório traz: total de tarefas do mês, quantas foram concluídas, quantas expiraram sem conclusão, quantas ainda estão pendentes, e o total geral |
-| R4 | Em **Configurações**, o usuário pode editar ou excluir o e-mail do responsável — mas **só efetiva após autorização confirmada por e-mail enviado ao responsável** |
+| R4 | As **três** operações sobre o e-mail do responsável — **cadastrar** (quando ainda não existe), **editar** e **excluir** — só efetivam após verificação por **código enviado ao e-mail do responsável** |
 
 ---
 
-## 2. Ponto de atenção antes de implementar (decisão do usuário necessária)
+## 2. Verificação por código — DECIDIDO (Sessão 029, 2026-07-23)
 
-O requisito R4 protege bem contra o usuário **remover** o acompanhamento sem o responsável saber. Mas, do jeito que está descrito, o **cadastro inicial (R1) não tem verificação nenhuma** — o que abre dois problemas reais:
+Ponto levantado na sessão anterior: se só editar/excluir exigissem verificação, um e-mail digitado errado no cadastro mandaria dados escolares para um estranho todo mês, **sem possibilidade de correção** (corrigir exigiria autorização enviada justamente ao endereço errado).
 
-1. **Erro de digitação** manda relatórios com dados escolares de um estudante para um estranho, todo mês, sem que ninguém perceba.
-2. Um endereço cadastrado errado **não pode ser corrigido**, porque a correção (R4) exige autorização enviada… para o endereço errado. O usuário fica preso.
+**Decisão do usuário:** aplicar verificação nas três operações — **cadastrar, editar e excluir**. Confirmado literalmente: *"pode deixar pra cadastrar também, ent cadastrar (se não tiver) - editar - excluir. [...] Ao usuário cadastrar será enviado um código para este e-mail do responsável permitindo cadastrar. Após isso é fé, todos os dias 25 será enviado este artigo."*
 
-**Correção proposta (recomendada, decidir na próxima conversa):** aplicar **double opt-in também no cadastro inicial**. O fluxo fica:
+**Mecanismo: código, não link.** O e-mail enviado ao responsável contém um **código numérico** que o estudante digita dentro do app para efetivar a operação. Isso é melhor que um link clicável neste caso, porque o código só chega às mãos do estudante se o responsável **repassar ativamente** — ou seja, o repasse do código *é* o ato de consentimento. Um link clicável seria confirmado pelo próprio responsável, o que também funciona, mas exigiria uma página pública de retorno; o código mantém tudo dentro do app e o fluxo mais simples.
 
-- Usuário digita o e-mail no onboarding → status `pendente`
-- Um e-mail de confirmação vai para o responsável ("Fulano cadastrou você para receber relatórios mensais de acompanhamento escolar. Confirmar?")
-- Só depois do clique de confirmação o status vira `ativo` e os relatórios começam a ser enviados
-- Se não confirmar em 7 dias, o cadastro expira sozinho e o usuário pode tentar de novo (isso resolve o problema do e-mail errado)
+### Fluxo das três operações
 
-Todo e-mail enviado ao responsável deve ter um link de **descadastro em 1 clique** — quem recebe precisa poder sair sem depender do estudante.
+| Operação | Pré-condição | Para onde vai o código | Efeito ao validar |
+|---|---|---|---|
+| **Cadastrar** | Nenhum responsável cadastrado | Para o e-mail **novo** que está sendo cadastrado | `status` vira `ativo`, relatórios começam |
+| **Editar** | Já existe um responsável `ativo` | Para o e-mail **atual** (é ele quem autoriza a troca) | E-mail é substituído pelo novo, `status` segue `ativo` |
+| **Excluir** | Já existe um responsável `ativo` | Para o e-mail **atual** | Registro vira `removido`, relatórios param |
+
+**Regras do código:**
+- 6 dígitos numéricos, gerados aleatoriamente (nunca sequenciais ou derivados de dados do usuário)
+- Validade de **30 minutos**
+- Uso único — invalidado assim que usado
+- Máximo de **5 tentativas** de digitação por código; ao estourar, invalida e obriga a pedir outro
+- Limite de reenvio: no máximo 1 código a cada 60 segundos por usuário (evita usar o app como ferramenta de spam contra um terceiro)
+- **Nunca armazenar o código em texto puro** no banco — guardar apenas o hash, comparar na validação
+
+**Depois do cadastro confirmado, é automático** ("após isso é fé"): todo dia 25 o relatório sai sozinho, sem nenhuma ação do usuário ou do responsável.
+
+**Descadastro pelo próprio responsável:** todo relatório enviado deve trazer, no rodapé, um link de saída em 1 clique. Quem recebe precisa poder parar de receber sem depender do estudante — isso não conflita com o fluxo de código acima, é uma via de saída independente para quem está do outro lado.
 
 ---
 
@@ -68,16 +80,24 @@ CREATE TABLE public.guardians (
   UNIQUE (user_id)                       -- 1 responsável por usuário nesta versão
 );
 
--- Tokens de ação (confirmar cadastro / autorizar alteração / descadastrar)
-CREATE TABLE public.guardian_tokens (
-  token       text PRIMARY KEY,          -- aleatório, alta entropia
-  guardian_id uuid NOT NULL REFERENCES public.guardians(id) ON DELETE CASCADE,
+-- Códigos de verificação (cadastrar / editar / excluir)
+CREATE TABLE public.guardian_codes (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  guardian_id uuid REFERENCES public.guardians(id) ON DELETE CASCADE,  -- null no cadastro inicial
+  codigo_hash text NOT NULL,             -- HASH do código de 6 dígitos, NUNCA o código em texto puro
   acao        text NOT NULL
-              CHECK (acao IN ('confirmar', 'autorizar_alteracao', 'descadastrar')),
-  payload     jsonb,                     -- ex: { "novo_email": "..." } para alteração
-  expira_em   timestamptz NOT NULL,      -- 7 dias para confirmar, 48h para alteração
-  usado_em    timestamptz
+              CHECK (acao IN ('cadastrar', 'editar', 'excluir')),
+  payload     jsonb,                     -- ex: { "email": "..." } no cadastro/edição
+  tentativas  smallint NOT NULL DEFAULT 0,   -- invalida ao chegar em 5
+  expira_em   timestamptz NOT NULL,      -- now() + 30 minutos
+  usado_em    timestamptz,
+  criado_em   timestamptz NOT NULL DEFAULT now()
 );
+
+-- Índice para o rate limit de reenvio (1 código por minuto por usuário)
+CREATE INDEX idx_guardian_codes_rate_limit
+  ON public.guardian_codes (user_id, criado_em DESC);
 
 -- Histórico de envios (evita envio duplicado e serve de auditoria)
 CREATE TABLE public.guardian_reports_log (
@@ -92,13 +112,15 @@ CREATE TABLE public.guardian_reports_log (
 ```
 
 **RLS obrigatório em todas as três tabelas**, seguindo o padrão do resto do projeto:
-- `guardians`: usuário só lê/escreve a linha onde `user_id = auth.uid()`
-- `guardian_tokens`: **nenhum acesso pelo cliente** — só a Edge Function (service role) manipula. Token na mão do cliente derrota o propósito da autorização.
+- `guardians`: usuário lê a linha onde `user_id = auth.uid()`, mas **não escreve direto** — toda escrita passa pela Edge Function que valida o código. Se o cliente pudesse dar `UPDATE` na tabela, bastaria chamar o Supabase direto pelo console do navegador para trocar o e-mail sem código nenhum.
+- `guardian_codes`: **nenhum acesso pelo cliente, nem leitura** — só a Edge Function (service role) manipula. Se o cliente conseguisse ler essa tabela, leria o próprio código que deveria vir do responsável, e a verificação inteira viraria teatro. (Mesmo com hash: o cliente saberia da existência e poderia tentar quebrar offline.)
 - `guardian_reports_log`: usuário pode ler o histórico do próprio responsável (transparência: ele vê o que foi enviado), sem poder escrever.
 
 ---
 
-## 5. Arquitetura de envio
+## 5. Arquitetura de envio do relatório mensal
+
+*(O fluxo de verificação por código está na seção 2; esta seção cobre o envio automático do dia 25, que roda sem nenhuma interação.)*
 
 ```
 pg_cron (todo dia 25, ~08:00)
@@ -169,27 +191,33 @@ Dados a calcular para o mês de referência (do dia 1 até o dia do envio):
 
 ## 9. Checklist de implementação (para a próxima conversa)
 
-**Decisões a tomar logo no início:**
-- [ ] Confirmar com o usuário se adota o double opt-in no cadastro inicial (seção 2) — recomendado
-- [ ] Escolher o provedor de e-mail (seção 6) e o usuário gerar/configurar a API key como secret no Supabase
+**Única decisão pendente (adiada pelo usuário na Sessão 029 — resolver no início da v4):**
+- [ ] Escolher o provedor de e-mail (seção 6, Resend recomendado) e o usuário gerar/configurar a API key como secret no Supabase — nunca colada em chat, nunca em arquivo versionado
+
+*(A verificação por código nas três operações já está decidida — ver seção 2.)*
 
 **Banco:**
-- [ ] Migration `008_guardian_reports.sql` — tabelas `guardians`, `guardian_tokens`, `guardian_reports_log` + RLS nas três
+- [ ] Migration `008_guardian_reports.sql` — tabelas `guardians`, `guardian_codes`, `guardian_reports_log` + RLS nas três (atenção à seção 4: cliente não escreve em `guardians` e não acessa `guardian_codes` de forma alguma)
 
-**Backend:**
-- [ ] Edge Function `enviar-relatorio-responsavel` — agregação dos dados + montagem do texto + envio + log (modelo: `send-notifications/index.ts`)
-- [ ] Edge Function `guardian-action` — endpoint público que recebe `?token=...` e executa confirmar / autorizar alteração / descadastrar; valida expiração e uso único
+**Backend (Edge Functions):**
+- [ ] `guardian-request-code` — recebe a ação (`cadastrar`/`editar`/`excluir`) + e-mail quando aplicável; valida rate limit de 60s; gera código de 6 dígitos; grava só o hash; envia o e-mail ao responsável
+- [ ] `guardian-verify-code` — recebe o código digitado; valida expiração, uso único e limite de 5 tentativas; executa a operação em `guardians`
+- [ ] `enviar-relatorio-responsavel` — agregação dos dados + montagem do texto + envio + log (modelo: `send-notifications/index.ts`)
+- [ ] `guardian-unsubscribe` — endpoint público do link de saída no rodapé do relatório (funciona sem login, é o responsável clicando)
 - [ ] Agendamento no Supabase Cron: `0 8 25 * *`
-- [ ] Template de e-mail HTML no visual Academic Dark (`#0f1117` / `#f59e0b`), responsivo, com link de descadastro no rodapé
+- [ ] Templates de e-mail HTML no visual Academic Dark (`#0f1117` / `#f59e0b`), responsivos: um para o código de verificação, um para o relatório mensal (este com o link de descadastro no rodapé)
 
 **Frontend:**
 - [ ] `guardianService.ts` — camada de serviço seguindo o padrão dos outros services
+- [ ] Componente de entrada de código de 6 dígitos, reaproveitável nas três operações
 - [ ] Passo de cadastro do responsável no `Onboarding.tsx` — **sempre pulável**, com aviso claro de quais dados serão compartilhados
-- [ ] Seção de gestão do responsável em `Configuracoes.tsx` — mostrar status (pendente/ativo), botões de editar e excluir, ambos disparando o fluxo de autorização
-- [ ] Estado visual de "aguardando confirmação do responsável" enquanto o token não foi usado
-- [ ] Página pública de retorno do token (confirmação/descadastro) — funciona sem login
-- [ ] i18n: novas strings em pt-BR/en/es (interface + corpo dos e-mails)
+- [ ] Seção de gestão do responsável em `Configuracoes.tsx` — status atual + botões Cadastrar (se não houver) / Editar / Excluir, os três abrindo o fluxo de código
+- [ ] Estado visual de "aguardando código" com contador de expiração e botão de reenvio (desabilitado por 60s)
+- [ ] Tratamento claro dos erros: código expirado, código errado, tentativas esgotadas, reenvio cedo demais
+- [ ] i18n: novas strings em pt-BR/en/es (interface + corpo dos dois e-mails)
 
 **Fechamento:**
 - [ ] Build 0 erros + teste real de envio para um e-mail de teste antes de considerar pronto
-- [ ] Testar o fluxo completo: cadastrar → confirmar → receber relatório → tentar editar → autorizar → descadastrar
+- [ ] Testar os 3 fluxos ponta a ponta: cadastrar → código → ativo; editar → código no e-mail antigo → troca; excluir → código → parado
+- [ ] Testar os caminhos de erro: código expirado, 5 tentativas erradas, reenvio antes dos 60s
+- [ ] Testar o descadastro pelo próprio responsável via link do rodapé

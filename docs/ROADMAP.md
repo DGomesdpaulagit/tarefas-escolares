@@ -4,12 +4,13 @@
 
 ### 🎯 Recurso principal: relatório mensal de acompanhamento para o responsável
 
-No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo **dia 25**, um relatório do mês é enviado automaticamente para esse e-mail, comentando o desenvolvimento do estudante: quantas tarefas teve no mês, quantas concluiu, quantas deixou passar do prazo, quantas ainda estão pendentes, o total geral e a comparação com o mês anterior. Editar ou excluir o e-mail do responsável em Configurações exige **autorização confirmada por e-mail enviado ao próprio responsável**.
+No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo **dia 25**, um relatório do mês é enviado automaticamente para esse e-mail, comentando o desenvolvimento do estudante: quantas tarefas teve no mês, quantas concluiu, quantas deixou passar do prazo, quantas ainda estão pendentes, o total geral e a comparação com o mês anterior.
 
-**Especificação técnica completa:** [`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`](./V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md) — modelo de dados (3 tabelas + RLS), fluxo de autorização por token, Edge Functions, agendamento via pg_cron, conteúdo do relatório e checklist passo a passo.
+**As três operações sobre o e-mail — cadastrar, editar e excluir — exigem um código de 6 dígitos enviado ao e-mail do responsável.** Decidido na Sessão 029: o código só chega ao estudante se o responsável repassar, então o repasse é o próprio ato de consentimento. Depois do cadastro confirmado, é tudo automático — todo dia 25 o relatório sai sozinho.
 
-- [ ] Decidir o provedor de e-mail (Resend recomendado) — requer API key configurada pelo usuário como secret no Supabase
-- [ ] Decidir se adota double opt-in também no cadastro inicial (recomendado — ver seção 2 da especificação: sem isso, um e-mail digitado errado não tem como ser corrigido)
+**Especificação técnica completa:** [`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`](./V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md) — modelo de dados (3 tabelas + RLS), fluxo de verificação por código, 4 Edge Functions, agendamento via pg_cron, conteúdo do relatório e checklist passo a passo.
+
+- [ ] **Única decisão pendente:** provedor de e-mail (Resend recomendado) — requer API key gerada e configurada pelo usuário como secret no Supabase
 
 ## v5.0 — Planejado (Sessão 029, 2026-07-23)
 

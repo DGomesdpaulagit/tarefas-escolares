@@ -33,12 +33,16 @@ Usuário revisou a lista de melhorias da v5 criada na sessão anterior e definiu
 
 Criada a especificação técnica completa em **`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`**: modelo de dados (`guardians`, `guardian_tokens`, `guardian_reports_log` + RLS nas três), fluxo de autorização por token de uso único com expiração, duas Edge Functions novas (`enviar-relatorio-responsavel` agendada via pg_cron `0 8 25 * *`, e `guardian-action` para os links de token), conteúdo e tom do relatório, e checklist passo a passo.
 
-**Ponto levantado na especificação (decisão do usuário na próxima conversa):** o pedido original só previa verificação por e-mail para *editar/excluir*, não para *cadastrar*. Isso deixa dois furos — um e-mail digitado errado manda dados escolares para um estranho todo mês, e não tem como corrigir depois (a correção exige autorização enviada justamente para o endereço errado). Proposta registrada na seção 2 do documento: aplicar double opt-in também no cadastro inicial, com expiração em 7 dias.
+**Furo levantado na especificação e RESOLVIDO na mesma sessão:** o pedido original só previa verificação por e-mail para *editar/excluir*, não para *cadastrar* — o que deixaria um e-mail digitado errado mandando dados escolares para um estranho todo mês, sem possibilidade de correção (corrigir exigiria autorização enviada justamente ao endereço errado). **Decisão do usuário:** aplicar verificação nas três operações — cadastrar (quando não houver), editar e excluir.
+
+**Mecanismo definido pelo usuário: código, não link.** Um código de 6 dígitos é enviado ao e-mail do responsável e digitado pelo estudante dentro do app. O código só chega às mãos do estudante se o responsável repassar ativamente — o repasse *é* o consentimento. Registrado na seção 2 do documento, com as regras de segurança derivadas: validade de 30min, uso único, máx. 5 tentativas, rate limit de 1 código/60s, e **armazenar só o hash** do código. Consequência importante refletida no RLS (seção 4): o cliente não pode escrever em `guardians` nem acessar `guardian_codes` de forma alguma — senão bastaria abrir o console do navegador para trocar o e-mail sem código, ou ler o próprio código que deveria vir do responsável.
+
+Após o cadastro confirmado é automático ("após isso é fé", palavras do usuário) — todo dia 25 o relatório sai sozinho. Mantido, independente disso, um link de descadastro em 1 clique no rodapé do relatório: quem recebe precisa poder sair sem depender do estudante.
 
 `docs/ROADMAP.md` reorganizado: v4.0 no topo como "próxima a ser implementada", v5.0 logo abaixo, itens descartados registrados explicitamente para não voltarem por engano.
 
 ### Próximo passo
-Próxima conversa = **início da v4.0**. Primeiras decisões: provedor de e-mail (Resend recomendado, usuário gera e configura a API key como secret no Supabase — nunca colada em chat) e se adota o double opt-in no cadastro inicial. Depois, seguir o checklist da seção 9 do documento de especificação.
+Próxima conversa = **início da v4.0**. **Única decisão pendente** (o usuário adiou nesta sessão): escolher o provedor de e-mail (Resend recomendado) e gerar/configurar a API key como secret no Supabase — nunca colada em chat. Depois, seguir o checklist da seção 9 do documento de especificação.
 
 ---
 
