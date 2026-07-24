@@ -1,8 +1,17 @@
 # Roadmap — Tarefas Escolares
 
-## v5.0 — Planejado (Sessão 029, 2026-07-23)
+## v4.0 — PRÓXIMA A SER IMPLEMENTADA (planejada na Sessão 029, 2026-07-23)
 
-Lista de melhorias levantada ao final da Sessão 029, a pedido do usuário ("quero que crie uma lista de melhorias para o v.5"). Nenhuma implementada ainda — fica para uma próxima conversa.
+### 🎯 Recurso principal: relatório mensal de acompanhamento para o responsável
+
+No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo **dia 25**, um relatório do mês é enviado automaticamente para esse e-mail, comentando o desenvolvimento do estudante: quantas tarefas teve no mês, quantas concluiu, quantas deixou passar do prazo, quantas ainda estão pendentes, o total geral e a comparação com o mês anterior. Editar ou excluir o e-mail do responsável em Configurações exige **autorização confirmada por e-mail enviado ao próprio responsável**.
+
+**Especificação técnica completa:** [`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`](./V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md) — modelo de dados (3 tabelas + RLS), fluxo de autorização por token, Edge Functions, agendamento via pg_cron, conteúdo do relatório e checklist passo a passo.
+
+- [ ] Decidir o provedor de e-mail (Resend recomendado) — requer API key configurada pelo usuário como secret no Supabase
+- [ ] Decidir se adota double opt-in também no cadastro inicial (recomendado — ver seção 2 da especificação: sem isso, um e-mail digitado errado não tem como ser corrigido)
+
+## v5.0 — Planejado (Sessão 029, 2026-07-23)
 
 ### 🎯 Recurso principal: registro de tarefas por imagem (análise por IA)
 
@@ -14,15 +23,14 @@ Usuário tira uma foto/print do quadro de avisos, agenda escolar em papel ou men
 
 ### Outras melhorias candidatas para v5
 
-- [ ] **Assistente de estudos por IA** — dado o histórico de desempenho (Métricas), sugerir automaticamente em quais matérias focar essa semana
 - [ ] **Resumo semanal automático** — notificação/email no domingo à noite com o que vem pela frente na semana
 - [ ] **Modo offline (PWA completo)** — cache de tarefas via Service Worker para uso sem internet, sincronizando quando a conexão voltar
 - [ ] **Exportar Agenda para o calendário do celular** — gerar arquivo `.ics` a partir das tarefas com prazo, importável no Google Calendar/Apple Calendar
 - [ ] **Widget de tarefas do dia** — versão simplificada da Visão Geral pensada para tela de bloqueio/widget do celular (PWA installable já existe; isso é sobre um recorte de dados mais enxuto)
-- [ ] **Histórico de conclusão em gráfico de calor (heatmap)** — visualização estilo GitHub contributions, mostrando os dias mais produtivos do mês/ano
-- [ ] **Metas por período** — usuário define uma meta de tarefas concluídas por semana/mês e acompanha o progresso
 - [ ] **Compartilhamento de tarefa avulsa** — gerar link de leitura (sem exigir login) para um responsável acompanhar uma tarefa específica, sem abrir mão de RLS no resto do app
 - [ ] Itens antigos ainda pendentes da lista de longo prazo (ver seção "v3.0 — Visão de Longo Prazo" abaixo): drag & drop, tarefas recorrentes, tags customizáveis, integração com Google Calendar
+
+**Descartados pelo usuário (Sessão 029, não implementar):** assistente de estudos por IA sugerindo matérias para focar; heatmap de conclusão estilo GitHub contributions; metas por período.
 
 ## v3.0 — Módulo de Mesada + Tutorial guiado (branch pessoal `v3-mesada-pessoal`, Sessão 028 — 2026-07-22) ✅ CONCLUÍDA
 

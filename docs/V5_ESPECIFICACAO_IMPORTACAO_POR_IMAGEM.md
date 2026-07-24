@@ -3,6 +3,7 @@
 **Documento de planejamento para iniciar uma NOVA conversa.**
 **Criado em:** 2026-07-23
 **Status:** Planejado, nenhum código implementado ainda.
+**Ordem de execução:** esta é a **v5.0** — vem DEPOIS da v4.0 (relatório mensal para o responsável, ver `V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`).
 
 ---
 

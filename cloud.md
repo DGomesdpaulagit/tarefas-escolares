@@ -19,6 +19,29 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
+## [Etapa 17 / Sessão 029n] - Planejamento v4.0: relatório mensal para o responsável + curadoria da lista v5
+**Data:** 2026-07-23
+**Branch:** `main`
+**Status:** ✅ Concluída (planejamento — sem código)
+
+### O que foi feito
+Usuário revisou a lista de melhorias da v5 criada na sessão anterior e definiu o escopo real:
+
+**Descartados da v5** (não implementar): assistente de estudos por IA, heatmap de conclusão estilo GitHub, metas por período.
+
+**Novo recurso, promovido a v4.0** (vem ANTES do registro por imagem): relatório mensal de acompanhamento enviado ao responsável. Usuário cadastra o e-mail do responsável no primeiro acesso; todo dia 25 um relatório do mês é enviado automaticamente (total de tarefas, concluídas, expiradas, pendentes, total geral); editar/excluir esse e-mail em Configurações exige autorização confirmada por e-mail enviado ao próprio responsável.
+
+Criada a especificação técnica completa em **`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`**: modelo de dados (`guardians`, `guardian_tokens`, `guardian_reports_log` + RLS nas três), fluxo de autorização por token de uso único com expiração, duas Edge Functions novas (`enviar-relatorio-responsavel` agendada via pg_cron `0 8 25 * *`, e `guardian-action` para os links de token), conteúdo e tom do relatório, e checklist passo a passo.
+
+**Ponto levantado na especificação (decisão do usuário na próxima conversa):** o pedido original só previa verificação por e-mail para *editar/excluir*, não para *cadastrar*. Isso deixa dois furos — um e-mail digitado errado manda dados escolares para um estranho todo mês, e não tem como corrigir depois (a correção exige autorização enviada justamente para o endereço errado). Proposta registrada na seção 2 do documento: aplicar double opt-in também no cadastro inicial, com expiração em 7 dias.
+
+`docs/ROADMAP.md` reorganizado: v4.0 no topo como "próxima a ser implementada", v5.0 logo abaixo, itens descartados registrados explicitamente para não voltarem por engano.
+
+### Próximo passo
+Próxima conversa = **início da v4.0**. Primeiras decisões: provedor de e-mail (Resend recomendado, usuário gera e configura a API key como secret no Supabase — nunca colada em chat) e se adota o double opt-in no cadastro inicial. Depois, seguir o checklist da seção 9 do documento de especificação.
+
+---
+
 ## [Etapa 17 / Sessão 029m] - Planejamento v5.0: registro de tarefas por imagem (IA) + lista de melhorias
 **Data:** 2026-07-23
 **Branch:** `main`
