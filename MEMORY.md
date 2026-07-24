@@ -447,13 +447,15 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ## 22. Próximo Passo Exato
 
-### 🔴 DUAS AÇÕES PENDENTES DO USUÁRIO (bloqueiam envio/análise reais)
+### ✅ v4.0 — RESEND_API_KEY configurada e testada de ponta a ponta (2026-07-24)
 
-1. **v4.0 (relatório ao responsável):** gerar a API key no [Resend](https://resend.com) e configurar como secret **`RESEND_API_KEY`** no painel do Supabase (Edge Functions → Secrets). Enquanto não existir, o relatório mensal falha e registra `RESEND_API_KEY nao configurada` em `guardian_reports_log`. Opcional, na mesma tela: `EMAIL_FROM` (default `Tarefas Escolares <onboarding@resend.dev>`) e `APP_URL` (default `https://tarefas-escolares-five.vercel.app`). Lembrete: o domínio de teste do Resend só entrega para o e-mail dono da conta — comprar domínio próprio (~R$40/ano) só depois do fluxo validado ponta a ponta.
+Usuário criou a conta Resend e configurou o secret. Testado com um responsável real (o próprio e-mail do usuário, `daviphone22@gmail.com` — mesma conta do Resend, obrigatório enquanto for o domínio de teste `onboarding@resend.dev`, que só entrega para o dono da conta): relatório mensal chegou de verdade na caixa de entrada, e o link de descadastro do rodapé foi confirmado funcionando em produção (`tarefas-escolares-five.vercel.app/descadastrar`). Dados de teste removidos do banco depois.
 
-2. **v5.0 (registro de tarefas por imagem):** gerar a API key no [console da Anthropic](https://console.anthropic.com) e configurar como secret **`ANTHROPIC_API_KEY`** no painel do Supabase. Enquanto não existir, `analisar-imagem-tarefas` responde `chave_ia_nao_configurada` sem gastar nada.
+**Pendência real:** se um dia o e-mail do responsável for de outra pessoa (não o dono da conta Resend), é preciso configurar domínio próprio verificado no Resend antes — o teste de hoje só provou o caminho com o domínio de teste.
 
-Nos dois casos: a chave nunca deve ser colada no chat nem versionada — o usuário configura direto no painel.
+### 🟡 v5.0 (registro de tarefas por imagem) — PARADA por decisão do usuário, sem orçamento
+
+Usuário decidiu **não** configurar a `ANTHROPIC_API_KEY` por enquanto: a API da Anthropic exige cartão de crédito/saldo pago, e ele não tem orçamento para isso agora ("não ent deixa quieto tem que pagar não tenho orçamento para isso" — 2026-07-24). **Não insistir nem sugerir de novo por conta própria** — a função já está pronta e implementada, só falta a chave quando/se o usuário decidir gastar com isso. Sem a chave, `analisar-imagem-tarefas` responde `chave_ia_nao_configurada` sem cobrar nada; nenhum outro recurso do app é afetado.
 
 ### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
 

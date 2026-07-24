@@ -12,10 +12,27 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem)
-## SESSÃO ATUAL: [Sessão 031] - Implementação completa da v5.0 ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem) + validação da v4.0 em produção
+## SESSÃO ATUAL: [Sessão 032] - RESEND_API_KEY configurada e testada; ANTHROPIC_API_KEY adiada por orçamento ✅ CONCLUÍDA
 
-## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) + v4.0 (relatório ao responsável) + **v5.0 implementada** (banco, Edge Function de análise e frontend no ar) — faltam duas secrets, que só o usuário pode configurar: `RESEND_API_KEY` (v4.0) e `ANTHROPIC_API_KEY` (v5.0)
+## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) + **v4.0 testada de ponta a ponta em produção** (relatório real enviado e recebido, descadastro confirmado) + v5.0 implementada mas **parada por decisão do usuário** (sem orçamento para a API paga da Anthropic por enquanto)
+
+---
+
+## [Etapa 19 / Sessão 032] - RESEND_API_KEY configurada e testada em produção; ANTHROPIC_API_KEY adiada por orçamento
+**Data:** 2026-07-24
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Usuário configurou a `RESEND_API_KEY` no Supabase seguindo o passo a passo. Para testar de verdade, foi cadastrado temporariamente um responsável com o próprio e-mail do usuário (`daviphone22@gmail.com` — a mesma conta do Resend, necessário porque o domínio de teste `onboarding@resend.dev` só entrega para o dono da conta) e disparada a Edge Function `enviar-relatorio-responsavel` manualmente.
+
+**Resultado: `enviados: 1, falhas: 0`.** O relatório chegou de verdade na caixa de entrada do usuário. O link de descadastro do rodapé foi aberto em produção (`tarefas-escolares-five.vercel.app/descadastrar`) com o token real do e-mail recebido — reconheceu o token, mostrou a tela de confirmação, e o clique em "Confirmar cancelamento" mudou o `status` para `removido` no banco. Dados de teste (o responsável e o log) removidos ao final; as tabelas voltaram a zero linhas.
+
+Sobre a v5.0: o usuário decidiu **não** configurar a `ANTHROPIC_API_KEY` por enquanto — a API da Anthropic exige saldo pago, e ele não tem orçamento pra isso agora. Nada foi implementado a mais; a decisão é só de não gastar. A função `analisar-imagem-tarefas` já está pronta e vai funcionar assim que (e se) o usuário decidir configurar a chave, sem precisar de mais nenhum trabalho de código.
+
+### Próximo passo
+Nenhum obrigatório. A v4.0 está com o caminho de teste validado — se o usuário quiser usar de verdade com o e-mail de um responsável diferente do dono da conta Resend, vai precisar verificar um domínio próprio no Resend antes (seção 6 da especificação). A v5.0 fica parada até o usuário decidir gastar com a API da Anthropic — não sugerir de novo por conta própria.
 
 ---
 

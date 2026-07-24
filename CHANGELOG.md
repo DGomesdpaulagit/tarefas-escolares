@@ -8,6 +8,11 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Validado (Etapa 19 / Sessão 032 — 2026-07-24) — v4.0 testada de ponta a ponta em produção; v5.0 adiada por orçamento
+Usuário configurou `RESEND_API_KEY` no Supabase. Teste real feito com um responsável temporário (o próprio e-mail do usuário — mesma conta do Resend, exigido pelo domínio de teste `onboarding@resend.dev`): `enviar-relatorio-responsavel` retornou `enviados: 1, falhas: 0`, o e-mail chegou de verdade, e o link de descadastro do rodapé foi confirmado funcionando em produção (`tarefas-escolares-five.vercel.app/descadastrar`) — reconheceu o token, mostrou a confirmação e o clique mudou o status para `removido` no banco. Dados de teste removidos ao final.
+
+Usuário decidiu não configurar `ANTHROPIC_API_KEY` por ora (API paga, sem orçamento no momento) — a v5.0 fica pronta e parada até essa decisão mudar; nenhum código pendente.
+
 ### Adicionado (Etapa 19 / Sessão 031 — 2026-07-24) — v5.0: registro de tarefas por imagem (análise por IA)
 Implementação completa da especificação `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`. Decisões tomadas no início da conversa: provedor **Anthropic Claude** (`claude-sonnet-5`) e limite de **5 análises por dia por usuário**.
 
