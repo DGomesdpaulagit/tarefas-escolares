@@ -145,16 +145,26 @@ Responsável recebe o e-mail
 
 ---
 
-## 6. Decisão pendente — provedor de e-mail
+## 6. Provedor de e-mail — DECIDIDO: Resend (Sessão 029, 2026-07-23)
 
-Precisa ser decidido no início da próxima conversa, porque exige uma API key que **só o usuário pode gerar e configurar** (como secret da Edge Function no Supabase — nunca colada em chat, nunca em arquivo versionado).
+**Escolha do usuário: Resend.** Motivos: é a integração mais simples em Edge Function Deno (chamada HTTP direta à API, sem SDK pesado nem SMTP) e a camada gratuita de 3.000 e-mails/mês sobra com folga para o volume real (1 relatório por mês por responsável + códigos de verificação eventuais).
 
-Opções:
-- **Resend** — a mais simples de integrar em Edge Function Deno, camada gratuita de 3.000 e-mails/mês. Recomendada.
-- **SendGrid** — mais tradicional, camada gratuita menor.
-- **SMTP próprio (Gmail)** — funciona, mas Gmail bloqueia envio automatizado com frequência e a entregabilidade é ruim. Não recomendado.
+Descartadas: SendGrid (integração mais trabalhosa, camada grátis menor) e SMTP do Gmail (Google bloqueia envio automatizado com frequência e a entregabilidade é ruim — na prática o recurso não funcionaria).
 
-Qualquer que seja: o domínio remetente precisa estar verificado no provedor, senão o relatório cai direto em spam — o que na prática significa que o recurso não funciona.
+### Pendência prática: domínio remetente
+
+Provedores exigem um **domínio verificado** para enviar a destinatários quaisquer — é assim que evitam virar ferramenta de spam. O app hoje roda em `tarefas-escolares-five.vercel.app`, subdomínio da Vercel cujo DNS o usuário não controla, então **não dá para verificar esse endereço como remetente**.
+
+Duas saídas, a decidir durante a implementação:
+
+1. **Domínio próprio** (ex: `tarefasescolares.com.br`, ~R$40/ano) verificado no Resend — resolve de vez e melhora o endereço do app de quebra.
+2. **Domínio de teste do Resend** — permite enviar sem verificar nada, mas com restrição de destinatário (na documentação atual, apenas o e-mail da própria conta). **Confirmar a regra vigente na documentação do Resend no início da implementação**, já que política de camada gratuita muda com o tempo.
+
+**Estratégia recomendada:** construir e testar o fluxo completo com o domínio de teste (custo zero), e só decidir sobre a compra do domínio quando o recurso estiver funcionando ponta a ponta. Isso evita gastar antes de ver rodando.
+
+### API key
+
+`RESEND_API_KEY` configurada como **secret da Edge Function no painel do Supabase** — gerada pelo próprio usuário, na conta dele. Nunca colada em chat, nunca em arquivo versionado, nunca no cliente.
 
 ---
 
@@ -191,10 +201,12 @@ Dados a calcular para o mês de referência (do dia 1 até o dia do envio):
 
 ## 9. Checklist de implementação (para a próxima conversa)
 
-**Única decisão pendente (adiada pelo usuário na Sessão 029 — resolver no início da v4):**
-- [ ] Escolher o provedor de e-mail (seção 6, Resend recomendado) e o usuário gerar/configurar a API key como secret no Supabase — nunca colada em chat, nunca em arquivo versionado
+**Decisões já fechadas (Sessão 029):** verificação por código nas três operações (seção 2) e provedor de e-mail = **Resend** (seção 6). Nada mais a decidir antes de começar.
 
-*(A verificação por código nas três operações já está decidida — ver seção 2.)*
+**Primeiros passos ao iniciar a v4:**
+- [ ] Usuário cria conta no Resend, gera a API key e configura como secret `RESEND_API_KEY` no Supabase (ele mesmo, no painel — nunca colada em chat)
+- [ ] Conferir na documentação atual do Resend a regra vigente do domínio de teste (seção 6) — política de camada gratuita muda com o tempo
+- [ ] Começar com o domínio de teste; decidir sobre comprar domínio próprio só depois do fluxo rodando ponta a ponta
 
 **Banco:**
 - [ ] Migration `008_guardian_reports.sql` — tabelas `guardians`, `guardian_codes`, `guardian_reports_log` + RLS nas três (atenção à seção 4: cliente não escreve em `guardians` e não acessa `guardian_codes` de forma alguma)

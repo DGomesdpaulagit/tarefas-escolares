@@ -10,7 +10,7 @@ No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo 
 
 **Especificação técnica completa:** [`docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`](./V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md) — modelo de dados (3 tabelas + RLS), fluxo de verificação por código, 4 Edge Functions, agendamento via pg_cron, conteúdo do relatório e checklist passo a passo.
 
-- [ ] **Única decisão pendente:** provedor de e-mail (Resend recomendado) — requer API key gerada e configurada pelo usuário como secret no Supabase
+**Provedor de e-mail definido: Resend** (Sessão 029). Nenhuma decisão pendente — a v4 está pronta para começar. Primeiro passo: usuário gera a API key no Resend e configura como secret `RESEND_API_KEY` no Supabase. Pendência prática a resolver durante a implementação: o domínio remetente (começar com o domínio de teste do Resend, avaliar comprar domínio próprio depois — ver seção 6 da especificação).
 
 ## v5.0 — Planejado (Sessão 029, 2026-07-23)
 

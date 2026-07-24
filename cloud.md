@@ -41,8 +41,10 @@ Após o cadastro confirmado é automático ("após isso é fé", palavras do usu
 
 `docs/ROADMAP.md` reorganizado: v4.0 no topo como "próxima a ser implementada", v5.0 logo abaixo, itens descartados registrados explicitamente para não voltarem por engano.
 
+**Provedor de e-mail: Resend** (decidido ao final da sessão). Motivo: integração mais simples em Edge Function Deno e 3.000 e-mails/mês grátis, com folga para o volume real. Pendência prática registrada na seção 6 do documento: o app roda em subdomínio da Vercel, cujo DNS o usuário não controla, então não dá para verificá-lo como domínio remetente — estratégia recomendada é construir e testar tudo com o domínio de teste do Resend (custo zero) e só avaliar comprar domínio próprio (~R$40/ano) depois do fluxo rodando ponta a ponta.
+
 ### Próximo passo
-Próxima conversa = **início da v4.0**. **Única decisão pendente** (o usuário adiou nesta sessão): escolher o provedor de e-mail (Resend recomendado) e gerar/configurar a API key como secret no Supabase — nunca colada em chat. Depois, seguir o checklist da seção 9 do documento de especificação.
+Próxima conversa = **início da v4.0**, sem nenhuma decisão pendente. Primeiro passo: usuário cria conta no Resend, gera a API key e configura como secret `RESEND_API_KEY` no painel do Supabase (ele mesmo — nunca colada em chat). Depois, seguir o checklist da seção 9 do documento de especificação.
 
 ---
 
