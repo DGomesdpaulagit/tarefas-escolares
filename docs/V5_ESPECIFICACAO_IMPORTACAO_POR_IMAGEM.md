@@ -135,3 +135,19 @@ Nesses casos:
 **Diferença do plano original:** a especificação não detalhava o que fazer com a imagem depois da análise. Decisão tomada na implementação: apagar sempre, sucesso ou erro — é o comportamento mais simples e mais respeitoso com o dado (fotos de agenda/quadro de avisos podem conter nome de outros alunos, endereço da escola etc.).
 
 **Pendência do usuário:** gerar a `ANTHROPIC_API_KEY` no [console da Anthropic](https://console.anthropic.com) e configurar como secret no painel do Supabase. Sem ela a função responde `chave_ia_nao_configurada` e nenhuma chamada paga é feita.
+
+---
+
+## 10. Troca de provedor: Anthropic → Google Gemini (Sessão 032, 2026-07-24)
+
+O usuário decidiu não pagar pela API da Anthropic para uso pessoal ("não tenho orçamento para isso"). Como o app hoje é usado só por ele (volume baixo — o teto de 5 análises/dia já limita isso), o **Google Gemini** cobre o caso sem custo: camada gratuita real via Google AI Studio, sem cartão de crédito, com modelo `gemini-2.5-flash` (multimodal, lê imagem) e limite de 1.500 requisições/dia — bem acima do necessário.
+
+**O que mudou no código** (`supabase/functions/analisar-imagem-tarefas/index.ts`):
+- Secret trocado de `ANTHROPIC_API_KEY` para `GOOGLE_API_KEY`
+- Endpoint: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, autenticado via header `x-goog-api-key`
+- Formato do request/response é diferente do Anthropic Messages API (`contents[].parts[]` com `inline_data` para a imagem, em vez de `messages[].content[]` com `source`); a extração do texto da resposta mudou de `content[0].text` para `candidates[0].content.parts[0].text`
+- O prompt, a lógica de "detalhamento incompleto" (determinística, seção 5) e todo o resto do pipeline (limite diário, apagar a foto após análise) **não mudaram** — só a chamada ao provedor de IA foi trocada
+
+**Ponto de transparência para o usuário saber:** na camada **gratuita** do Google AI Studio, os prompts enviados podem ser usados pelo Google para melhorar os produtos deles — diferente da API paga, que não faz isso. Como as fotos analisadas passam por lá antes de serem apagadas do nosso Storage, isso é uma característica real do modelo gratuito, não um bug. Se algum dia o app for publicado e o volume justificar, vale reavaliar (ver `docs/CHECKLIST_PUBLICACAO.md`, item 1.2).
+
+**Se o usuário quiser reverter para Anthropic no futuro:** a mudança é isolada nas ~20 linhas do `fetch()` e na leitura da resposta — não exige tocar em banco, frontend ou i18n.

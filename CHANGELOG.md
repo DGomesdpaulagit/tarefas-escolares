@@ -8,6 +8,15 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Modificado (Etapa 19 / Sessão 032 — 2026-07-24) — v5.0: provedor de IA trocado de Anthropic para Google Gemini
+Usuário pediu uma alternativa sem custo à Anthropic, já que o app hoje é uso pessoal com volume baixo (teto de 5 análises/dia). Trocado para **Google Gemini** (`gemini-2.5-flash`), que tem camada gratuita real via Google AI Studio (sem cartão), com limite de 1.500 requisições/dia.
+
+- `supabase/functions/analisar-imagem-tarefas/index.ts`: secret `ANTHROPIC_API_KEY` → `GOOGLE_API_KEY`; endpoint e formato de request/response adaptados para a Gemini API (`contents[].parts[]` com `inline_data`, autenticação via header `x-goog-api-key`)
+- Nada mais mudou: prompt, regra determinística de "detalhamento incompleto", limite diário e exclusão da foto após análise seguem iguais
+- Documentado em `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` (seção 10) um ponto de transparência: na camada gratuita, o Google pode usar os prompts enviados para melhorar produtos deles — diferente da API paga
+
+Criado também `docs/CHECKLIST_PUBLICACAO.md` a pedido do usuário: lista do que fazer se o app for publicado publicamente um dia (remoção completa da Mesada, assinatura de API de IA, LGPD/consentimento de menores, exclusão de conta, ambiente de produção separado, requisitos de loja de apps, entre outros).
+
 ### Validado (Etapa 19 / Sessão 032 — 2026-07-24) — v4.0 testada de ponta a ponta em produção; v5.0 adiada por orçamento
 Usuário configurou `RESEND_API_KEY` no Supabase. Teste real feito com um responsável temporário (o próprio e-mail do usuário — mesma conta do Resend, exigido pelo domínio de teste `onboarding@resend.dev`): `enviar-relatorio-responsavel` retornou `enviados: 1, falhas: 0`, o e-mail chegou de verdade, e o link de descadastro do rodapé foi confirmado funcionando em produção (`tarefas-escolares-five.vercel.app/descadastrar`) — reconheceu o token, mostrou a confirmação e o clique mudou o status para `removido` no banco. Dados de teste removidos ao final.
 

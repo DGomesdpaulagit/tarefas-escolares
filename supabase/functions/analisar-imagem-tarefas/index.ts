@@ -1,5 +1,5 @@
 // Supabase Edge Function — analisar-imagem-tarefas
-// Recebe o caminho de uma imagem já enviada ao Storage, chama o Claude (visão)
+// Recebe o caminho de uma imagem já enviada ao Storage, chama o Gemini (visão)
 // e devolve uma lista de tarefas candidatas para revisão do usuário.
 // Ver docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md
 
@@ -8,12 +8,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY") ?? "";
 
-const ANTHROPIC_MODEL = "claude-sonnet-5";
+// Camada gratuita do Google AI Studio (sem cartão): 1.500 req/dia, bem acima
+// do nosso teto de 5 análises/dia por usuário. Ver docs/V5_ESPECIFICACAO_
+// IMPORTACAO_POR_IMAGEM.md seção 9 para o histórico da troca de provedor.
+const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const LIMITE_DIARIO = 5;
 const JANELA_HORAS = 24;
-const TAMANHO_MAX_BYTES = 8 * 1024 * 1024; // 8MB — teto do próprio Storage/Anthropic
+const TAMANHO_MAX_BYTES = 8 * 1024 * 1024; // 8MB — folga confortável abaixo do limite de request do Gemini
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -157,7 +161,7 @@ Deno.serve(async (req) => {
     return json({ erro: "limite_diario", limite: LIMITE_DIARIO }, 429);
   }
 
-  if (!ANTHROPIC_API_KEY) {
+  if (!GOOGLE_API_KEY) {
     return json({ erro: "chave_ia_nao_configurada" }, 500);
   }
 
@@ -207,23 +211,21 @@ Regras:
 
   let respostaIA: Response;
   try {
-    respostaIA = await fetch("https://api.anthropic.com/v1/messages", {
+    respostaIA = await fetch(GEMINI_URL, {
       method: "POST",
       headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "x-goog-api-key": GOOGLE_API_KEY,
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 2048,
-        messages: [{
+        contents: [{
           role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-            { type: "text", text: prompt },
+          parts: [
+            { inline_data: { mime_type: mediaType, data: base64 } },
+            { text: prompt },
           ],
         }],
+        generationConfig: { maxOutputTokens: 2048 },
       }),
     });
   } catch (e) {
@@ -238,7 +240,7 @@ Regras:
   }
 
   const corpo = await respostaIA.json();
-  const texto: string = corpo?.content?.[0]?.text ?? "";
+  const texto: string = corpo?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
   let brutas: unknown[];
   try {

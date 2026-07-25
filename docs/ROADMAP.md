@@ -19,9 +19,9 @@ No primeiro acesso, o usuário pode cadastrar o e-mail de um responsável. Todo 
 
 **Provedor de e-mail definido: Resend** (Sessão 029). Nenhuma decisão pendente — a v4 está pronta para começar. Primeiro passo: usuário gera a API key no Resend e configura como secret `RESEND_API_KEY` no Supabase. Pendência prática a resolver durante a implementação: o domínio remetente (começar com o domínio de teste do Resend, avaliar comprar domínio próprio depois — ver seção 6 da especificação).
 
-## v5.0 — ✅ IMPLEMENTADA (Sessão 031, 2026-07-24)
+## v5.0 — ✅ IMPLEMENTADA (Sessão 031, 2026-07-24; provedor trocado para Gemini na Sessão 032)
 
-Banco (bucket `task-images` + `image_analysis_usage`), Edge Function `analisar-imagem-tarefas` e todo o frontend estão no ar. Provedor: **Anthropic Claude** (`claude-sonnet-5`), limite de **5 análises/dia por usuário**. **Falta só a `ANTHROPIC_API_KEY`**, que só o usuário pode gerar e configurar como secret no painel do Supabase — sem ela a função responde `chave_ia_nao_configurada` sem gastar nada.
+Banco (bucket `task-images` + `image_analysis_usage`), Edge Function `analisar-imagem-tarefas` e todo o frontend estão no ar. **Provedor: Google Gemini** (`gemini-2.5-flash`, camada gratuita — trocado da Anthropic por decisão do usuário de não pagar pela API), limite de **5 análises/dia por usuário**. Falta só a `GOOGLE_API_KEY`, gerada gratuitamente em aistudio.google.com/apikey e configurada como secret no Supabase — sem ela a função responde `chave_ia_nao_configurada` sem gastar nada. Detalhes da troca de provedor: seção 10 da especificação.
 
 Descrição original do planejamento abaixo, mantida como referência (seção 9 da especificação registra o que saiu diferente):
 

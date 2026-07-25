@@ -457,9 +457,13 @@ Usuário criou a conta Resend e configurou o secret. Testado com um responsável
 
 **Pendência real:** se um dia o e-mail do responsável for de outra pessoa (não o dono da conta Resend), é preciso configurar domínio próprio verificado no Resend antes — o teste de hoje só provou o caminho com o domínio de teste.
 
-### 🟡 v5.0 (registro de tarefas por imagem) — PARADA por decisão do usuário, sem orçamento
+### ✅ v5.0 (registro de tarefas por imagem) — provedor trocado para Google Gemini, gratuito (Sessão 032, 2026-07-24)
 
-Usuário decidiu **não** configurar a `ANTHROPIC_API_KEY` por enquanto: a API da Anthropic exige cartão de crédito/saldo pago, e ele não tem orçamento para isso agora ("não ent deixa quieto tem que pagar não tenho orçamento para isso" — 2026-07-24). **Não insistir nem sugerir de novo por conta própria** — a função já está pronta e implementada, só falta a chave quando/se o usuário decidir gastar com isso. Sem a chave, `analisar-imagem-tarefas` responde `chave_ia_nao_configurada` sem cobrar nada; nenhum outro recurso do app é afetado.
+Depois de recusar pagar pela Anthropic, o usuário pediu uma alternativa sem custo. Trocado o provedor de IA de visão de **Anthropic Claude** para **Google Gemini** (`gemini-2.5-flash`), que tem camada gratuita real (sem cartão) via Google AI Studio — cobre o volume de uso pessoal (teto de 5 análises/dia) com folga (limite do Gemini: 1.500/dia). Só a Edge Function `analisar-imagem-tarefas` mudou (endpoint + formato de request/response); todo o resto do pipeline é idêntico. Detalhes técnicos: `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 10.
+
+**Pendência do usuário:** gerar a `GOOGLE_API_KEY` gratuita em [aistudio.google.com/apikey](https://aistudio.google.com/apikey) e configurar como secret no Supabase (guiado passo a passo, aguardando confirmação). Sem ela, `chave_ia_nao_configurada` sem custo nenhum.
+
+**Ponto de transparência já documentado:** na camada gratuita do Gemini, o Google pode usar os prompts para melhorar produtos deles (diferente da API paga). Vale mencionar ao usuário se ele perguntar sobre privacidade dessa feature no futuro.
 
 ### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
 
