@@ -445,6 +445,10 @@ Claude trabalha → Atualiza MEMORY.md → git commit + push → Obsidian sincro
 
 ---
 
+## 21b. Documento novo: checklist de publicação
+
+Criado `docs/CHECKLIST_PUBLICACAO.md` (Sessão 032, 2026-07-24) a pedido do usuário: lista do que precisa ser feito **se e quando** ele decidir publicar o app publicamente (Play Store ou link divulgado), começando pelos dois itens que ele mencionou (retirar a Mesada por inteiro; assinatura da Anthropic para a v5.0) e ampliado com segurança/LGPD (dados de menores, exclusão de conta, RLS), infraestrutura (ambiente separado, domínio próprio no Resend) e requisitos de loja de apps. **Não é uma lista de tarefas em andamento** — nada deste documento deve ser executado sem o usuário pedir explicitamente para avançar nele.
+
 ## 22. Próximo Passo Exato
 
 ### ✅ v4.0 — RESEND_API_KEY configurada e testada de ponta a ponta (2026-07-24)
