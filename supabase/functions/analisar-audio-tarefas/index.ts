@@ -1,6 +1,8 @@
-// Supabase Edge Function — analisar-imagem-tarefas
-// Recebe o caminho de uma imagem já enviada ao Storage, chama o Gemini (visão)
+// Supabase Edge Function — analisar-audio-tarefas
+// Recebe o caminho de um áudio já enviado ao Storage, chama o Gemini (áudio)
 // e devolve uma lista de tarefas candidatas para revisão do usuário.
+// Mesma arquitetura de analisar-imagem-tarefas, trocando imagem por áudio e
+// bucket/tabela próprios (não compartilha cota diária com a análise de foto).
 // Ver docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -10,16 +12,11 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY") ?? "";
 
-// Camada gratuita do Google AI Studio (sem cartão), bem acima do nosso teto de
-// 5 análises/dia por usuário. Ver docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md
-// seção 9 (troca de provedor) e seção 11 (gemini-2.5-flash foi descontinuado
-// para novas contas antes até da data de desligamento anunciada — trocado
-// para gemini-3.5-flash, o substituto oficial, em 2026-07-26).
 const GEMINI_MODEL = "gemini-3.5-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const LIMITE_DIARIO = 5;
 const JANELA_HORAS = 24;
-const TAMANHO_MAX_BYTES = 8 * 1024 * 1024; // 8MB — folga confortável abaixo do limite de request do Gemini
+const TAMANHO_MAX_BYTES = 15 * 1024 * 1024; // folga para ~90s de áudio comprimido
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -68,10 +65,7 @@ function extrairArrayJSON(texto: string): unknown[] {
   return bruto;
 }
 
-/**
- * Regras de "detalhamento incompleto" — seção 5 da especificação. Deterministic
- * na função, não delegado à opinião livre do modelo, para o critério ser estável.
- */
+/** Mesma regra determinística de "detalhamento incompleto" da análise de imagem. */
 function avaliarCampos(
   title: string,
   subjectName: string | null,
@@ -145,8 +139,6 @@ Deno.serve(async (req) => {
   }
 
   const path = body.path ?? "";
-  // A pasta no bucket é sempre {user_id}/... — mesma regra do RLS do Storage.
-  // Confere de novo aqui porque a função roda com service role (ignora RLS).
   if (!path || !path.startsWith(`${user.id}/`)) {
     return json({ erro: "caminho_invalido" }, 400);
   }
@@ -154,7 +146,7 @@ Deno.serve(async (req) => {
   // --- limite diário: protege contra custo, checado ANTES da chamada paga ---
   const desde = new Date(Date.now() - JANELA_HORAS * 60 * 60 * 1000).toISOString();
   const { count } = await admin
-    .from("image_analysis_usage")
+    .from("audio_analysis_usage")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("criado_em", desde);
@@ -167,9 +159,8 @@ Deno.serve(async (req) => {
     return json({ erro: "chave_ia_nao_configurada" }, 500);
   }
 
-  // --- baixa a imagem do Storage (service role) ---
   const { data: arquivo, error: erroDownload } = await admin.storage
-    .from("task-images")
+    .from("task-audio")
     .download(path);
 
   if (erroDownload || !arquivo) {
@@ -180,7 +171,7 @@ Deno.serve(async (req) => {
     return json({ erro: "arquivo_grande_demais" }, 413);
   }
 
-  const mediaType = arquivo.type && arquivo.type.startsWith("image/") ? arquivo.type : "image/jpeg";
+  const mediaType = arquivo.type && arquivo.type.startsWith("audio/") ? arquivo.type : "audio/webm";
   const bytes = new Uint8Array(await arquivo.arrayBuffer());
   let binario = "";
   for (let i = 0; i < bytes.length; i += 8192) {
@@ -188,7 +179,6 @@ Deno.serve(async (req) => {
   }
   const base64 = btoa(binario);
 
-  // --- contexto: disciplinas já cadastradas do usuário, para a IA tentar casar ---
   const { data: disciplinasRows } = await admin
     .from("subjects")
     .select("name")
@@ -197,19 +187,19 @@ Deno.serve(async (req) => {
   const nomesDisciplinas = (disciplinasRows ?? []).map((d) => d.name as string);
   const disciplinasConhecidas = new Set(nomesDisciplinas.map((n) => n.toLowerCase()));
 
-  const prompt = `Você analisa fotos/prints de agendas escolares, quadros de avisos e planners para identificar tarefas.
+  const prompt = `Você ouve um áudio em que um estudante descreve verbalmente as tarefas escolares que precisa fazer.
 Data de hoje: ${hojeBrasilia()} (use para resolver datas relativas como "amanhã" ou "sexta-feira").
-Disciplinas já cadastradas pelo usuário (prefira estes nomes exatos quando a imagem corresponder a uma delas): ${nomesDisciplinas.length ? nomesDisciplinas.join(", ") : "nenhuma cadastrada ainda"}.
+Disciplinas já cadastradas pelo usuário (prefira estes nomes exatos quando o áudio corresponder a uma delas): ${nomesDisciplinas.length ? nomesDisciplinas.join(", ") : "nenhuma cadastrada ainda"}.
 
-Extraia cada tarefa/atividade escolar visível na imagem. Responda APENAS com um array JSON, sem nenhum texto antes ou depois, no formato:
+Extraia cada tarefa/atividade escolar mencionada no áudio. Responda APENAS com um array JSON, sem nenhum texto antes ou depois, no formato:
 [{"title": string, "subject_name": string ou null, "due_date": "AAAA-MM-DD" ou null, "priority": "Alta"|"Média"|"Baixa" ou null, "confidence": number entre 0 e 1}]
 
 Regras:
 - "due_date" só deve vir preenchido se houver confiança razoável na data — nunca invente uma data.
 - "subject_name" só deve vir preenchido se estiver relativamente claro qual é a matéria.
-- "confidence" reflete sua certeza geral sobre aquela tarefa (letra ruim, texto cortado ou ambíguo = confiança baixa).
-- Se a imagem não tiver nenhuma tarefa identificável, responda "[]".
-- Não invente tarefas que não estão na imagem.`;
+- "confidence" reflete sua certeza geral sobre aquela tarefa (áudio ruim, fala cortada ou ambígua = confiança baixa).
+- Se o áudio não mencionar nenhuma tarefa identificável, responda "[]".
+- Não invente tarefas que não foram ditas no áudio.`;
 
   let respostaIA: Response;
   try {
@@ -231,12 +221,12 @@ Regras:
       }),
     });
   } catch (e) {
-    await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: false });
+    await admin.from("audio_analysis_usage").insert({ user_id: user.id, sucesso: false });
     return json({ erro: "falha_de_rede", detalhe: String(e) }, 502);
   }
 
   if (!respostaIA.ok) {
-    await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: false });
+    await admin.from("audio_analysis_usage").insert({ user_id: user.id, sucesso: false });
     const detalhe = await respostaIA.text();
     console.error(`Gemini respondeu ${respostaIA.status}: ${detalhe.slice(0, 500)}`);
     return json({ erro: "falha_na_analise", detalhe: detalhe.slice(0, 300) }, 502);
@@ -249,7 +239,7 @@ Regras:
   try {
     brutas = extrairArrayJSON(texto);
   } catch {
-    await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: false });
+    await admin.from("audio_analysis_usage").insert({ user_id: user.id, sucesso: false });
     console.error(`Resposta do Gemini sem JSON reconhecível. corpo=${JSON.stringify(corpo).slice(0, 800)}`);
     return json({ erro: "resposta_ia_invalida" }, 502);
   }
@@ -258,7 +248,7 @@ Regras:
     .map((b) => normalizarCandidata(b as CandidataIA, disciplinasConhecidas))
     .filter((c): c is CandidataFinal => c !== null);
 
-  await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: true });
+  await admin.from("audio_analysis_usage").insert({ user_id: user.id, sucesso: true });
 
   return json({
     tarefas: candidatas,

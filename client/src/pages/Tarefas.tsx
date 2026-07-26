@@ -1,12 +1,11 @@
 import { useTarefas } from "@/contexts/TarefasContext";
 import TarefaCard from "@/components/TarefaCard";
-import TarefaForm from "@/components/TarefaForm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Search, SlidersHorizontal, X, Upload, Camera, Trash2 } from "lucide-react";
+import { Loader2, Plus, Search, SlidersHorizontal, X, Upload, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ImportarPlanilhaModal from "@/components/ImportarPlanilhaModal";
-import ImportarImagemModal from "@/components/ImportarImagemModal";
+import NovaTarefaModal from "@/components/NovaTarefaModal";
 import LimparTarefasModal from "@/components/LimparTarefasModal";
 import {
   Select,
@@ -64,7 +63,6 @@ export default function Tarefas() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [ordenacao, setOrdenacao] = useState<Ordenacao>("urgente");
   const [importando, setImportando] = useState(false);
-  const [importandoFoto, setImportandoFoto] = useState(false);
   const [limpando, setLimpando] = useState(false);
 
   const tarefasOrdenadas = ordenarTarefas(tarefasFiltradas, ordenacao);
@@ -125,17 +123,6 @@ export default function Tarefas() {
           >
             <Upload size={14} />
             <span className="hidden sm:inline">{t("tarefas.importar")}</span>
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={() => setImportandoFoto(true)}
-            variant="outline"
-            className="border-white/10 text-slate-400 hover:bg-white/5 hover:text-slate-200 h-9 gap-1.5 text-sm bg-transparent"
-            aria-label={t("tarefas.importarFoto")}
-          >
-            <Camera size={14} />
-            <span className="hidden sm:inline">{t("tarefas.importarFoto")}</span>
           </Button>
 
           <Button
@@ -258,9 +245,8 @@ export default function Tarefas() {
         )}
       </div>
 
-      {criando && <TarefaForm onClose={() => setCriando(false)} />}
+      {criando && <NovaTarefaModal onClose={() => setCriando(false)} />}
       {importando && <ImportarPlanilhaModal onClose={() => setImportando(false)} />}
-      {importandoFoto && <ImportarImagemModal onClose={() => setImportandoFoto(false)} />}
       {limpando && <LimparTarefasModal onClose={() => setLimpando(false)} />}
     </div>
   );

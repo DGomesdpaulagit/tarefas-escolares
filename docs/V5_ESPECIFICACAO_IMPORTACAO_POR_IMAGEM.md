@@ -163,3 +163,30 @@ O `gemini-2.5-flash` foi descontinuado para novas contas **antes até da data de
 **Duas melhorias feitas junto com a correção**, que valem para qualquer erro futuro de IA nesta função:
 - `console.error()` antes de retornar `falha_na_analise` e `resposta_ia_invalida`, logando a resposta bruta do provedor — sem isso, só dava pra diagnosticar inspecionando a aba Network do navegador do usuário
 - Este tipo de erro (modelo descontinuado) é **externo ao nosso código** — se voltar a acontecer no futuro, o sintoma é sempre "análise falha para todo mundo, de repente, sem nenhuma mudança no nosso lado" e a causa é sempre checar se o provedor mudou/descontinuou o modelo em uso.
+
+---
+
+## 12. Extensão: importação por áudio + reorganização da entrada (2026-07-26)
+
+Pedido do usuário: um recurso equivalente ao de foto, mas por **áudio** (o estudante grava ou envia um áudio contando as tarefas), e que **os dois** (foto e áudio) deixem de ser botões soltos na página Tarefas e passem a viver **dentro do fluxo de "Nova Tarefa"**.
+
+### O que foi feito
+
+**Novo modal seletor `NovaTarefaModal.tsx`** — ponto único de entrada ao criar uma tarefa: apresenta 3 opções (✍️ Escrever, 📷 Foto, 🎤 Áudio) e delega para o fluxo correspondente. Substituiu o `TarefaForm` direto nos botões "+ Nova Tarefa" de `Tarefas.tsx` e `VisaoGeral.tsx`. O botão "Importar por foto", que antes vivia solto na barra de ferramentas de Tarefas, foi removido — a foto agora só se acessa por dentro do seletor.
+
+**Decisão de escopo:** o "+ Nova" de criação rápida por dia na Agenda (clique/long-press numa célula do calendário) **não** passou a abrir o seletor — continua indo direto para o formulário manual, com a data já preenchida. Foto/áudio não têm como aproveitar uma data pré-selecionada de forma natural (podem gerar várias tarefas com datas próprias), e essa é uma ação pensada para ser rápida; inserir uma pergunta antes dela removeria a vantagem de velocidade que o recurso tem hoje.
+
+**Banco (migration `010_task_audio`):** bucket privado `task-audio` (mesmo padrão de RLS por pasta do `task-images`) e tabela `audio_analysis_usage`, com **cota diária própria** (não compartilha os "5 por dia" com a análise de foto — são limites independentes, mesmo raciocínio de proteção de custo).
+
+**Edge Function `analisar-audio-tarefas`** — espelha `analisar-imagem-tarefas` quase linha a linha: mesmo modelo (`gemini-3.5-flash`), mesmo formato de retorno, mesma regra determinística de "detalhamento incompleto". Só muda o bucket, a tabela de limite e o prompt (adaptado para transcrição/interpretação de fala em vez de leitura de imagem).
+
+**Frontend — refatoração para eliminar duplicação:**
+- `client/src/lib/candidataTarefa.ts` — tipo `CandidataTarefa` (antes duplicado dentro de `imageImportService.ts`) e o mapa de labels dos campos faltando, agora compartilhados
+- `client/src/components/RevisaoCandidatasTarefas.tsx` — a tela de revisão das tarefas candidatas (lista de cards, badges de completo/incompleto, botão "Importar prontas", integração com `TarefaForm` para completar as incompletas) foi extraída para um componente único, usado tanto por `ImportarImagemModal` quanto pelo novo `ImportarAudioModal`
+- `audioImportService.ts` — espelha `imageImportService.ts` (upload → análise → apagar o arquivo do Storage logo depois, mesma política de privacidade já adotada para foto)
+- `ImportarAudioModal.tsx` — gravação via `MediaRecorder` (limite de 90s, com contador ao vivo) **ou** envio de um arquivo de áudio já gravado, como alternativa caso o navegador negue a permissão do microfone
+- Códigos de erro do backend generalizados de `imagem_nao_encontrada`/`imagem_grande_demais` para `arquivo_nao_encontrado`/`arquivo_grande_demais`, e as chaves i18n de erro/revisão que eram `importarImagem.*` migraram para um namespace `importarIA.*` compartilhado — só o que é de fato específico de cada modo (textos da tela de captura) ficou em `importarImagem.*`/`importarAudio.*` separados
+
+### Fora de escopo desta extensão
+- Transcrição do áudio exibida ao usuário (só o resultado estruturado das tarefas é mostrado, não o texto transcrito)
+- Múltiplos áudios em sequência numa mesma sessão de gravação

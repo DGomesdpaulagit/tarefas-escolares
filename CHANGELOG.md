@@ -8,6 +8,18 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 19 / Sessão 034 — 2026-07-26) — Importação por áudio + "Nova Tarefa" unificada (manual/foto/áudio)
+Usuário pediu um recurso equivalente à foto, mas por áudio, e que os dois deixassem de ser botões soltos e passassem a viver dentro do fluxo de "Nova Tarefa".
+
+- **`NovaTarefaModal.tsx`** (novo) — seletor que aparece ao criar uma tarefa (Tarefas.tsx e VisaoGeral.tsx): Escrever / Foto / Áudio. O botão solto "Importar por foto" foi removido da barra de Tarefas. A criação rápida por dia na Agenda continua indo direto para o formulário manual (decisão de escopo: não faz sentido oferecer foto/áudio numa ação pensada para ser rápida e com data já pré-selecionada)
+- **Migration `010_task_audio`** — bucket `task-audio` (RLS por pasta) + tabela `audio_analysis_usage` com cota diária própria (5/dia, independente da cota de foto)
+- **Edge Function `analisar-audio-tarefas`** — espelha `analisar-imagem-tarefas` (mesmo modelo Gemini, mesmo formato de retorno, mesma regra determinística de "detalhamento incompleto"), adaptando bucket, tabela e prompt para áudio
+- **`ImportarAudioModal.tsx`** — grava via `MediaRecorder` (até 90s, com contador) ou aceita upload de um arquivo de áudio já pronto, como alternativa se o navegador negar a permissão do microfone
+- **Refatoração para eliminar duplicação:** `lib/candidataTarefa.ts` (tipo compartilhado) e `components/RevisaoCandidatasTarefas.tsx` (tela de revisão das tarefas candidatas, agora usada tanto por foto quanto por áudio, em vez de duas cópias quase idênticas)
+- Códigos de erro do backend generalizados (`imagem_nao_encontrada` → `arquivo_nao_encontrado`, etc.) e chaves i18n compartilhadas migradas para o namespace `importarIA.*`
+
+Detalhes técnicos completos em `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 12.
+
 ### Corrigido (Etapa 19 / Sessão 032 — 2026-07-26) — v5.0: modelo Gemini descontinuado, testado e funcionando
 No primeiro teste real com foto de tarefa, a análise falhava com 502. Causa encontrada inspecionando a aba Network do navegador (os logs da Edge Function só mostravam o status HTTP, sem o corpo): `gemini-2.5-flash` foi descontinuado para novas contas antes até da data de desligamento anunciada pelo Google. Corrigido para `gemini-3.5-flash`, o substituto oficial, ainda na camada gratuita. Testado com sucesso depois: foto real → tarefa extraída corretamente (título, disciplina, data, prioridade).
 

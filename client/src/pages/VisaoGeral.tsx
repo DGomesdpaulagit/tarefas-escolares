@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TarefaForm from "@/components/TarefaForm";
+import NovaTarefaModal from "@/components/NovaTarefaModal";
 
 interface VisaoGeralProps {
   onNavegar?: (pagina: string) => void;
@@ -295,7 +296,7 @@ export default function VisaoGeral({ onNavegar, onAbrirTarefasFiltradas }: Visao
         </div>
       )}
 
-      {criando && <TarefaForm onClose={() => setCriando(false)} />}
+      {criando && <NovaTarefaModal onClose={() => setCriando(false)} />}
       {editando && <TarefaForm tarefa={editando} onClose={() => setEditando(null)} />}
     </div>
   );

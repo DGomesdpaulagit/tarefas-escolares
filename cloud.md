@@ -12,8 +12,36 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem) + validação de v4.0/v5.0 em produção
-## SESSÃO ATUAL: [Sessão 033] - v5.0 testada de ponta a ponta com sucesso (Gemini, após corrigir modelo descontinuado) ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem/áudio) + validação em produção
+## SESSÃO ATUAL: [Sessão 034] - Importação por áudio + "Nova Tarefa" unificada ✅ CONCLUÍDA
+
+## [Etapa 19 / Sessão 034] - Importação por áudio + reorganização da entrada (manual/foto/áudio dentro de "Nova Tarefa")
+**Data:** 2026-07-26
+**Branch:** `main`
+**Status:** ✅ Concluída (código pronto e verificado por build; fluxo real não testado por falta de login/microfone nesta sessão)
+
+### O que foi feito
+Depois de confirmar a v4.0 e v5.0 funcionando, o usuário pediu duas coisas na mesma mensagem: (1) um recurso equivalente ao de foto, mas por áudio; (2) que os dois — foto e áudio — deixassem de ser botões soltos na página Tarefas e passassem a viver dentro do fluxo de "Nova Tarefa".
+
+Criado `NovaTarefaModal.tsx`, um seletor que aparece ao clicar em "+ Nova Tarefa" (em Tarefas.tsx e VisaoGeral.tsx) oferecendo Escrever/Foto/Áudio, delegando para o `TarefaForm`, `ImportarImagemModal` ou o novo `ImportarAudioModal`. O botão solto "Importar por foto" foi removido. Decisão de escopo comunicada no código e na especificação: a criação rápida por dia na Agenda (clique/long-press numa célula) continua indo direto para o formulário manual — não faz sentido pedir "foto ou áudio" numa ação pensada para ser instantânea com uma data já escolhida.
+
+Para o áudio: migration `010_task_audio` (bucket `task-audio` + tabela `audio_analysis_usage`, com cota diária **própria**, não compartilhada com a de foto), Edge Function `analisar-audio-tarefas` (espelha a de imagem quase linha a linha — mesmo modelo Gemini, mesma regra de "detalhamento incompleto"), e `ImportarAudioModal.tsx` com gravação via `MediaRecorder` (até 90s) ou upload de arquivo de áudio como alternativa.
+
+Aproveitada a oportunidade para eliminar duplicação: extraído `lib/candidataTarefa.ts` (tipo compartilhado, antes só existia dentro do serviço de imagem) e `components/RevisaoCandidatasTarefas.tsx` (a tela de revisão das tarefas candidatas — cards, badges, botão "Completar", importação em lote — agora um componente único usado por foto e áudio, em vez de duas cópias quase idênticas). Códigos de erro do backend generalizados e chaves i18n reorganizadas num namespace compartilhado `importarIA.*`.
+
+### Verificação feita
+- `npm run build` — 0 erros TS
+- App carrega sem erro de console
+- Edge Function `analisar-audio-tarefas` deployada com sucesso
+- Migration `010_task_audio` aplicada (bucket + tabela + RLS confirmados pelo próprio `apply_migration`)
+
+### Não verificado (e por quê)
+O fluxo completo do seletor (abrir "+ Nova Tarefa" → escolher Áudio → gravar → revisar → importar) não foi exercitado de ponta a ponta: exige login na conta do usuário e acesso a microfone, nenhum dos dois disponível nesta sessão pelo lado do Claude. Pedir ao usuário para testar na próxima interação.
+
+### Próximo passo
+Usuário testar o seletor "Nova Tarefa" (as três opções) e o fluxo de áudio de verdade — gravar um áudio contando uma tarefa e conferir se a extração funciona como a de foto. Reportar qualquer erro do mesmo jeito que já funcionou bem nas sessões anteriores (print da aba Network se a análise falhar).
+
+---
 
 ## [Etapa 19 / Sessão 033] - v5.0 testada com sucesso: GOOGLE_API_KEY configurada, modelo Gemini corrigido
 **Data:** 2026-07-26

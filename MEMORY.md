@@ -467,6 +467,14 @@ Depois de recusar pagar pela Anthropic, o usuário pediu uma alternativa sem cus
 
 **Ponto de transparência já documentado:** na camada gratuita do Gemini, o Google pode usar os prompts para melhorar produtos deles (diferente da API paga). Vale mencionar ao usuário se ele perguntar sobre privacidade dessa feature no futuro.
 
+### ✅ Importação por áudio + "Nova Tarefa" unificada (Sessão 034, 2026-07-26)
+
+Adicionado recurso equivalente ao de foto, mas por áudio (`ImportarAudioModal.tsx`, Edge Function `analisar-audio-tarefas`, bucket `task-audio` + tabela `audio_analysis_usage` com cota diária própria de 5/dia). Reorganizada a entrada: "+ Nova Tarefa" (Tarefas.tsx, VisaoGeral.tsx) agora abre `NovaTarefaModal.tsx`, um seletor Escrever/Foto/Áudio — o botão solto "Importar por foto" foi removido. A Agenda **não** entrou nessa mudança: a criação rápida por dia continua indo direto pro formulário manual (decisão deliberada, ação pensada para ser rápida).
+
+Duplicação eliminada nessa mesma leva: `lib/candidataTarefa.ts` (tipo compartilhado) e `components/RevisaoCandidatasTarefas.tsx` (tela de revisão das candidatas, usada por foto e áudio). Ver `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 12.
+
+**Não testado ponta a ponta** (sem login/microfone disponíveis na sessão): pedir ao usuário para testar o seletor e a gravação de áudio reais na próxima interação.
+
 ### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
 
 Especificação: `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` (seção 9 registra o que foi decidido e o que saiu diferente). Decisões do usuário: provedor **Anthropic Claude** (`claude-sonnet-5`), limite de **5 análises/dia por usuário**.

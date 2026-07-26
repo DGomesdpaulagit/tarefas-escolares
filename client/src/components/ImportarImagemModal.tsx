@@ -1,13 +1,11 @@
 import { useRef, useState } from "react";
-import { toast } from "sonner";
-import { AlertCircle, AlertTriangle, Camera, CheckCircle2, Loader2, X } from "lucide-react";
+import { AlertCircle, Camera, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTarefas } from "@/contexts/TarefasContext";
-import { useArquivos } from "@/contexts/ArquivosContext";
 import { useIdioma } from "@/contexts/LanguageContext";
-import { ErroImportarImagem, imageImportService, type CandidataTarefa } from "@/services/imageImportService";
-import TarefaForm from "@/components/TarefaForm";
+import { ErroImportarImagem, imageImportService } from "@/services/imageImportService";
+import RevisaoCandidatasTarefas from "@/components/RevisaoCandidatasTarefas";
+import type { CandidataComId } from "@/lib/candidataTarefa";
 import type { DicionarioChave } from "@/lib/i18n";
 
 interface ImportarImagemModalProps {
@@ -16,34 +14,22 @@ interface ImportarImagemModalProps {
 
 type Status = "idle" | "enviando" | "analisando" | "preview" | "error";
 
-type Candidata = CandidataTarefa & { localId: string };
-
-const LABEL_CAMPO: Record<string, DicionarioChave> = {
-  data: "importarImagem.campoData",
-  disciplina: "importarImagem.campoDisciplina",
-  titulo: "importarImagem.campoTitulo",
-};
-
 export default function ImportarImagemModal({ onClose }: ImportarImagemModalProps) {
   const { user } = useAuth();
-  const { adicionarTarefa } = useTarefas();
-  const { adicionarArquivo } = useArquivos();
   const { t } = useIdioma();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [status, setStatus] = useState<Status>("idle");
-  const [candidatas, setCandidatas] = useState<Candidata[]>([]);
+  const [candidatas, setCandidatas] = useState<CandidataComId[]>([]);
   const [restantesHoje, setRestantesHoje] = useState<number | null>(null);
   const [erro, setErro] = useState("");
   const [nomeArquivo, setNomeArquivo] = useState("");
   const [tamanhoArquivo, setTamanhoArquivo] = useState(0);
-  const [importando, setImportando] = useState(false);
-  const [completandoId, setCompletandoId] = useState<string | null>(null);
 
   const traduzErro = (codigo: string): string => {
-    const chave = `importarImagem.erro.${codigo}` as DicionarioChave;
+    const chave = `importarIA.erro.${codigo}` as DicionarioChave;
     const texto = t(chave);
-    return texto !== chave ? texto : t("importarImagem.erro.generico");
+    return texto !== chave ? texto : t("importarIA.erro.generico");
   };
 
   const handleFileSelect = async (file: File) => {
@@ -75,41 +61,6 @@ export default function ImportarImagemModal({ onClose }: ImportarImagemModalProp
     const file = e.dataTransfer.files[0];
     if (file) handleFileSelect(file);
   };
-
-  const prontas = candidatas.filter((c) => c.camposFaltando.length === 0);
-  const incompletas = candidatas.filter((c) => c.camposFaltando.length > 0);
-
-  const importarProntas = async () => {
-    if (prontas.length === 0) return;
-    setImportando(true);
-    try {
-      for (const c of prontas) {
-        await adicionarTarefa({
-          title: c.title,
-          subject_name: c.subject_name ?? "Outra",
-          subject_id: null,
-          status: "Não iniciada",
-          priority: c.priority,
-          due_date: c.due_date,
-          progress: 0,
-          notes: null,
-          link: null,
-          sector: null,
-          origin: null,
-          description: null,
-        });
-      }
-      await adicionarArquivo(nomeArquivo, tamanhoArquivo, prontas.length, "imagem");
-      toast.success(`${prontas.length} ${t(prontas.length !== 1 ? "importarImagem.toastImportadasPlural" : "importarImagem.toastImportadasSingular")}`);
-      setCandidatas((prev) => prev.filter((c) => c.camposFaltando.length > 0));
-    } catch {
-      toast.error(traduzErro("generico"));
-    } finally {
-      setImportando(false);
-    }
-  };
-
-  const candidataCompletando = candidatas.find((c) => c.localId === completandoId) ?? null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={t("importarImagem.titulo")}>
@@ -169,39 +120,17 @@ export default function ImportarImagemModal({ onClose }: ImportarImagemModalProp
           )}
 
           {status === "preview" && (
-            <div className="space-y-4">
-              {restantesHoje !== null && (
-                <p className="text-xs text-slate-500 text-right">{restantesHoje} {t("importarImagem.restamHoje")}</p>
-              )}
-
-              {candidatas.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 text-sm">
-                  <AlertCircle size={24} className="mx-auto mb-2 opacity-40" aria-hidden="true" />
-                  <p>{t("importarImagem.nenhumaTarefaEncontrada")}</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm text-amber-300 font-medium">
-                    {candidatas.length} {t(candidatas.length !== 1 ? "importarImagem.tarefaEncontradaPlural" : "importarImagem.tarefaEncontradaSingular")}
-                  </p>
-
-                  <div className="space-y-2">
-                    {candidatas.map((c) => (
-                      <CandidataCard
-                        key={c.localId}
-                        candidata={c}
-                        onCompletar={() => setCompletandoId(c.localId)}
-                        t={t}
-                      />
-                    ))}
-                  </div>
-
-                  {prontas.length === 0 && incompletas.length > 0 && (
-                    <p className="text-xs text-slate-500 italic">{t("importarImagem.semTarefasProntas")}</p>
-                  )}
-                </>
-              )}
-            </div>
+            <RevisaoCandidatasTarefas
+              candidatas={candidatas}
+              setCandidatas={setCandidatas}
+              restantesHoje={restantesHoje}
+              nomeArquivo={nomeArquivo}
+              tamanhoArquivo={tamanhoArquivo}
+              tipoArquivo="imagem"
+              onFechar={onClose}
+              onTentarNovamente={() => setStatus("idle")}
+              textoTentarNovamente={t("importarImagem.btnTentarNovamente")}
+            />
           )}
         </div>
 
@@ -211,101 +140,11 @@ export default function ImportarImagemModal({ onClose }: ImportarImagemModalProp
               {t("importarImagem.fechar")}
             </Button>
             <Button onClick={() => setStatus("idle")} className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold">
-              {t("importarImagem.btnTentarOutraFoto")}
+              {t("importarImagem.btnTentarNovamente")}
             </Button>
           </div>
         )}
-
-        {status === "preview" && (
-          <div className="flex gap-3 px-6 py-4 border-t border-white/10 bg-[var(--bg-base)]/50">
-            {candidatas.length === 0 ? (
-              <Button onClick={() => setStatus("idle")} className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold">
-                {t("importarImagem.btnTentarOutraFoto")}
-              </Button>
-            ) : (
-              <>
-                <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white bg-transparent">
-                  {t("importarImagem.btnConcluir")}
-                </Button>
-                {prontas.length > 0 && (
-                  <Button
-                    onClick={importarProntas}
-                    disabled={importando}
-                    className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold gap-2"
-                  >
-                    {importando && <Loader2 size={14} className="animate-spin" />}
-                    {t("importarImagem.btnImportarProntas")} ({prontas.length})
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        )}
       </div>
-
-      {candidataCompletando && (
-        <TarefaForm
-          initial={{
-            title: candidataCompletando.title,
-            subject_name: candidataCompletando.subject_name ?? undefined,
-            due_date: candidataCompletando.due_date ?? undefined,
-            priority: candidataCompletando.priority,
-          }}
-          onSalvou={() => setCandidatas((prev) => prev.filter((c) => c.localId !== completandoId))}
-          onClose={() => setCompletandoId(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-function CandidataCard({
-  candidata, onCompletar, t,
-}: {
-  candidata: Candidata;
-  onCompletar: () => void;
-  t: (chave: DicionarioChave) => string;
-}) {
-  const completa = candidata.camposFaltando.length === 0;
-
-  return (
-    <div className={`rounded-lg p-3 border ${completa ? "bg-white/5 border-white/10" : "bg-amber-500/5 border-amber-500/30"}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm text-slate-200 font-medium truncate">{candidata.title}</p>
-          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-            {candidata.subject_name && (
-              <span className="text-xs bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">{candidata.subject_name}</span>
-            )}
-            {candidata.due_date && (
-              <span className="text-xs bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">
-                {new Date(`${candidata.due_date}T12:00:00`).toLocaleDateString()}
-              </span>
-            )}
-            <span className="text-xs bg-white/10 text-slate-400 px-1.5 py-0.5 rounded">{candidata.priority}</span>
-          </div>
-        </div>
-        {completa ? (
-          <CheckCircle2 size={16} className="text-emerald-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-        ) : (
-          <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
-        )}
-      </div>
-
-      {!completa && (
-        <div className="flex items-center justify-between gap-2 mt-2">
-          <p className="text-xs text-amber-400">
-            {t("importarImagem.faltamCampos")}: {candidata.camposFaltando.map((f) => t(LABEL_CAMPO[f])).join(", ")}
-          </p>
-          <Button
-            size="sm"
-            onClick={onCompletar}
-            className="bg-amber-500 hover:bg-amber-400 text-black font-semibold h-7 px-2.5 text-xs shrink-0"
-          >
-            {t("importarImagem.btnCompletar")}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

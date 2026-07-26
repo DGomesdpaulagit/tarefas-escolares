@@ -1,16 +1,8 @@
 import { supabase } from "@/supabase/client";
+import type { CandidataTarefa } from "@/lib/candidataTarefa";
 
 const FUNCTIONS_URL = `${import.meta.env.VITE_SUPABASE_URL as string}/functions/v1`;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
-export type CandidataTarefa = {
-  title: string;
-  subject_name: string | null;
-  due_date: string | null;
-  priority: "Alta" | "Média" | "Baixa";
-  confianca: number;
-  camposFaltando: ("data" | "disciplina" | "titulo")[];
-};
 
 export class ErroImportarImagem extends Error {
   constructor(public codigo: string) {
