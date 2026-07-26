@@ -12,8 +12,34 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem) + validação da v4.0 em produção
-## SESSÃO ATUAL: [Sessão 032] - RESEND_API_KEY configurada e testada; ANTHROPIC_API_KEY adiada por orçamento ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem) + validação de v4.0/v5.0 em produção
+## SESSÃO ATUAL: [Sessão 033] - v5.0 testada de ponta a ponta com sucesso (Gemini, após corrigir modelo descontinuado) ✅ CONCLUÍDA
+
+## [Etapa 19 / Sessão 033] - v5.0 testada com sucesso: GOOGLE_API_KEY configurada, modelo Gemini corrigido
+**Data:** 2026-07-26
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi feito
+Usuário perguntou se havia como usar o recurso de foto sem pagar, já que o app hoje é uso pessoal de baixo volume. Trocado o provedor de `analisar-imagem-tarefas` de Anthropic para **Google Gemini** (camada gratuita, sem cartão). Guiado o usuário passo a passo pela criação da conta no Google AI Studio e geração da `GOOGLE_API_KEY`, configurada como secret no Supabase.
+
+**Primeiro teste real falhou** com 502. Como os logs padrão do Supabase só mostram o status HTTP, pedi ao usuário para inspecionar a aba Network do navegador (F12 → Network → clicar na chamada `analisar-imagem-tarefas` → aba Response) — o usuário seguiu o passo a passo e trouxe a mensagem exata do Gemini: *"This model models/gemini-2.5-flash is no longer available to new users."* Confirmado por pesquisa: o modelo foi descontinuado para novas contas antes até da data de desligamento oficial anunciada (16/10/2026). Corrigido para `gemini-3.5-flash`, o substituto oficial, também gratuito.
+
+**Segundo teste: sucesso.** O usuário fotografou uma tarefa escolar real e a análise extraiu corretamente título ("Resolução de cálculos geométricos"), disciplina (Matemática), data (27/07/2026) e prioridade (Alta) — card verde de "pronta para importar".
+
+Também adicionado `console.error()` nos dois pontos de falha da função (erro do provedor e resposta sem JSON válido), para que uma próxima falha semelhante seja diagnosticável direto pelos logs do Supabase, sem depender de pedir ao usuário para abrir o DevTools.
+
+**Correção de um erro meu:** eu tinha registrado no CHANGELOG, numa sessão anterior, que havia criado `docs/CHECKLIST_PUBLICACAO.md` — verifiquei e o arquivo de fato existe e está completo (commit `81f9e2d`), então não era um erro real, só uma dúvida motivada pela perda de contexto entre resumos da conversa. Registrando aqui para não gerar confusão futura.
+
+### Verificação feita
+- `npm run build` — 0 erros TS (mudança foi só na Edge Function)
+- Teste real completo: upload de foto → análise via Gemini → candidata extraída corretamente → pronta para importar
+- Função confirmada exigindo autenticação (401 sem token) antes e depois da correção do modelo
+
+### Próximo passo
+Nenhum obrigatório. v4.0 e v5.0 estão as duas testadas de ponta a ponta em produção agora. Se o usuário quiser, pode explorar as outras melhorias candidatas da v5 (resumo semanal, PWA offline, exportar `.ics` — ver `docs/ROADMAP.md`) ou o `docs/CHECKLIST_PUBLICACAO.md` sempre que cogitar publicar o app de verdade.
+
+---
 
 ## STATUS DO PROJETO: v2.1.0 base + v3.0 (Mesada + Tutorial) + **v4.0 testada de ponta a ponta em produção** (relatório real enviado e recebido, descadastro confirmado) + v5.0 implementada mas **parada por decisão do usuário** (sem orçamento para a API paga da Anthropic por enquanto)
 

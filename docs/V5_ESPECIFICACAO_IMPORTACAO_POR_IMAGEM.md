@@ -151,3 +151,15 @@ O usuário decidiu não pagar pela API da Anthropic para uso pessoal ("não tenh
 **Ponto de transparência para o usuário saber:** na camada **gratuita** do Google AI Studio, os prompts enviados podem ser usados pelo Google para melhorar os produtos deles — diferente da API paga, que não faz isso. Como as fotos analisadas passam por lá antes de serem apagadas do nosso Storage, isso é uma característica real do modelo gratuito, não um bug. Se algum dia o app for publicado e o volume justificar, vale reavaliar (ver `docs/CHECKLIST_PUBLICACAO.md`, item 1.2).
 
 **Se o usuário quiser reverter para Anthropic no futuro:** a mudança é isolada nas ~20 linhas do `fetch()` e na leitura da resposta — não exige tocar em banco, frontend ou i18n.
+
+---
+
+## 11. Correção do nome do modelo (2026-07-26)
+
+No primeiro teste real (usuário logado, foto de tarefa real), a análise falhou com **502** e a mensagem exata do Gemini (capturada inspecionando a aba Network do navegador, já que os logs padrão da Edge Function só mostram status HTTP, não o corpo): *"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use a newer model."*
+
+O `gemini-2.5-flash` foi descontinuado para novas contas **antes até da data de desligamento anunciada** (16/10/2026) — um caso real de deprecação sem aviso prévio efetivo, que a documentação já existente sobre o modelo não deixava claro no momento da implementação original (Sessão 032). Corrigido para **`gemini-3.5-flash`**, o substituto oficial, que segue na camada gratuita do Google AI Studio (60 req/min, sem cartão). Testado com uma foto real depois da correção — funcionou, extraiu título/disciplina/data/prioridade corretamente.
+
+**Duas melhorias feitas junto com a correção**, que valem para qualquer erro futuro de IA nesta função:
+- `console.error()` antes de retornar `falha_na_analise` e `resposta_ia_invalida`, logando a resposta bruta do provedor — sem isso, só dava pra diagnosticar inspecionando a aba Network do navegador do usuário
+- Este tipo de erro (modelo descontinuado) é **externo ao nosso código** — se voltar a acontecer no futuro, o sintoma é sempre "análise falha para todo mundo, de repente, sem nenhuma mudança no nosso lado" e a causa é sempre checar se o provedor mudou/descontinuou o modelo em uso.

@@ -10,10 +10,12 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY") ?? "";
 
-// Camada gratuita do Google AI Studio (sem cartão): 1.500 req/dia, bem acima
-// do nosso teto de 5 análises/dia por usuário. Ver docs/V5_ESPECIFICACAO_
-// IMPORTACAO_POR_IMAGEM.md seção 9 para o histórico da troca de provedor.
-const GEMINI_MODEL = "gemini-2.5-flash";
+// Camada gratuita do Google AI Studio (sem cartão), bem acima do nosso teto de
+// 5 análises/dia por usuário. Ver docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md
+// seção 9 (troca de provedor) e seção 11 (gemini-2.5-flash foi descontinuado
+// para novas contas antes até da data de desligamento anunciada — trocado
+// para gemini-3.5-flash, o substituto oficial, em 2026-07-26).
+const GEMINI_MODEL = "gemini-3.5-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const LIMITE_DIARIO = 5;
 const JANELA_HORAS = 24;
@@ -236,6 +238,7 @@ Regras:
   if (!respostaIA.ok) {
     await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: false });
     const detalhe = await respostaIA.text();
+    console.error(`Gemini respondeu ${respostaIA.status}: ${detalhe.slice(0, 500)}`);
     return json({ erro: "falha_na_analise", detalhe: detalhe.slice(0, 300) }, 502);
   }
 
@@ -247,6 +250,7 @@ Regras:
     brutas = extrairArrayJSON(texto);
   } catch {
     await admin.from("image_analysis_usage").insert({ user_id: user.id, sucesso: false });
+    console.error(`Resposta do Gemini sem JSON reconhecível. corpo=${JSON.stringify(corpo).slice(0, 800)}`);
     return json({ erro: "resposta_ia_invalida" }, 502);
   }
 

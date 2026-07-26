@@ -8,6 +8,13 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 19 / Sessão 032 — 2026-07-26) — v5.0: modelo Gemini descontinuado, testado e funcionando
+No primeiro teste real com foto de tarefa, a análise falhava com 502. Causa encontrada inspecionando a aba Network do navegador (os logs da Edge Function só mostravam o status HTTP, sem o corpo): `gemini-2.5-flash` foi descontinuado para novas contas antes até da data de desligamento anunciada pelo Google. Corrigido para `gemini-3.5-flash`, o substituto oficial, ainda na camada gratuita. Testado com sucesso depois: foto real → tarefa extraída corretamente (título, disciplina, data, prioridade).
+
+Adicionado `console.error()` nos dois pontos de falha da análise (resposta de erro do provedor e resposta sem JSON válido), logando o corpo bruto — sem isso o diagnóstico dependia de inspecionar a aba Network do navegador do usuário a cada vez.
+
+Detalhes em `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 11.
+
 ### Modificado (Etapa 19 / Sessão 032 — 2026-07-24) — v5.0: provedor de IA trocado de Anthropic para Google Gemini
 Usuário pediu uma alternativa sem custo à Anthropic, já que o app hoje é uso pessoal com volume baixo (teto de 5 análises/dia). Trocado para **Google Gemini** (`gemini-2.5-flash`), que tem camada gratuita real via Google AI Studio (sem cartão), com limite de 1.500 requisições/dia.
 
