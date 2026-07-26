@@ -473,7 +473,7 @@ Adicionado recurso equivalente ao de foto, mas por áudio (`ImportarAudioModal.t
 
 Duplicação eliminada nessa mesma leva: `lib/candidataTarefa.ts` (tipo compartilhado) e `components/RevisaoCandidatasTarefas.tsx` (tela de revisão das candidatas, usada por foto e áudio). Ver `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 12.
 
-**Não testado ponta a ponta** (sem login/microfone disponíveis na sessão): pedir ao usuário para testar o seletor e a gravação de áudio reais na próxima interação.
+**✅ Testado e confirmado pelo usuário na mesma sessão** ("deu certo") — seletor e fluxo de áudio funcionando de primeira, sem precisar de correção (diferente da foto, que exigiu trocar o modelo Gemini descontinuado). v4.0 e v5.0 (foto e áudio) estão as três validadas em produção agora.
 
 ### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
 

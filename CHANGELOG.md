@@ -18,7 +18,7 @@ Usuário pediu um recurso equivalente à foto, mas por áudio, e que os dois dei
 - **Refatoração para eliminar duplicação:** `lib/candidataTarefa.ts` (tipo compartilhado) e `components/RevisaoCandidatasTarefas.tsx` (tela de revisão das tarefas candidatas, agora usada tanto por foto quanto por áudio, em vez de duas cópias quase idênticas)
 - Códigos de erro do backend generalizados (`imagem_nao_encontrada` → `arquivo_nao_encontrado`, etc.) e chaves i18n compartilhadas migradas para o namespace `importarIA.*`
 
-Detalhes técnicos completos em `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 12.
+Detalhes técnicos completos em `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` seção 12. **Testado pelo usuário em seguida: funcionou de primeira**, sem precisar de correção.
 
 ### Corrigido (Etapa 19 / Sessão 032 — 2026-07-26) — v5.0: modelo Gemini descontinuado, testado e funcionando
 No primeiro teste real com foto de tarefa, a análise falhava com 502. Causa encontrada inspecionando a aba Network do navegador (os logs da Edge Function só mostravam o status HTTP, sem o corpo): `gemini-2.5-flash` foi descontinuado para novas contas antes até da data de desligamento anunciada pelo Google. Corrigido para `gemini-3.5-flash`, o substituto oficial, ainda na camada gratuita. Testado com sucesso depois: foto real → tarefa extraída corretamente (título, disciplina, data, prioridade).

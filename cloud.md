@@ -35,11 +35,11 @@ Aproveitada a oportunidade para eliminar duplicação: extraído `lib/candidataT
 - Edge Function `analisar-audio-tarefas` deployada com sucesso
 - Migration `010_task_audio` aplicada (bucket + tabela + RLS confirmados pelo próprio `apply_migration`)
 
-### Não verificado (e por quê)
-O fluxo completo do seletor (abrir "+ Nova Tarefa" → escolher Áudio → gravar → revisar → importar) não foi exercitado de ponta a ponta: exige login na conta do usuário e acesso a microfone, nenhum dos dois disponível nesta sessão pelo lado do Claude. Pedir ao usuário para testar na próxima interação.
+### ✅ Testado pelo usuário logo em seguida, na mesma sessão
+Usuário confirmou "deu certo": seletor "Nova Tarefa" com as 3 opções funcionando, e o fluxo de áudio (gravar → analisar → revisar → importar) funcionou de primeira, sem precisar de nenhum ajuste — diferente do que aconteceu com a foto (que precisou corrigir o modelo Gemini descontinuado). Com isso, **v4.0 e v5.0 (foto e áudio) estão as três validadas de ponta a ponta em produção**.
 
 ### Próximo passo
-Usuário testar o seletor "Nova Tarefa" (as três opções) e o fluxo de áudio de verdade — gravar um áudio contando uma tarefa e conferir se a extração funciona como a de foto. Reportar qualquer erro do mesmo jeito que já funcionou bem nas sessões anteriores (print da aba Network se a análise falhar).
+Nenhum obrigatório. Tudo que foi planejado para a v4.0 e v5.0 está implementado e funcionando. Se o usuário quiser, pode explorar as outras melhorias candidatas da v5 (resumo semanal, PWA offline, exportar `.ics`) ou o `docs/CHECKLIST_PUBLICACAO.md` quando cogitar publicar o app de verdade.
 
 ---
 
