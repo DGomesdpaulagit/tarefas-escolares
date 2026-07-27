@@ -36,8 +36,7 @@ Se o usuário disser "sim", "pode", "continua", "vai", "oi", ou qualquer coisa �
 C:\Users\HP\Documents\Tarefas-Escolares-app (1)
 ```
 
-Branch pessoal ativa (v3.0, módulo de Mesada + tutorial guiado): `v3-mesada-pessoal`.
-Branch pública/estável (v2.1.0): `main`.
+Branch única do projeto: `main` (v2.1.0 + Mesada/tutorial + i18n + relatório ao responsável + importação por IA). A antiga branch `v3-mesada-pessoal` foi descontinuada e mesclada em `main` (Sessão 029a, 2026-07-23) — a Mesada segue protegida pela feature flag `VITE_ENABLE_MESADA_MODULE`, não por uma branch separada. Tag `v2.1.0-publico` marca o ponto de retorno seguro (antes da Mesada), útil se o app for publicado ao público um dia — ver `docs/CHECKLIST_PUBLICACAO.md`.
 
 ## URLs oficiais
 
@@ -153,7 +152,9 @@ A sugestão de nome deve cobrir **tudo que aconteceu na conversa inteira**, não
 ## Stack do projeto
 
 React 19 + TypeScript 5.6 + Vite 7 + Tailwind CSS v4 + shadcn/ui +
-Supabase Auth + PostgreSQL + Wouter + Recharts + Framer Motion + Sonner + Vercel CI/CD
+Supabase (Auth + PostgreSQL + Storage + Edge Functions/Deno + pg_cron) + Wouter + Recharts + Framer Motion + Sonner + Vercel CI/CD
+
+Integrações externas via Edge Function (secrets no painel do Supabase, nunca no `.env` do cliente): Google Gemini (importação de tarefas por foto/áudio) e Resend (relatório mensal ao responsável).
 
 ---
 

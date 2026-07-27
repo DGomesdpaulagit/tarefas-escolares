@@ -475,6 +475,20 @@ Duplicação eliminada nessa mesma leva: `lib/candidataTarefa.ts` (tipo comparti
 
 **✅ Testado e confirmado pelo usuário na mesma sessão** ("deu certo") — seletor e fluxo de áudio funcionando de primeira, sem precisar de correção (diferente da foto, que exigiu trocar o modelo Gemini descontinuado). v4.0 e v5.0 (foto e áudio) estão as três validadas em produção agora.
 
+### ✅ Auditoria geral do projeto (Sessão 035, 2026-07-27)
+
+Usuário pediu para ler todo o projeto, atualizar documentação e achar erros. Resultado:
+
+**Banco corrigido** (migration `011_hardening_e_performance`): todas as ~24 policies de RLS reescritas de `auth.uid()` para `(select auth.uid())` (WARN de performance do próprio linter do Supabase — reavaliação por linha em vez de por statement); `search_path` fixado em `set_updated_at()`/`handle_new_user()`; `EXECUTE` de `handle_new_user()`/`rls_auto_enable()` revogado de `anon`/`authenticated` (**atenção**: `REVOKE ... FROM PUBLIC` sozinho não basta, o Supabase concede `EXECUTE` explicitamente a `anon`/`authenticated` — precisa revogar dos dois diretamente); 5 índices de FK adicionados. Confirmado via `get_advisors` antes/depois.
+
+**Migrations `003`–`006` reconstruídas** — existiam só em produção (aplicadas via MCP em sessões antigas), nunca tinham sido salvas como arquivo no repo. Lição: **sempre que aplicar uma migration via MCP, também salvar o arquivo `.sql` correspondente em `supabase/migrations/` na mesma sessão** — não confiar em "já apliquei, depois eu salvo".
+
+**`.env.example` criado** — nunca existiu, apesar do README instruir copiá-lo.
+
+**Documentação técnica reescrita**: `README.md`, `docs/ARQUITETURA.md`, `docs/BANCO_DE_DADOS.md`, `docs/DEPLOY.md`, `LINKS.md` (tinha links relativos quebrados), `MEMORY_CORE.md` (parado desde a Sessão 028, com regra já revertida), `CLAUDE.md` (branch `v3-mesada-pessoal` como se ainda fosse ativa — isso guiava mal toda sessão nova), `DOCUMENTACAO_PROJETO.md` (seções 25/26/23).
+
+**Encontrado mas não corrigido sozinho** (decisão do usuário, ainda pendente de resposta): dois lockfiles (npm + pnpm) coexistindo; `server/index.ts` e `shared/const.ts` são código morto (zero referências em todo o projeto, não usados pelo deploy real da Vercel) — não apaguei sem confirmação; "Leaked password protection" desativado no Supabase Auth é toggle de dashboard, não corrigível por código.
+
 ### ✅ v5.0 IMPLEMENTADA — Registro de tarefas por imagem (Sessão 031, 2026-07-24)
 
 Especificação: `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md` (seção 9 registra o que foi decidido e o que saiu diferente). Decisões do usuário: provedor **Anthropic Claude** (`claude-sonnet-5`), limite de **5 análises/dia por usuário**.

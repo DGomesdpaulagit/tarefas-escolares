@@ -46,13 +46,12 @@ Todos os links relevantes do projeto organizados por categoria.
 | Recurso | URL |
 |---------|-----|
 | **Repositório** | https://github.com/DGomesdpaulagit/tarefas-escolares |
-| **Branch main (pública)** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/main |
-| **Branch v3-mesada-pessoal (uso pessoal)** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/v3-mesada-pessoal |
+| **Branch main (única, publicada)** | https://github.com/DGomesdpaulagit/tarefas-escolares/tree/main |
 | **Commits** | https://github.com/DGomesdpaulagit/tarefas-escolares/commits/main |
 | **Issues** | https://github.com/DGomesdpaulagit/tarefas-escolares/issues |
 | **Releases** | https://github.com/DGomesdpaulagit/tarefas-escolares/releases |
 
-> ⚠️ A branch `v3-mesada-pessoal` tem commits locais ainda não enviados ao GitHub (push falhou por exigir autenticação interativa neste ambiente). Rodar `git push origin v3-mesada-pessoal` manualmente.
+> A branch `v3-mesada-pessoal` foi descontinuada — tudo foi mesclado em `main` (Sessão 029a, 2026-07-23). Hoje o projeto trabalha só em `main`; a tag `v2.1.0-publico` marca o ponto de retorno seguro anterior à Mesada, se um dia o app for publicado ao público (ver `docs/CHECKLIST_PUBLICACAO.md`).
 
 ---
 
@@ -73,6 +72,15 @@ Todos os links relevantes do projeto organizados por categoria.
 | Supabase Auth | https://supabase.com/docs/guides/auth |
 | Row Level Security | https://supabase.com/docs/guides/database/postgres/row-level-security |
 | Supabase Management API | https://supabase.com/docs/reference/api/introduction |
+| Supabase Edge Functions | https://supabase.com/docs/guides/functions |
+| pg_cron | https://supabase.com/docs/guides/database/extensions/pg_cron |
+
+### IA e E-mail (v4.0 / v5.0)
+| Serviço | Documentação | Uso no projeto |
+|-----------|-------------|-----|
+| Google Gemini API | https://ai.google.dev/gemini-api/docs | Análise de foto/áudio (`GOOGLE_API_KEY`) |
+| Google AI Studio (gerar chave) | https://aistudio.google.com/apikey | — |
+| Resend | https://resend.com/docs | Relatório mensal ao responsável (`RESEND_API_KEY`) |
 
 ### UI
 | Tecnologia | Documentação |
@@ -118,16 +126,23 @@ Todos os links relevantes do projeto organizados por categoria.
 
 | Arquivo | Descrição |
 |---------|-----------|
+| [cloud.md](./cloud.md) | Registro de continuidade entre sessões — lido automaticamente a cada conversa |
 | [MEMORY.md](./MEMORY.md) | Estado completo do projeto — referência principal entre sessões |
+| [CLAUDE.md](./CLAUDE.md) | Instruções automáticas de início/fim de sessão |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de versões (Keep a Changelog) |
 | [PROMPTS.md](./PROMPTS.md) | Prompts usados para construir o projeto |
 | [BUGS.md](./BUGS.md) | Bugs resolvidos e conhecidos |
 | [LINKS.md](./LINKS.md) | Este arquivo |
-| [ARQUITETURA.md](./ARQUITETURA.md) | Arquitetura técnica detalhada |
-| [BANCO_DE_DADOS.md](./BANCO_DE_DADOS.md) | Esquema completo do banco |
-| [DEPLOY.md](./DEPLOY.md) | Guia de deploy e CI/CD |
-| [ROADMAP.md](./ROADMAP.md) | Roadmap por fases |
+| [docs/ARQUITETURA.md](docs/ARQUITETURA.md) | Arquitetura técnica detalhada |
+| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md) | Esquema completo do banco |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Guia de deploy e CI/CD |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Roadmap por fases |
+| [docs/CHECKLIST_PUBLICACAO.md](docs/CHECKLIST_PUBLICACAO.md) | O que fazer se o app for publicado publicamente um dia |
+| [docs/AUDITORIA.md](docs/AUDITORIA.md) | Auditoria de código histórica (2026-05-19) |
+| [docs/V3_ESPECIFICACAO_MODULO_MESADA.md](docs/V3_ESPECIFICACAO_MODULO_MESADA.md) | Especificação: Mesada por Desempenho |
+| [docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md](docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md) | Especificação: relatório mensal ao responsável |
+| [docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md](docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md) | Especificação: importação por foto e áudio |
 
 ---
 
-*Atualizado em: 2026-07-22*
+*Atualizado em: 2026-07-27*

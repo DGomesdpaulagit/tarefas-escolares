@@ -8,6 +8,23 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Corrigido (Etapa 19 / Sessão 035 — 2026-07-27) — Auditoria geral: banco de dados, migrations faltando, documentação desatualizada
+Usuário pediu para ler todos os arquivos e documentos do projeto, atualizar e procurar erros.
+
+**Banco de dados (migration `011_hardening_e_performance`, aplicada):**
+- `auth_rls_initplan` (WARN de performance): todas as ~24 policies de RLS reavaliavam `auth.uid()` por linha em vez de por statement — trocadas para `(select auth.uid())` em todas as tabelas (profiles, subjects, tasks, imports, notification_settings, push_subscriptions, mesada_*, guardians, guardian_reports_log, image/audio_analysis_usage). Confirmado por nova checagem de advisors: warnings zerados
+- `search_path` mutável em `set_updated_at()` e `handle_new_user()` (WARN de segurança) — fixado com `SET search_path = public, pg_temp`
+- `handle_new_user()` e `rls_auto_enable()` executáveis via RPC por `anon`/`authenticated` sem necessidade (WARN de segurança) — `EXECUTE` revogado; não afeta o disparo automático via trigger/event trigger
+- Índices faltando em 5 foreign keys (`guardian_codes.guardian_id`, `mesada_materias.subject_id`/`user_id`, `mesada_notas.user_id`, `tasks.subject_id`) — adicionados
+
+**Migrations `003`–`006` reconstruídas:** existiam aplicadas em produção mas os arquivos nunca tinham sido salvos no repositório (aplicadas direto via MCP em sessões antigas) — reconstruídas a partir do schema real, idempotentes.
+
+**`.env.example` criado:** não existia — o README instruía `cp .env.example .env`, um comando que sempre falhava.
+
+**Documentação reescrita/corrigida** (estava congelada em versões antigas do projeto, algumas desde a v1): `README.md`, `docs/ARQUITETURA.md`, `docs/BANCO_DE_DADOS.md`, `docs/DEPLOY.md`, `LINKS.md` (links relativos quebrados — apontavam para `./ARQUITETURA.md` etc. quando os arquivos estão em `docs/`), `MEMORY_CORE.md` (parado na Sessão 028, ainda com a regra revertida "Mesada nunca vai para main"), `CLAUDE.md` (branch `v3-mesada-pessoal` não existe mais como estratégia ativa), `DOCUMENTACAO_PROJETO.md` (seção 25 desatualizada + adicionada seção 26 para v4.0/v5.0 + seção 23 de ideias futuras com itens já entregues removidos).
+
+**Encontrado e não corrigido automaticamente** (reportado ao usuário para decisão): `package-lock.json` e `pnpm-lock.yaml` coexistindo (dois gerenciadores de pacote); `server/index.ts` e `shared/const.ts` sem nenhuma referência em todo o código — dead code órfão, não usado pelo deploy da Vercel; "Leaked password protection" desativado no Supabase Auth (toggle de dashboard, não é algo que dá pra corrigir por SQL/código); `guardian_codes` com RLS sem nenhuma policy segue INFO no advisor — comportamento intencional, documentado.
+
 ### Adicionado (Etapa 19 / Sessão 034 — 2026-07-26) — Importação por áudio + "Nova Tarefa" unificada (manual/foto/áudio)
 Usuário pediu um recurso equivalente à foto, mas por áudio, e que os dois deixassem de ser botões soltos e passassem a viver dentro do fluxo de "Nova Tarefa".
 

@@ -12,8 +12,44 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem/áudio) + validação em produção
-## SESSÃO ATUAL: [Sessão 034] - Importação por áudio + "Nova Tarefa" unificada ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem/áudio) + auditoria geral
+## SESSÃO ATUAL: [Sessão 035] - Auditoria completa: RLS/performance, migrations faltando, documentação ✅ CONCLUÍDA
+
+## [Etapa 19 / Sessão 035] - Auditoria geral do projeto: banco, migrations faltando, documentação desatualizada
+**Data:** 2026-07-27
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi pedido
+"Leia todos os arquivos e documentos do projeto e os atualize e veja erros."
+
+### O que foi encontrado e corrigido
+
+**Banco de dados** — rodei `get_advisors` (segurança e performance) do MCP do Supabase, que eu não tinha usado até agora neste projeto:
+- Todas as ~24 policies de RLS reavaliavam `auth.uid()` linha a linha em vez de por statement (WARN de performance, `auth_rls_initplan`) — reescritas para `(select auth.uid())` numa migration só (`011_hardening_e_performance`), sem mudar nenhum comportamento. Reconferido depois: warning zerado.
+- `set_updated_at()` e `handle_new_user()` com `search_path` mutável (WARN de segurança) — corrigido.
+- `handle_new_user()` e `rls_auto_enable()` executáveis via RPC por `anon`/`authenticated` sem necessidade (WARN de segurança) — precisei de duas tentativas: `REVOKE ... FROM PUBLIC` não bastou porque o Supabase concede `EXECUTE` explicitamente a `anon`/`authenticated` na criação da função, separado do grant via `PUBLIC`. Corrigido revogando dos dois diretamente. Reconferido: zerado.
+- 5 índices faltando em foreign keys — adicionados.
+
+**Migrations perdidas:** descobri que `supabase/migrations/003` a `006` (emoji em disciplinas, onboarding, ano escolar, notificação ao criar) **nunca foram salvas como arquivo** — só existiam aplicadas direto em produção via MCP, em sessões antigas. Reconstruí os 4 arquivos a partir do schema real (idempotentes, `IF NOT EXISTS`), pra fechar essa lacuna no controle de versão.
+
+**`.env.example` não existia** — o `README.md` instruía `cp .env.example .env`, comando que sempre falhava para qualquer pessoa nova clonando o projeto. Criado.
+
+**Documentação técnica muito desatualizada** — vários arquivos estavam congelados em versões antigas do projeto (alguns desde antes da Mesada existir): `README.md`, `docs/ARQUITETURA.md`, `docs/BANCO_DE_DADOS.md` e `docs/DEPLOY.md` reescritos para refletir o estado real (contexts/services/tabelas/buckets/Edge Functions atuais, incluindo v3/v4/v5). `LINKS.md` tinha links relativos quebrados (apontava pra `./ARQUITETURA.md` quando o arquivo está em `docs/`) e ainda avisava sobre um push pendente resolvido há muito tempo. `MEMORY_CORE.md` estava parado na Sessão 028 e ainda continha a regra "Mesada nunca vai para main", que foi revertida na Sessão 029a — atualizado. `CLAUDE.md` (as instruções automáticas de início de sessão) ainda descrevia uma branch `v3-mesada-pessoal` como estratégia ativa, quando na prática o projeto trabalha só em `main` há várias sessões — corrigido, porque isso guiava mal toda nova conversa. `DOCUMENTACAO_PROJETO.md`: seção 25 corrigida e nova seção 26 criada para v4.0/v5.0; seção 23 (ideias futuras) tinha itens já entregues (i18n, foto/OCR) ainda listados como pendentes.
+
+### O que encontrei mas não corrigi sozinho (decisão do usuário)
+- **Dois lockfiles** (`package-lock.json` e `pnpm-lock.yaml`) versionados ao mesmo tempo — o fluxo real usa `npm`, mas ter os dois pode causar drift de dependências entre eles. Não removi nenhum sem confirmar qual o usuário quer manter.
+- **`server/index.ts` e `shared/const.ts` são código morto** — nenhum lugar do projeto importa nada de `shared/`, e nenhum script do `package.json` roda o `server/`. O deploy real (Vercel) serve o build estático direto, sem esse servidor. Não apaguei por conta própria (regra do `CLAUDE.md`: nunca apagar arquivo sem necessidade confirmada) — fica como sugestão.
+- **"Leaked password protection" desativado** no Supabase Auth (WARN do advisor) — é um toggle no painel (Authentication → Settings), não algo que corrijo por SQL.
+
+### Verificação feita
+- `npm run build` — 0 erros TS, antes e depois de todas as mudanças de banco
+- `get_advisors` (segurança e performance) reconferido depois das correções — os warnings tratados sumiram; restam só itens INFO esperados (índices novos ainda sem uso — natural, app de baixo tráfego) e os dois itens de decisão do usuário acima
+
+### Próximo passo
+Nenhum obrigatório. Perguntar ao usuário sobre os 3 itens da seção "decisão do usuário" acima, se quiser resolver também.
+
+---
 
 ## [Etapa 19 / Sessão 034] - Importação por áudio + reorganização da entrada (manual/foto/áudio dentro de "Nova Tarefa")
 **Data:** 2026-07-26

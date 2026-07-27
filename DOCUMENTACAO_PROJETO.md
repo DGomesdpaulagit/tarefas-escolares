@@ -34,7 +34,8 @@
 22. [Diferenciais do sistema](#22-diferenciais-do-sistema)
 23. [Ideias futuras para expansão](#23-ideias-futuras-para-expansão)
 24. [Conclusão final](#24-conclusão-final)
-25. [Anexo — v3.0: Módulo de Mesada + Tutorial guiado (branch pessoal)](#25-anexo--v30-módulo-de-mesada--tutorial-guiado-branch-pessoal)
+25. [Anexo — v3.0: Módulo de Mesada + Tutorial guiado](#25-anexo--v30-módulo-de-mesada--tutorial-guiado)
+26. [Anexo — v4.0 (relatório ao responsável) e v5.0 (importação por foto/áudio)](#26-anexo--v40-relatório-ao-responsável-e-v50-importação-por-fotoáudio)
 
 ---
 
@@ -1021,20 +1022,23 @@ Sem precisar refatorar componente por componente, troca de tema funciona em todo
 
 ## 23. Ideias futuras para expansão
 
+> ✅ **Já entregues desde a última revisão desta seção** (não são mais "futuras"): i18n em runtime (pt-BR/en/es, cobertura completa), OCR/foto de quadro-negro e importação por áudio via IA (v5.0), relatório mensal ao responsável (v4.0). Ver seção 26.
+
 ### 23.1 Curto prazo (próximas semanas)
 
-- **i18n em runtime** — usar a estrutura já preparada (`profiles.language` + 3 idiomas no seletor) para traduzir efetivamente as strings da interface (pt-BR, en, es)
-- **Otimização de bundle** — code-splitting via `manualChunks` no Vite para baixar o chunk principal abaixo de 500kB
+- **Otimização de bundle** — code-splitting via `manualChunks` no Vite para baixar o chunk principal abaixo de 500kB (ainda pendente — build atual gera ~1,78MB no chunk principal)
 - **Testes manuais ampliados em mobile real** — bateria de testes em iOS Safari (PWA), Chrome Android, Firefox Android
 - **Drag-and-drop entre dias na Agenda** — arrastar mini-card de um dia para outro alterando `due_date`
+- **Resumo semanal automático** — notificação/e-mail no domingo à noite com o que vem pela frente
+- **Exportar Agenda para `.ics`** — importável no Google Calendar/Apple Calendar
 
 ### 23.2 Médio prazo
 
 - **Tarefas recorrentes** — gerar automaticamente tarefas semanais ou mensais ("Aula de Matemática toda quarta")
 - **Tags / labels customizáveis** — além de Setor e Origem, permitir tags livres
-- **OCR de quadro-negro** — fotografar o quadro pelo celular e gerar tarefa automaticamente
-- **Sugestão de prioridade via IA** — analisar histórico e título da tarefa para sugerir prioridade
+- **Sugestão de prioridade via IA** — analisar histórico e título da tarefa para sugerir prioridade (diferente da v5.0, que já extrai prioridade do conteúdo de uma foto/áudio — isso seria sobre tarefas digitadas manualmente)
 - **Integração com Google Calendar / Microsoft Teams** — sincronização de eventos e tarefas
+- **Modo offline (PWA completo)** — cache de tarefas via Service Worker + IndexedDB para uso sem internet
 
 ### 23.3 Longo prazo
 
@@ -1043,7 +1047,6 @@ Sem precisar refatorar componente por componente, troca de tema funciona em todo
 - **Recurring revenue / Plano Pro** — recursos premium (IA, storage maior, integrações)
 - **API pública** para integração com sistemas educacionais (Moodle, Google Classroom, Microsoft Education)
 - **Análise preditiva** — alertar "você costuma atrasar tarefas de Matemática 60% das vezes, comece com antecedência"
-- **Modo offline completo** — service worker cacheando tudo + IndexedDB para escrever offline
 
 ### 23.4 Pequenos refinamentos pendentes
 
@@ -1087,9 +1090,9 @@ O projeto está oficialmente **finalizado na versão 2.1.0**. Pode evoluir confo
 
 ---
 
-## 25. Anexo — v3.0: Módulo de Mesada + Tutorial guiado (branch pessoal)
+## 25. Anexo — v3.0: Módulo de Mesada + Tutorial guiado
 
-> Esta seção documenta trabalho posterior ao encerramento da v2.1.0 (seção 24). **Não faz parte da versão pública** — vive exclusivamente na branch `v3-mesada-pessoal` e não deve ser mesclada em `main`.
+> Esta seção documenta trabalho posterior ao encerramento da v2.1.0 (seção 24). **Atualização (2026-07-23):** ao contrário do que esta seção dizia originalmente, o módulo de Mesada **não vive mais numa branch separada** — foi mesclado em `main` (única branch do projeto hoje), protegido só pela feature flag `VITE_ENABLE_MESADA_MODULE`. Decisão do usuário: o único destinatário do link de produção é o próprio pai dele, que banca a mesada e tem acesso autorizado aos dados. Ver `docs/CHECKLIST_PUBLICACAO.md` para o que fazer se isso mudar (app publicado ao público).
 
 ### 25.1 Módulo de Mesada por Desempenho (uso exclusivamente pessoal)
 
@@ -1124,12 +1127,28 @@ Diferente do módulo de Mesada, esse recurso **não é pessoal por natureza** �
 
 ### 25.3 Estado no encerramento desta etapa
 
-Ambos os recursos foram implementados, com build validado (0 erros TypeScript) e commits salvos na branch `v3-mesada-pessoal`. Testes manuais na UI real (login, lançamentos, tutorial) ficam a cargo do usuário. Não há próximo passo definido — o usuário não tinha novas ideias no momento do encerramento desta etapa (2026-07-22). Um segundo projeto Vercel apontando para essa branch (com a env var ativada) é o caminho natural caso o usuário queira um link de acesso remoto pessoal no futuro.
+Ambos os recursos foram implementados e mesclados em `main`, com build validado (0 erros TypeScript). O deploy de produção (`tarefas-escolares-five.vercel.app`) roda com `VITE_ENABLE_MESADA_MODULE=true`, então o módulo aparece nesse link — decisão consciente do usuário, ver nota no início da seção 25.
 
 ---
 
-**Documento gerado em:** 2026-05-29 · **Anexo v3.0 adicionado em:** 2026-07-22
-**Versão do sistema documentada:** 2.1.0 (pública) + 3.0 (pessoal, anexo)
+## 26. Anexo — v4.0 (relatório ao responsável) e v5.0 (importação por foto/áudio)
+
+### 26.1 v4.0 — Relatório mensal para o responsável
+
+Todo dia 25, quem cadastrou um e-mail de responsável recebe um resumo do mês (tarefas totais, concluídas, expiradas, pendentes, comparação com o mês anterior, destaque de melhor/pior disciplina). As três operações sobre o e-mail do responsável — cadastrar, editar, excluir — exigem um código de 6 dígitos enviado ao e-mail que autoriza a mudança (o novo endereço no cadastro; o atual em edição/exclusão), garantindo que o repasse do código seja o próprio ato de consentimento.
+
+Implementado com 4 Edge Functions (`guardian-request-code`, `guardian-verify-code`, `enviar-relatorio-responsavel`, `guardian-unsubscribe`), 3 tabelas novas com RLS restritiva (`guardians`, `guardian_codes` — sem nenhuma policy, inacessível ao cliente — e `guardian_reports_log`), provedor de e-mail **Resend** (camada gratuita) e agendamento via pg_cron. Validado em produção com envio real: e-mail recebido e link de descadastro funcionando. Especificação completa: `docs/V4_ESPECIFICACAO_RELATORIO_RESPONSAVEL.md`.
+
+### 26.2 v5.0 — Registro de tarefas por foto e por áudio (análise por IA)
+
+Em vez de digitar cada tarefa, o usuário tira uma foto de um quadro/agenda ou grava um áudio contando o que precisa fazer, e uma IA (Google Gemini, camada gratuita) extrai as tarefas candidatas para revisão antes de importar. Tarefas com dado incompleto (sem data, sem disciplina reconhecida, título vago) ganham um aviso e precisam ser completadas manualmente antes de entrar na lista.
+
+Os dois modos (foto e áudio) vivem dentro de um seletor único ao criar uma tarefa nova (`NovaTarefaModal`) — não são mais botões soltos na tela de Tarefas. Nenhuma foto/áudio é retido: o arquivo é apagado do Storage assim que a análise termina. Limite de 5 análises por dia por modalidade, para controlar custo. Validado em produção com foto e áudio reais. Especificação completa: `docs/V5_ESPECIFICACAO_IMPORTACAO_POR_IMAGEM.md`.
+
+---
+
+**Documento gerado em:** 2026-05-29 · **Anexo v3.0 adicionado em:** 2026-07-22 · **Anexos v4.0/v5.0 e revisão geral em:** 2026-07-27
+**Versão do sistema documentada:** 2.1.0 + 3.0 (Mesada) + 4.0 (relatório ao responsável) + 5.0 (importação por IA) — tudo em `main`
 **Autoria do projeto:** Davi Gomes de Paula
 **Pareamento técnico ao longo do desenvolvimento:** Claude (Anthropic) via Claude Code
 

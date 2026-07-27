@@ -15,9 +15,32 @@ Guia completo para publicar o projeto em produção.
 
 1. No menu lateral, clique em **SQL Editor**
 2. Clique em **New Query**
-3. Cole o conteúdo de `supabase/migrations/001_initial_schema.sql`
-4. Clique em **Run** (ou `Ctrl+Enter`)
-5. Verifique em **Table Editor** se as tabelas foram criadas
+3. Cole e rode o conteúdo de **cada arquivo** de `supabase/migrations/`, **em ordem numérica** (001, 002, 003... até o mais recente) — cada um é uma migration incremental, não um schema único
+4. Verifique em **Table Editor** se as tabelas foram criadas
+
+### 1.1.1 Deployar as Edge Functions
+
+Cada pasta em `supabase/functions/` (exceto `_shared`) é uma função a deployar — via Supabase CLI (`supabase functions deploy <nome>`) ou pelo MCP do Supabase. `guardian-unsubscribe` deve ser deployada com `verify_jwt = false` (é o endpoint público do link de descadastro); as demais usam o padrão (`verify_jwt = true`).
+
+### 1.1.2 Configurar os Secrets das Edge Functions
+
+Em **Edge Functions → Secrets** no painel do Supabase (nunca no `.env` do cliente):
+
+| Secret | Necessário para | Onde gerar |
+|---|---|---|
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Notificações push (`send-notifications`) | Gerar par de chaves VAPID (ex: `npx web-push generate-vapid-keys`) |
+| `RESEND_API_KEY` | Relatório mensal ao responsável (v4.0) | [resend.com](https://resend.com) → API Keys |
+| `EMAIL_FROM` (opcional) | Idem — remetente do relatório | Default: `Tarefas Escolares <onboarding@resend.dev>` (domínio de teste, só entrega ao dono da conta Resend) |
+| `APP_URL` (opcional) | Idem — link de descadastro no rodapé do e-mail | Default: `https://tarefas-escolares-five.vercel.app` |
+| `GOOGLE_API_KEY` | Importação por foto/áudio via IA (v5.0) | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — camada gratuita, sem cartão |
+
+### 1.1.3 Agendar os Cron Jobs (pg_cron)
+
+Habilite a extensão `pg_cron` (Database → Extensions) e agende:
+- `send-notifications` → `0 11 * * *` (diário, 08h Brasília)
+- `enviar-relatorio-responsavel` → `0 11 25 * *` (dia 25, 08h Brasília)
+
+Ver `docs/BANCO_DE_DADOS.md` para os nomes exatos dos jobs já em uso em produção.
 
 ### 1.2 Obter as Credenciais
 
@@ -61,7 +84,7 @@ git push -u origin main
    - `VITE_SUPABASE_URL` = sua URL do Supabase
    - `VITE_SUPABASE_ANON_KEY` = sua chave anon
 5. Framework: **Vite**
-6. Build command: `pnpm build`
+6. Build command: `npm run build`
 7. Output directory: `dist`
 8. Clique em **Deploy**
 
@@ -92,10 +115,15 @@ vercel --prod
 
 ## 4. Variáveis de Ambiente
 
+Do lado do **cliente** (Vercel, prefixo `VITE_`):
+
 | Variável | Onde encontrar | Obrigatória |
 |---|---|---|
 | `VITE_SUPABASE_URL` | Supabase → Settings → API → Project URL | ✅ |
 | `VITE_SUPABASE_ANON_KEY` | Supabase → Settings → API → anon/public key | ✅ |
+| `VITE_ENABLE_MESADA_MODULE` | Definida manualmente como `true` | Só se quiser o módulo de Mesada ativo nesse deploy |
+
+Do lado das **Edge Functions** (painel do Supabase, nunca na Vercel): ver seção 1.1.2 acima.
 
 ---
 
@@ -115,8 +143,10 @@ vercel --prod
 - [ ] `VITE_SUPABASE_ANON_KEY` configurada na Vercel
 - [ ] Schema SQL executado no Supabase
 - [ ] RLS ativo em todas as tabelas
-- [ ] Build local passa: `pnpm build`
-- [ ] TypeCheck passa: `pnpm check`
+- [ ] Build local passa: `npm run build`
+- [ ] TypeCheck passa: `npm run check`
+- [ ] Todas as Edge Functions deployadas (seção 1.1.1) e seus secrets configurados (seção 1.1.2)
+- [ ] Cron jobs agendados (seção 1.1.3)
 
 ---
 
