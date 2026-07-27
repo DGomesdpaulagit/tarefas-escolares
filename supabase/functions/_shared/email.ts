@@ -35,6 +35,7 @@ export async function enviarEmail(
 
     if (!res.ok) {
       const detalhe = await res.text();
+      console.error(`Resend respondeu ${res.status} ao enviar para ${para}: ${detalhe.slice(0, 500)}`);
       return { ok: false, erro: `Resend ${res.status}: ${detalhe.slice(0, 300)}` };
     }
     return { ok: true };
