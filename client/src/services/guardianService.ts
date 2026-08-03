@@ -62,7 +62,7 @@ export const guardianService = {
   async get(userId: string): Promise<Responsavel | null> {
     const { data, error } = await supabase
       .from("guardians")
-      .select("id, user_id, email, nome, status, criado_em, confirmado_em")
+      .select("id, user_id, email, nome, status, access_token, criado_em, confirmado_em")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -78,8 +78,9 @@ export const guardianService = {
   async solicitarCodigo(
     acao: AcaoResponsavel,
     email?: string,
+    nome?: string,
   ): Promise<{ destino_mascarado: string; expira_em: string }> {
-    return chamar("guardian-request-code", { acao, email });
+    return chamar("guardian-request-code", { acao, email, nome });
   },
 
   /** Valida o código digitado e efetiva a operação. */
@@ -87,6 +88,11 @@ export const guardianService = {
     codigo: string,
   ): Promise<{ acao: AcaoResponsavel; guardian: Responsavel | null }> {
     return chamar("guardian-verify-code", { codigo });
+  },
+
+  /** Link público do painel do responsável — mesmo endereço, sem login. */
+  linkPainel(accessToken: string): string {
+    return `${window.location.origin}/responsavel?token=${accessToken}`;
   },
 
   /** Histórico de relatórios enviados (transparência para o usuário). */

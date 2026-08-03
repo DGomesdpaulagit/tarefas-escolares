@@ -21,6 +21,7 @@ import Onboarding from "./pages/Onboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Welcome, { welcomeJaVisto } from "./pages/Welcome";
 import Descadastrar from "./pages/Descadastrar";
+import PainelResponsavel from "./pages/PainelResponsavel";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { profileService } from "@/services/profileService";
@@ -31,10 +32,13 @@ function Router() {
   const { estaAutenticado, carregando } = useAuth();
   const [local] = useLocation();
 
-  // Rota pública do responsável — quem abre não tem conta, então precisa
+  // Rotas públicas do responsável — quem abre não tem conta, então precisam
   // passar por fora do gate de autenticação e do Welcome.
   if (local === "/descadastrar") {
     return <Descadastrar />;
+  }
+  if (local === "/responsavel") {
+    return <PainelResponsavel />;
   }
 
   if (carregando) {

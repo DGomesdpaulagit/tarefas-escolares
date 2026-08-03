@@ -112,6 +112,12 @@ const PASSOS_BASE: TourStep[] = [
     descricaoChave: "tour.configAbasDesc",
   },
   {
+    id: "config-tab-responsavel",
+    page: "configuracoes",
+    tituloChave: "tour.responsavelTitulo",
+    descricaoChave: "tour.responsavelDesc",
+  },
+  {
     id: "config-tutorial-button",
     page: "configuracoes",
     tituloChave: "tour.revejaTitulo",

@@ -69,7 +69,9 @@ Deno.serve(async (req) => {
     .eq("id", registro.id);
 
   const agora = new Date().toISOString();
-  const emailPayload = (registro.payload as { email?: string } | null)?.email ?? null;
+  const cargaUtil = registro.payload as { email?: string; nome?: string } | null;
+  const emailPayload = cargaUtil?.email ?? null;
+  const nomePayload = cargaUtil?.nome ?? null;
 
   if (registro.acao === "cadastrar") {
     if (!emailPayload) return json({ erro: "payload_invalido" }, 500);
@@ -78,10 +80,11 @@ Deno.serve(async (req) => {
       .upsert({
         user_id: user.id,
         email: emailPayload,
+        nome: nomePayload,
         status: "ativo",
         confirmado_em: agora,
       }, { onConflict: "user_id" })
-      .select("id, email, status, criado_em, confirmado_em")
+      .select("id, email, nome, status, access_token, criado_em, confirmado_em")
       .single();
     if (error) return json({ erro: "falha_ao_salvar", detalhe: error.message }, 500);
     return json({ ok: true, acao: "cadastrar", guardian: data });
@@ -90,9 +93,9 @@ Deno.serve(async (req) => {
   if (registro.acao === "editar") {
     if (!emailPayload) return json({ erro: "payload_invalido" }, 500);
     const { data, error } = await admin.from("guardians")
-      .update({ email: emailPayload, status: "ativo", confirmado_em: agora })
+      .update({ email: emailPayload, nome: nomePayload, status: "ativo", confirmado_em: agora })
       .eq("user_id", user.id)
-      .select("id, email, status, criado_em, confirmado_em")
+      .select("id, email, nome, status, access_token, criado_em, confirmado_em")
       .single();
     if (error) return json({ erro: "falha_ao_salvar", detalhe: error.message }, 500);
     return json({ ok: true, acao: "editar", guardian: data });

@@ -8,6 +8,25 @@ Versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado (Etapa 19 / Sessão 036 — 2026-07-27) — Painel completo do responsável (v4.1) + correção do e-mail de cadastro + tutorial atualizado
+Usuário reportou erro ao cadastrar e-mail do responsável, pediu para adicionar o recurso ao tutorial, e pediu acesso completo (tarefas, desempenho, mesada) ao invés de só o resumo mensal por e-mail.
+
+**Diagnóstico do erro de cadastro:** confirmado via log (`console.error` adicionado a `_shared/email.ts`) que a causa é o domínio de teste do Resend (`onboarding@resend.dev`), que só entrega para o e-mail dono da conta — não é bug do código. Usuário optou por seguir testando só com o próprio e-mail por enquanto, sem comprar domínio ainda.
+
+**Painel completo do responsável (v4.1)** — decisão de arquitetura: link próprio sem login/senha, não conta separada com sistema de permissões.
+- Migration `012_guardian_dashboard`: `guardians.nome` (nome do responsável, usado na saudação) e `guardians.access_token` (token do painel, separado do `unsubscribe_token` de propósito — consequências diferentes se vazar)
+- Edge Function `guardian-dashboard` (pública): tarefas completas, métricas agregadas e mesada (se houver), tudo classificado com a mesma regra `getStatusEfetivo()` do cliente
+- Nova página pública `/responsavel?token=` (`PainelResponsavel.tsx`), fora do gate de autenticação
+- `ResponsavelPainel.tsx`: campo de nome no cadastro + bloco "copiar link do painel"
+- Testado com dados reais do usuário: nome, 32 tarefas, métricas e mesada todos corretos
+
+**Tutorial guiado** — novo passo explicando o recurso do responsável, com `data-tour` dedicado em cada aba de Configurações (antes só existia no container geral das abas).
+
+**Resolvidos os 3 itens da auditoria anterior:**
+- `pnpm-lock.yaml` removido (projeto usa npm, confirmado com o usuário)
+- `server/index.ts` e `shared/const.ts` removidos (código morto, zero referências, express nem instalado)
+- "Leaked password protection" do Supabase Auth **não pôde ser corrigido por código** — é um toggle de dashboard (Authentication → Settings); reportado ao usuário
+
 ### Corrigido (Etapa 19 / Sessão 035 — 2026-07-27) — Auditoria geral: banco de dados, migrations faltando, documentação desatualizada
 Usuário pediu para ler todos os arquivos e documentos do projeto, atualizar e procurar erros.
 

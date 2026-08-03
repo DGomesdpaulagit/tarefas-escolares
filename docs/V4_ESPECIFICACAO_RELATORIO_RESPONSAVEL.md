@@ -255,3 +255,24 @@ A seção 5 dizia "checar o log ANTES de enviar, gravar DEPOIS" — o que estava
 ### 10.3 Coluna nova, não prevista na seção 4
 
 `guardians.unsubscribe_token` (`text NOT NULL DEFAULT encode(gen_random_bytes(24), 'hex')`) — o link de saída precisa identificar o responsável sem login, e usar o `id` da linha para isso permitiria adivinhação/enumeração.
+
+---
+
+## 11. Extensão v4.1 — Painel completo do responsável (2026-07-27)
+
+O usuário pediu mais do que o resumo mensal: acesso completo — tarefas, desempenho e mesada — com uma saudação personalizada ("Bem-vindo Henrique, acompanhe tudo das matérias do Davi"). Decisão de arquitetura (confirmada com o usuário antes de implementar): **link próprio, sem login/senha** — não uma conta de responsável separada com sistema de permissões por papel (que exigiria muito mais infraestrutura para um caso de uso pessoal).
+
+**Banco (migration `012_guardian_dashboard`):**
+- `guardians.nome` — nome do responsável, capturado no mesmo fluxo de cadastro por código, usado na saudação
+- `guardians.access_token` — token de acesso ao painel, **separado** do `unsubscribe_token`: consequências diferentes se vazar (esse dá leitura a todos os dados; o outro só cancela o e-mail), então precisam poder ser rotacionados independentemente
+
+**Edge Function `guardian-dashboard`** (pública, `verify_jwt=false`): recebe `?token=`, valida contra `guardians.access_token` + `status='ativo'`, e devolve JSON com nome do estudante, nome do responsável, lista completa de tarefas (classificadas com a mesma regra de `getStatusEfetivo()`), métricas agregadas (mesmo formato de `MetricasTarefas` do cliente) e, se existir, a mesada mais recente (valor acumulado do ano letivo somando `valor_calculado`, que já reflete o travamento do limite de MB — não precisou reimplementar essa regra).
+
+**Frontend:**
+- `PainelResponsavel.tsx` — página pública em `/responsavel?token=`, fora do gate de autenticação e do Welcome (mesmo padrão de `/descadastrar`)
+- `ResponsavelPainel.tsx` ganhou: campo de nome no cadastro, e um bloco "copiar link do painel" (só aparece com responsável ativo) — o estudante compartilha manualmente (WhatsApp, e-mail), não depende do Resend funcionar
+- Tutorial guiado ganhou um passo novo explicando o recurso do responsável (`data-tour="config-tab-responsavel"` em cada aba de Configurações, não só no container geral)
+
+**Simplificação consciente:** a página `/responsavel` não é traduzida (fica em pt-BR fixo) — diferente do resto do app, que tem i18n completo. Motivo: o app não tem como saber o idioma preferido do responsável (só o do estudante), e replicar o sistema de tradução para uma página que ninguém mais vê pareceu esforço desproporcional ao benefício nesta primeira versão.
+
+**Testado com dados reais do usuário:** nome, 32 tarefas com título/disciplina/status/data corretos, métricas batendo com a Visão Geral do app, e a seção de mesada exibindo o ano letivo certo. Dados de teste removidos do banco depois.

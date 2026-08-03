@@ -12,8 +12,45 @@ Lido automaticamente no início de cada nova conversa.
 
 ---
 
-## ETAPA ATUAL: Etapa 19 - v5.0 (registro de tarefas por imagem/áudio) + auditoria geral
-## SESSÃO ATUAL: [Sessão 035] - Auditoria completa: RLS/performance, migrations faltando, documentação ✅ CONCLUÍDA
+## ETAPA ATUAL: Etapa 19 - v5.0 (imagem/áudio) + auditoria geral + v4.1 (painel do responsável)
+## SESSÃO ATUAL: [Sessão 036] - Painel completo do responsável + correção do e-mail + tutorial + itens da auditoria ✅ CONCLUÍDA
+
+## [Etapa 19 / Sessão 036] - Painel completo do responsável (v4.1), correção do e-mail de cadastro, tutorial atualizado, itens da auditoria resolvidos
+**Data:** 2026-07-27
+**Branch:** `main`
+**Status:** ✅ Concluída
+
+### O que foi pedido
+Na mesma mensagem, o usuário: (1) pediu para resolver os 3 itens que a auditoria anterior tinha encontrado e não corrigido sozinha; (2) reportou um erro real ao tentar cadastrar o e-mail do responsável; (3) pediu para o tutorial guiado passar a explicar o recurso do responsável; (4) pediu acesso **completo** do responsável ao app — tarefas, desempenho e mesada, não só o resumo do e-mail mensal — com uma saudação personalizada como exemplo ("Bem-vindo Henrique, acompanhe tudo das matérias do Davi").
+
+### Diagnóstico do erro de cadastro
+O log padrão do Supabase não mostra corpo de erro (lição já registrada em memória), então adicionei `console.error` em `_shared/email.ts` e pedi para o usuário tentar de novo. Confirmado: o domínio de teste do Resend (`onboarding@resend.dev`) só entrega e-mail para o dono da conta — o e-mail que o usuário tentou cadastrar (`aureasantosgomes@gmail.com`) é diferente da conta Resend (`daviphone22@gmail.com`). Não é bug do código, é a proteção anti-spam do próprio Resend. Perguntei ao usuário como queria resolver (comprar domínio / testar só com o próprio e-mail / deixar pra depois) — escolheu testar só com o próprio e-mail por enquanto.
+
+### Painel completo do responsável (v4.1)
+Antes de implementar, perguntei ao usuário como o pai deveria acessar (link sem senha vs. conta separada) e o que deveria mostrar — decisão dele: **link próprio sem login**, mostrando tudo (tarefas, desempenho, mesada). Implementado:
+- Migration `012_guardian_dashboard`: `guardians.nome` (usado na saudação) e `guardians.access_token` (token do painel, deliberadamente separado do `unsubscribe_token` — consequência de vazamento é diferente para cada um)
+- Edge Function pública `guardian-dashboard`: autenticação é o próprio token (longo, aleatório, não enumerável), não uma conta; devolve tarefas completas, métricas agregadas (mesmo formato usado no resto do app) e a mesada mais recente, se existir
+- Página pública `PainelResponsavel.tsx` em `/responsavel?token=`, fora do gate de autenticação — mesmo padrão já usado em `/descadastrar`
+- `ResponsavelPainel.tsx`: campo de nome no cadastro + bloco "copiar link do painel" (o estudante compartilha manualmente, não depende do Resend)
+- **Testado com dados reais do usuário** direto no navegador: nome ("Bem-vindo, Henrique!"), 32 tarefas com título/disciplina/status/data corretos, métricas batendo com a Visão Geral, mesada mostrando o ano letivo certo. Dados de teste removidos do banco depois.
+
+### Tutorial guiado
+Novo passo explicando o recurso do responsável. Precisou adicionar `data-tour="config-tab-{id}"` em cada botão de aba de Configurações (antes só existia um `data-tour` no container geral das 5 abas juntas), pra poder destacar especificamente a aba Responsável.
+
+### Os 3 itens da auditoria anterior, resolvidos
+- **Lockfile duplicado:** perguntei qual gerenciador o usuário usa de verdade — respondeu npm — removido `pnpm-lock.yaml`
+- **Código morto:** `server/index.ts` e `shared/const.ts` removidos (zero referências em todo o projeto, `express` nem estava instalado — nem rodaria se algo chamasse). `tsconfig.json` atualizado (removido include de `shared/**/*` e o path alias `@shared/*`)
+- **Leaked password protection:** não existe ferramenta MCP disponível para alterar configuração de Auth do Supabase — expliquei ao usuário que é um toggle manual em Authentication → Settings
+
+### Verificação feita
+- `npm run build` — 0 erros TS, em cada etapa
+- Teste end-to-end do painel do responsável com dados reais, direto no navegador (sem login necessário, confirmando que o fluxo público funciona)
+- Edge Functions redeployadas e confirmadas ativas
+
+### Próximo passo
+Nenhum obrigatório. Se o usuário quiser, pode comprar um domínio para o Resend (permite cadastrar responsável com e-mail de terceiros) ou desativar manualmente o "leaked password protection" no painel do Supabase.
+
+---
 
 ## [Etapa 19 / Sessão 035] - Auditoria geral do projeto: banco, migrations faltando, documentação desatualizada
 **Data:** 2026-07-27

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Mail, MailCheck, Pencil, Send, ShieldCheck, Trash2, X } from "lucide-react";
+import { Check, Copy, Loader2, Mail, MailCheck, Pencil, Send, ShieldCheck, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,7 @@ export default function ResponsavelPainel({
 
   const [acao, setAcao] = useState<AcaoResponsavel | null>(null);
   const [email, setEmail] = useState("");
+  const [nome, setNome] = useState("");
   const [codigo, setCodigo] = useState("");
   const [destino, setDestino] = useState<string | null>(null);
   const [expiraEm, setExpiraEm] = useState<number | null>(null);
@@ -94,6 +95,7 @@ export default function ResponsavelPainel({
   const limpar = () => {
     setAcao(null);
     setEmail("");
+    setNome("");
     setCodigo("");
     setDestino(null);
     setExpiraEm(null);
@@ -101,11 +103,11 @@ export default function ResponsavelPainel({
   };
 
   // --- pedir código --------------------------------------------------------
-  const pedirCodigo = async (qual: AcaoResponsavel, emailAlvo?: string) => {
+  const pedirCodigo = async (qual: AcaoResponsavel, emailAlvo?: string, nomeAlvo?: string) => {
     setOcupado(true);
     setErro(null);
     try {
-      const r = await guardianService.solicitarCodigo(qual, emailAlvo);
+      const r = await guardianService.solicitarCodigo(qual, emailAlvo, nomeAlvo);
       setAcao(qual);
       setDestino(r.destino_mascarado);
       setExpiraEm(new Date(r.expira_em).getTime());
@@ -175,7 +177,7 @@ export default function ResponsavelPainel({
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-slate-900 dark:text-white break-all">
-                {responsavel.email}
+                {responsavel.nome ? `${responsavel.nome} · ${responsavel.email}` : responsavel.email}
               </p>
               {responsavel.confirmado_em && (
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -212,7 +214,7 @@ export default function ResponsavelPainel({
           ocupado={ocupado}
           erro={erro}
           onConfirmar={confirmar}
-          onReenviar={() => pedirCodigo(acao!, acao === "excluir" ? undefined : email)}
+          onReenviar={() => pedirCodigo(acao!, acao === "excluir" ? undefined : email, acao === "cadastrar" ? nome : undefined)}
           onCancelar={limpar}
           t={t}
         />
@@ -221,9 +223,11 @@ export default function ResponsavelPainel({
           acao={acao}
           email={email}
           setEmail={(v) => { setEmail(v); setErro(null); }}
+          nome={nome}
+          setNome={(v) => { setNome(v); setErro(null); }}
           ocupado={ocupado}
           erro={erro}
-          onEnviar={() => pedirCodigo(acao, acao === "excluir" ? undefined : email)}
+          onEnviar={() => pedirCodigo(acao, acao === "excluir" ? undefined : email, acao === "cadastrar" ? nome : undefined)}
           onCancelar={limpar}
           t={t}
         />
@@ -260,6 +264,11 @@ export default function ResponsavelPainel({
         </div>
       )}
 
+      {/* Link do painel completo — só quando ativo, fora do fluxo de código */}
+      {!aguardandoCodigo && !acao && responsavel && (
+        <LinkPainel token={responsavel.access_token} t={t} />
+      )}
+
       {/* O que é enviado — transparência */}
       <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4">
         <div className="flex items-center gap-2 mb-1.5">
@@ -281,11 +290,13 @@ export default function ResponsavelPainel({
 // ============================================================
 
 function FormEmail({
-  acao, email, setEmail, ocupado, erro, onEnviar, onCancelar, t,
+  acao, email, setEmail, nome, setNome, ocupado, erro, onEnviar, onCancelar, t,
 }: {
   acao: AcaoResponsavel;
   email: string;
   setEmail: (s: string) => void;
+  nome: string;
+  setNome: (s: string) => void;
   ocupado: boolean;
   erro: string | null;
   onEnviar: () => void;
@@ -301,6 +312,23 @@ function FormEmail({
     <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 space-y-3">
       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{aviso}</p>
 
+      {acao === "cadastrar" && (
+        <div className="space-y-1.5">
+          <Label htmlFor="resp-nome" className="text-slate-700 dark:text-slate-300 text-sm">
+            {t("resp.nomeLabel")}
+          </Label>
+          <Input
+            id="resp-nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder={t("resp.nomePlaceholder")}
+            className="bg-white/5 border-white/10 text-slate-900 dark:text-white focus:border-amber-500"
+            maxLength={80}
+            autoComplete="off"
+          />
+        </div>
+      )}
+
       {acao !== "excluir" && (
         <div className="space-y-1.5">
           <Label htmlFor="resp-email" className="text-slate-700 dark:text-slate-300 text-sm">
@@ -313,7 +341,7 @@ function FormEmail({
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("resp.emailPlaceholder")}
             className="bg-white/5 border-white/10 text-slate-900 dark:text-white focus:border-amber-500"
-            autoFocus
+            autoFocus={acao !== "cadastrar"}
             autoComplete="off"
           />
         </div>
@@ -426,6 +454,51 @@ function EntradaCodigo({
           className="border-white/10 bg-transparent text-slate-700 dark:text-slate-300 hover:bg-white/10"
         >
           {cooldown > 0 ? `${t("resp.reenviarEm")} ${cooldown}s` : t("resp.btnReenviar")}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// Link do painel completo (sem login) — acesso a tarefas, desempenho e mesada
+// ============================================================
+
+function LinkPainel({ token, t }: { token: string; t: (c: DicionarioChave) => string }) {
+  const [copiado, setCopiado] = useState(false);
+  const link = guardianService.linkPainel(token);
+
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      toast.error(t("resp.erro.generico"));
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-white/8 bg-white/[0.02] p-4 space-y-2">
+      <p className="text-xs uppercase tracking-wider text-slate-500 font-medium">
+        {t("resp.linkPainelTitulo")}
+      </p>
+      <p className="text-xs text-slate-500 leading-relaxed">{t("resp.linkPainelDesc")}</p>
+      <div className="flex items-center gap-2 mt-1">
+        <Input
+          readOnly
+          value={link}
+          onFocus={(e) => e.target.select()}
+          className="bg-white/5 border-white/10 text-slate-500 text-xs h-9"
+        />
+        <Button
+          size="sm"
+          onClick={copiar}
+          variant="outline"
+          className="border-white/10 bg-transparent text-slate-700 dark:text-slate-300 hover:bg-white/10 h-9 px-3 shrink-0 gap-1.5"
+        >
+          {copiado ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+          {copiado ? t("resp.linkCopiado") : t("resp.linkCopiar")}
         </Button>
       </div>
     </div>

@@ -90,6 +90,7 @@ export default function Configuracoes() {
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
+              data-tour={`config-tab-${id}`}
               onClick={() => setAbaAtiva(id)}
               className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all text-left w-full focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                 abaAtiva === id

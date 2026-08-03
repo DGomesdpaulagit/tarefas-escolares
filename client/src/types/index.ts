@@ -54,6 +54,7 @@ export interface Responsavel {
   email: string;
   nome: string | null;
   status: StatusResponsavel;
+  access_token: string;
   criado_em: string;
   confirmado_em: string | null;
 }

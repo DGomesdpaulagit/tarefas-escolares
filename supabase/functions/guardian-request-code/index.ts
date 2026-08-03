@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
   const { data: { user } } = await cliente.auth.getUser();
   if (!user) return json({ erro: "nao_autenticado" }, 401);
 
-  let body: { acao?: string; email?: string };
+  let body: { acao?: string; email?: string; nome?: string };
   try {
     body = await req.json();
   } catch {
@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
   }
 
   const emailNovo = (body.email ?? "").trim().toLowerCase();
+  const nomeResponsavel = (body.nome ?? "").trim().slice(0, 80) || null;
 
   // --- rate limit: 1 código por minuto por usuário ---
   const { data: ultimo } = await admin
@@ -92,7 +93,7 @@ Deno.serve(async (req) => {
     guardian_id: guardian?.id ?? null,
     codigo_hash: await hashCodigo(codigo),
     acao,
-    payload: acao === "excluir" ? null : { email: emailNovo },
+    payload: acao === "excluir" ? null : { email: emailNovo, nome: nomeResponsavel },
     expira_em: expira,
   });
 

@@ -451,6 +451,16 @@ Criado `docs/CHECKLIST_PUBLICACAO.md` (Sessão 032, 2026-07-24) a pedido do usu�
 
 ## 22. Próximo Passo Exato
 
+### ✅ v4.1 — Painel completo do responsável + correção do e-mail + tutorial (Sessão 036, 2026-07-27)
+
+**Erro de cadastro do responsável, diagnosticado:** era o domínio de teste do Resend rejeitando um destinatário diferente do dono da conta — não bug de código. Usuário optou por continuar testando só com o próprio e-mail por ora.
+
+**Novo recurso — painel completo do responsável (v4.1), decisão de arquitetura confirmada com o usuário antes de codar:** link próprio sem login/senha (não conta separada com sistema de permissões). Migration `012_guardian_dashboard` (`guardians.nome`, `guardians.access_token` — deliberadamente separado do `unsubscribe_token`), Edge Function pública `guardian-dashboard`, página pública `PainelResponsavel.tsx` em `/responsavel?token=`. Mostra tarefas completas, métricas e mesada (se houver). **Testado com dados reais do usuário direto no navegador** — nome, 32 tarefas, métricas e mesada todos corretos.
+
+**Tutorial guiado** ganhou um passo sobre o recurso do responsável — precisou de `data-tour="config-tab-{id}"` por aba de Configurações (antes só existia um `data-tour` no container geral).
+
+**Os 3 itens da auditoria anterior (Sessão 035), resolvidos:** lockfile duplicado (`pnpm-lock.yaml` removido, usuário confirmou que usa npm), código morto (`server/index.ts` + `shared/const.ts` removidos, zero referências, `express` nem instalado), "leaked password protection" do Supabase Auth **não tem ferramenta MCP para corrigir** — é toggle manual em Authentication → Settings, reportado ao usuário.
+
 ### ✅ v4.0 — RESEND_API_KEY configurada e testada de ponta a ponta (2026-07-24)
 
 Usuário criou a conta Resend e configurou o secret. Testado com um responsável real (o próprio e-mail do usuário, `daviphone22@gmail.com` — mesma conta do Resend, obrigatório enquanto for o domínio de teste `onboarding@resend.dev`, que só entrega para o dono da conta): relatório mensal chegou de verdade na caixa de entrada, e o link de descadastro do rodapé foi confirmado funcionando em produção (`tarefas-escolares-five.vercel.app/descadastrar`). Dados de teste removidos do banco depois.
